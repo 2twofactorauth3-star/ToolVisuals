@@ -1,0 +1,15 @@
+sourceSets {
+    main.java {
+        srcDirs = ['../../src/main/java']
+        ['Emote', 'EmoteGroup', 'PairEmote'].each { type -> include "ru/he3hauka/toolvisuals/animation/${type}.java" }
+        include 'ru/he3hauka/toolvisuals/animation/social/*.java'
+        include 'ru/he3hauka/toolvisuals/cosmetic/**/*.java'
+        include 'ru/he3hauka/toolvisuals/network/**/*.java'
+        include 'ru/he3hauka/toolvisuals/minigame/**/*.java'
+        include 'ru/he3hauka/toolvisuals/storage/*.java'
+        include 'ru/he3hauka/toolvisuals/animation/protocol/**/*.java'
+        ['WireCatalog', 'PacketBudget', 'EmoteGate', 'EmoteWire', 'RelayLimits', 'RelayMailbox'].each { type ->
+            include "ru/he3hauka/toolvisuals/animation/network/${type}.java"
+        }
+    }
+}

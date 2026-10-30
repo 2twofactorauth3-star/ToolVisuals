@@ -1,0 +1,53 @@
+{
+  "project": "immediatelyfast",
+  "version": "1.17.1+26.3-fabric",
+  "file": "ImmediatelyFast-Fabric-1.17.1+26.3.jar",
+  "url": "https://cdn.modrinth.com/data/5ZwdcRci/versions/3MP9UR23/ImmediatelyFast-Fabric-1.17.1%2B26.3.jar",
+  "sha512": "8e139589fd995bce3d485a34d92a07243964212f7ed2e4fc2f6de5b9a74d0f59b03252e7ce40c64e006cf3e21bed5de27b830d33ef048b286e041f6178ad8428",
+  "dependencies": [],
+  "fabric": {
+    "schemaVersion": 1,
+    "id": "immediatelyfast",
+    "version": "1.17.1+26.3",
+    "name": "ImmediatelyFast",
+    "description": "Speed up and optimize immediate mode rendering in Minecraft",
+    "authors": [
+      {
+        "name": "RK_01",
+        "contact": {
+          "homepage": "https://github.com/RaphiMC"
+        }
+      }
+    ],
+    "contact": {
+      "homepage": "https://github.com/RaphiMC/ImmediatelyFast",
+      "sources": "https://github.com/RaphiMC/ImmediatelyFast",
+      "issues": "https://github.com/RaphiMC/ImmediatelyFast/issues"
+    },
+    "license": "LGPL-3.0-or-later",
+    "icon": "assets/immediatelyfast/icon.png",
+    "environment": "client",
+    "mixins": [
+      "immediatelyfast-common.mixins.json",
+      "immediatelyfast-fabric.mixins.json"
+    ],
+    "accessWidener": "immediatelyfast.classtweaker",
+    "depends": {
+      "java": ">=25",
+      "minecraft": "26.3.x",
+      "fabricloader": ">=0.19.3"
+    },
+    "custom": {
+      "modmenu": {
+        "links": {
+          "modmenu.discord": "https://raphimc.net/discord",
+          "modmenu.donate": "https://raphimc.net/donate",
+          "modmenu.kofi": "https://ko-fi.com/rk_01",
+          "modmenu.github_releases": "https://github.com/RaphiMC/ImmediatelyFast/releases",
+          "modmenu.modrinth": "https://modrinth.com/mod/immediatelyfast",
+          "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/immediatelyfast"
+        }
+      }
+    }
+  }
+}

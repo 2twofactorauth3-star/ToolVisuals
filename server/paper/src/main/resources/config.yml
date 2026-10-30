@@ -1,0 +1,24 @@
+reward:
+  enabled: true
+  id: visuals-player
+  required-playtime-seconds: 1800
+  commands:
+    - 'hkit give pvp4 %player%'
+storage-flush-seconds: 30
+placeholders:
+  using: 'Да'
+  not-using: 'Нет'
+messages:
+  players-only: 'Эта команда доступна только игроку.'
+  no-permission: 'У вас нет прав для получения награды.'
+  disabled: 'Получение награды отключено.'
+  requires-client: 'Для награды зайдите с клиентом ToolVisuals.'
+  loading: 'Данные ещё загружаются. Попробуйте через несколько секунд.'
+  remaining: 'До награды осталось наиграть: %time%.'
+  processing: 'Проверяем получение награды…'
+  busy: 'Предыдущий запрос ещё обрабатывается.'
+  received: 'Награда получена. Спасибо, что играете с ToolVisuals!'
+  already-claimed: 'Вы уже получили эту награду.'
+  review-required: 'Эта награда ожидает проверки администратора.'
+  unavailable: 'Хранилище временно недоступно. Получение награды остановлено.'
+  delivery-failed: 'Выдача не завершена. Сообщите администратору код: %claim%.'

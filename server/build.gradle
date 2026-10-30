@@ -1,0 +1,24 @@
+def modProperties = new Properties()
+rootProject.file('../gradle.properties').withInputStream { modProperties.load(it) }
+ext.pluginArchiveBaseName = modProperties.getProperty('plugin_archives_base_name')
+allprojects {
+    group = 'ru.he3hauka.toolvisuals'
+    version = modProperties.getProperty('mod_version')
+    repositories { mavenCentral() }
+}
+
+subprojects {
+    apply plugin: 'java'
+    java { toolchain.languageVersion = JavaLanguageVersion.of(21) }
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 21
+    }
+    def localChecks = rootProject.file('../gradle/local-checks.gradle')
+    if (localChecks.isFile()) apply from: localChecks
+    tasks.named('jar') {
+        from(rootProject.file('README.txt'))
+        from(rootProject.file('../LICENSE')) { rename { 'LICENSE_ToolVisuals' } }
+        from(rootProject.files('../NOTICE', '../COPYING')) { rename { it + '_ToolVisuals' } }
+    }
+}

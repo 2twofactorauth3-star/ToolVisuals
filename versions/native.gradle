@@ -1,0 +1,89 @@
+interface NativeDistributionServices {
+    @javax.inject.Inject
+    org.gradle.process.ExecOperations getExecOperations()
+}
+
+loom { mixin { useLegacyMixinAp = false } }
+
+def target = new groovy.json.JsonSlurper().parse(rootProject.file('versions/targets.json')).targets.find { it.minecraft == projectDir.name }
+if (target == null) throw new GradleException('Unknown native Minecraft target: ' + projectDir.name)
+def minecraftVersion = target.minecraft
+ext.nativeMinecraftVersion = minecraftVersion
+def generated = rootProject.layout.buildDirectory.dir('versions/' + minecraftVersion)
+def dependencyManifest = file('dependencies.json')
+def dependenciesForTarget = new groovy.json.JsonSlurper().parse(dependencyManifest)
+def pythonExecutable = providers.gradleProperty('pythonExecutable').orElse('python')
+version = rootProject.version
+group = rootProject.group
+base { archivesName = rootProject.archives_base_name }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+def acquireNativeDependencies = tasks.register('acquireNativeDependencies', Exec) {
+    workingDir rootProject.projectDir
+    commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion
+    inputs.files(dependencyManifest, rootProject.file('versions/targets.json'), rootProject.file('build-tools/dependencies.py'), rootProject.fileTree('build-tools/multiversion') { include '*.py' })
+    outputs.files(dependenciesForTarget.collect { file('libs/' + it.file) })
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraftVersion}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    dependenciesForTarget.each { dependency ->
+        def archive = files(file('libs/' + dependency.file)).builtBy(acquireNativeDependencies)
+        modImplementation archive
+        include archive
+    }
+}
+
+def generateNativeSources = tasks.register('generateNativeSources', Exec) {
+    dependsOn acquireNativeDependencies
+    workingDir rootProject.projectDir
+    commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion, '--resources'
+    inputs.files(rootProject.fileTree('src'), rootProject.fileTree('versions/common/main'), fileTree('main'), file('relocations.json'), file('excludes.json'), dependencyManifest, rootProject.file('gradle.properties'), rootProject.fileTree('libs/music'), rootProject.fileTree('native/music/windows'), rootProject.fileTree('build-tools/multiversion') { include '*.py' }, rootProject.file('build-tools/distribution.py'), rootProject.file('build-tools/dependencies.py'))
+    outputs.dirs(generated.map { it.dir('generated-sources') }, generated.map { it.dir('resources') })
+}
+
+sourceSets {
+    main {
+        java.setSrcDirs([generated.map { it.dir('generated-sources') }])
+        resources.setSrcDirs([generated.map { it.dir('resources') }])
+    }
+}
+tasks.named('compileJava') { dependsOn generateNativeSources }
+tasks.named('processResources') { dependsOn generateNativeSources }
+java { toolchain.languageVersion = JavaLanguageVersion.of(target.java as int) }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(target.java as int)
+}
+def localChecks = rootProject.file('gradle/local-checks.gradle')
+if (localChecks.isFile()) apply from: localChecks
+tasks.withType(Jar).configureEach { archiveVersion.set("${project.version}+fabric-${minecraftVersion}") }
+tasks.named('jar') {
+    from(rootProject.file('LICENSE')) { rename { 'LICENSE_ToolVisuals' } }
+    from(rootProject.files('NOTICE', 'COPYING')) { rename { it + '_ToolVisuals' } }
+}
+def compactorJava = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }
+def compactServices = objects.newInstance(NativeDistributionServices)
+tasks.named('remapJar') {
+    dependsOn rootProject.tasks.named('jarToolsClasses')
+    doLast {
+        compactServices.execOperations.javaexec {
+            executable = compactorJava.get().executablePath.asFile.absolutePath
+            classpath = rootProject.sourceSets.jarTools.runtimeClasspath
+            mainClass = 'ru.he3hauka.toolvisuals.build.JarCompactor'
+            args archiveFile.get().asFile.absolutePath, file('libs/' + dependenciesForTarget.find { it.project == 'fabric-api' }.file).absolutePath
+        }
+    }
+}
+tasks.register('copyClientRelease', Copy) {
+    dependsOn tasks.named('remapJar')
+    from tasks.named('remapJar').flatMap { it.archiveFile }
+    into rootProject.layout.buildDirectory.dir('libs')
+}
+tasks.named('build') { dependsOn tasks.named('copyClientRelease') }

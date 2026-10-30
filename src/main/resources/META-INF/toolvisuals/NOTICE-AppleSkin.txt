@@ -1,0 +1,5 @@
+AppleSkin by squeek502
+Version 3.0.10+mc26.3, licensed under the Unlicense.
+https://modrinth.com/mod/appleskin
+https://github.com/squeek502/AppleSkin
+The original archive is included unchanged. ToolVisuals controls visibility through the public AppleSkin API and client integration hooks.

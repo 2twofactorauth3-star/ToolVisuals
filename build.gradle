@@ -1,0 +1,253 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.17.21'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+tasks.named('build') {
+    dependsOn ':minecraft1214:build', ':minecraft12111:build'
+}
+
+tasks.register('buildServerPlugin', GradleBuild) {
+    dir = file('server')
+    tasks = [':paper:build']
+    doLast {
+        copy {
+            from file("server/paper/build/libs/${project.plugin_archives_base_name}-${project.mod_version}.jar")
+            into layout.buildDirectory.dir('libs')
+        }
+    }
+}
+
+tasks.register('release') {
+    dependsOn tasks.named('build'), tasks.named('buildServerPlugin')
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+tasks.withType(Jar).configureEach {
+    archiveVersion.set("${project.mod_version}+fabric-${project.minecraft_version}")
+}
+
+sourceSets {
+    jarTools { java.srcDir 'build-tools/src/main/java' }
+}
+
+tasks.named('compileJarToolsJava', JavaCompile) {
+    source(layout.projectDirectory.file('src/main/java/ru/he3hauka/toolvisuals/client/compatibility/lunar/LunarChatCompatibility.java'))
+}
+
+interface DistributionServices {
+    @javax.inject.Inject
+    org.gradle.process.ExecOperations getExecOperations()
+}
+
+def distributionServices = objects.newInstance(DistributionServices)
+def distributionTools = sourceSets.jarTools.runtimeClasspath
+def performanceManifestFile = layout.projectDirectory.file('libs/performance/bundle.json')
+def performanceManifest = new groovy.json.JsonSlurper().parse(performanceManifestFile.asFile, 'UTF-8')
+def performanceArchives = performanceManifest.mods.collect { layout.projectDirectory.file('libs/performance/' + it.file).asFile }
+
+def pythonExecutable = providers.gradleProperty('pythonExecutable').orElse('python')
+def acquireBundledDependencies = tasks.register('acquireBundledDependencies', Exec) {
+    workingDir projectDir
+    commandLine pythonExecutable.get(), layout.projectDirectory.file('build-tools/dependencies.py').asFile, '--target', project.minecraft_version
+    inputs.files(performanceManifestFile, 'libs/voicechat/voicechat.json', 'libs/appleskin/appleskin.json', 'build-tools/dependencies.py')
+    outputs.files(performanceArchives, file("libs/voicechat/voicechat-fabric-${project.voicechat_version}.jar"), file('libs/appleskin/appleskin-fabric-mc26.3-3.0.10.jar'))
+}
+def bundledArchive = { File archive -> files(archive).builtBy(acquireBundledDependencies) }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.maxhenkel.de/repository/public' }
+    maven { name = 'ViaVersion'; url = 'https://repo.viaversion.com' }
+     
+     
+     
+     
+     
+}
+
+dependencies {
+    jarToolsImplementation 'com.google.code.gson:gson:2.14.0'
+    jarToolsImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+     
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+     
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    include("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}") { transitive = false }
+     
+    runtimeOnly('com.viaversion:viafabricplus:5.1.1') { transitive = false }
+    include('com.viaversion:viafabricplus:5.1.1') { transitive = false }
+    compileOnly('com.viaversion:viafabricplus-api:5.1.1') { transitive = false }
+    compileOnly('com.viaversion:viaversion-common:5.12.1-20260927.122410-10') { transitive = false }
+
+     
+     
+    performanceArchives.each { archive ->
+        runtimeOnly bundledArchive(archive)
+        include bundledArchive(archive)
+    }
+    ['entityculling', 'sodium', 'ixeris'].each { id ->
+        compileOnly bundledArchive(performanceArchives.find { it.name == performanceManifest.mods.find { it.id == id }.file })
+    }
+
+    implementation bundledArchive(file("libs/voicechat/voicechat-fabric-${project.voicechat_version}.jar"))
+    include bundledArchive(file("libs/voicechat/voicechat-fabric-${project.voicechat_version}.jar"))
+    runtimeOnly('de.maxhenkel.voicechat:voicechat-api:2.6.25:fabric-stub') { transitive = false }
+    implementation bundledArchive(file('libs/appleskin/appleskin-fabric-mc26.3-3.0.10.jar'))
+    include bundledArchive(file('libs/appleskin/appleskin-fabric-mc26.3-3.0.10.jar'))
+}
+
+def localChecks = file('gradle/local-checks.gradle')
+if (localChecks.isFile()) apply from: localChecks
+
+def voicechatArchive = layout.projectDirectory.file("libs/voicechat/voicechat-fabric-${project.voicechat_version}.jar")
+def voicechatManifest = layout.projectDirectory.file('libs/voicechat/voicechat.json')
+def bundledVoicechatVersion = project.voicechat_version
+def verifyPinnedArchive = { File archive, manifest, String expectedVersion ->
+    def bytes = archive.bytes
+    def checksum = java.security.MessageDigest.getInstance('SHA-512').digest(bytes).encodeHex().toString()
+    if (manifest.version != expectedVersion || manifest.bytes != bytes.length || manifest.sha512 != checksum)
+        throw new GradleException('Bundled dependency does not match its pinned official archive: ' + archive.name)
+}
+def verifyArchive = { String taskName, archive, manifestFile, String expectedVersion ->
+    tasks.register(taskName) {
+        dependsOn acquireBundledDependencies
+        inputs.files(archive, manifestFile)
+        doLast {
+            def manifest = new groovy.json.JsonSlurper().parse(manifestFile.asFile, 'UTF-8')
+            verifyPinnedArchive(archive.asFile, manifest, expectedVersion)
+        }
+    }
+}
+verifyArchive('verifyBundledVoiceChat', voicechatArchive, voicechatManifest, bundledVoicechatVersion)
+verifyArchive('verifyBundledAppleSkin', layout.projectDirectory.file('libs/appleskin/appleskin-fabric-mc26.3-3.0.10.jar'),
+        layout.projectDirectory.file('libs/appleskin/appleskin.json'), '3.0.10+mc26.3')
+tasks.register('verifyBundledPerformance') {
+    dependsOn acquireBundledDependencies
+    inputs.files(performanceManifestFile, performanceArchives)
+    doLast {
+        if (performanceManifest.minecraft != project.minecraft_version)
+            throw new GradleException('Performance bundle targets a different Minecraft version')
+        performanceManifest.mods.each { entry ->
+            verifyPinnedArchive(layout.projectDirectory.file('libs/performance/' + entry.file).asFile, entry, entry.version)
+        }
+    }
+}
+
+tasks.register('verifyBundledMusic') {
+    inputs.files('libs/music/music-helper.json', 'libs/music/ToolVisualsMedia.exe', 'native/music/windows/MediaBridge.cs', fileTree('native/music/windows/audio') { include '*.cs' })
+    doLast {
+        def manifest = new groovy.json.JsonSlurper().parse(file('libs/music/music-helper.json'), 'UTF-8')
+        def helper = file('libs/music/ToolVisualsMedia.exe').bytes
+        def digest = { byte[] data -> java.security.MessageDigest.getInstance('SHA-256').digest(data).encodeHex().toString() }
+        if (manifest.protocol != 1 || manifest.file != 'ToolVisualsMedia.exe' || manifest.bytes != helper.length
+                || helper.length < 1024 || helper.length > 131072 || helper[0] != 77 || helper[1] != 90
+                || manifest.sha256 != digest(helper) || manifest.source_sha256 != digest(file('native/music/windows/MediaBridge.cs').bytes))
+            throw new GradleException('Bundled Windows music helper does not match its source and manifest')
+        def sources = [file('native/music/windows/MediaBridge.cs')] + fileTree('native/music/windows/audio').matching { include '*.cs' }.files.sort { it.name }
+        def expected = sources.collect { [path: projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/'), sha256: digest(it.bytes)] }
+        if (manifest.sources != expected)
+            throw new GradleException('Bundled Windows music helper sources do not match its manifest')
+    }
+}
+
+processResources {
+    dependsOn tasks.named('verifyBundledMusic')
+    from('libs/music') {
+        include 'ToolVisualsMedia.exe', 'music-helper.json'
+        into 'META-INF/toolvisuals/music'
+    }
+    dependsOn tasks.named('verifyBundledVoiceChat')
+    dependsOn tasks.named('verifyBundledAppleSkin')
+    dependsOn tasks.named('verifyBundledPerformance')
+    from(performanceManifestFile) {
+        into 'META-INF/toolvisuals'
+        rename { 'bundled-performance.json' }
+    }
+    from('libs/appleskin/appleskin.json') {
+        into 'META-INF/toolvisuals'
+        rename { 'bundled-appleskin.json' }
+    }
+    from('libs/voicechat/voicechat.json') {
+        into 'META-INF/toolvisuals'
+        rename { 'bundled-voicechat.json' }
+    }
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    inputs.property "fabric_version", project.fabric_version
+    inputs.property "voicechat_version", project.voicechat_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version,
+                "fabric_version": project.fabric_version,
+                "voicechat_version": project.voicechat_version
+    }
+}
+
+def targetJavaVersion = 25
+tasks.withType(JavaCompile).configureEach {
+     
+     
+     
+     
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+}
+
+def distributionJava = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(targetJavaVersion) }
+
+jar {
+    dependsOn tasks.named('jarToolsClasses')
+    inputs.files(distributionTools).withPropertyName('distributionTools').withNormalizer(org.gradle.api.tasks.ClasspathNormalizer)
+    from("LICENSE") {
+        rename { "${it}_${base.archivesName.get()}" }
+    }
+    from(files('NOTICE', 'COPYING')) { rename { "${it}_${base.archivesName.get()}" } }
+    doLast {
+        def distributionFile = archiveFile.get().asFile
+        def api = configurations.runtimeClasspath.files.find { it.name == "fabric-api-${project.fabric_version}.jar" }
+        if (api == null) throw new GradleException('Fabric API distribution not found for JAR compaction')
+        distributionServices.execOperations.javaexec {
+            executable = distributionJava.get().executablePath.asFile.absolutePath
+            classpath = distributionTools
+            mainClass = 'ru.he3hauka.toolvisuals.build.JarCompactor'
+            args distributionFile.absolutePath, api.absolutePath
+        }
+    }
+}
+
+ 
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+
+     
+    repositories {
+         
+         
+         
+         
+    }
+}

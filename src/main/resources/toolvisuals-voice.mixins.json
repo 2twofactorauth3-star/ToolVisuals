@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.he3hauka.toolvisuals.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "voicechat.VoiceStateMixin",
+    "voicechat.VoiceClientMixin",
+    "voicechat.VoiceMicInvoker",
+    "voicechat.VoicePermissionsMixin",
+    "voicechat.VoiceOnboardingMixin",
+    "voicechat.VoiceKeyMixin",
+    "voicechat.VoicePttMixin",
+    "voicechat.VoiceScreenMixin",
+    "voicechat.VoiceDebugMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

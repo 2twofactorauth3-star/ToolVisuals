@@ -1,0 +1,26 @@
+src/main/java/ru/he3hauka/toolvisuals/client/optimization/text/PreparedTextCache.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's prepared-text cache; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/client/optimization/text/StableText.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's stable text marker; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationChatMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationFontManagerMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's cache invalidation; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationFontMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's prepared-text caching; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/mixin/localization/OptimizationLanguageMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's stable text marking; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationParticleMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from ZakoOpt's per-tick particle lighting; see META-INF/licenses/zakoopt/NOTICE.

@@ -1,0 +1,15 @@
+ToolVisuals
+Copyright (c) 2026 He3HaukaX
+
+ToolVisuals-authored source code is licensed under LGPL-3.0-only; see LICENSE and COPYING. Third-party material and derivatives listed below retain their upstream terms.
+
+Adapted ZakoOpt code is covered by LGPL-3.0. Its notices, attribution, source reference and license texts are retained in src/main/resources/META-INF/licenses/zakoopt.
+Adapted Particle Core code is covered by MIT. Its notice and license are retained in src/main/resources/META-INF/licenses/performance.
+Manrope is covered by the SIL Open Font License 1.1, retained in src/main/resources/assets/toolvisuals/font/manrope-ofl.txt.
+Gradle Wrapper terms are retained in gradle/wrapper/NOTICE.
+
+Fabric API, ViaFabricPlus, Simple Voice Chat, AppleSkin and performance dependencies retain their own licenses. Their pinned download manifests are in libs and versions/<minecraft>/dependencies.json. Original notices and licenses are also retained inside nested dependency archives; ToolVisuals notices are under src/main/resources/META-INF.
+Version-specific Sodium shaders retain the PolyForm Shield 1.0.0 license of the matching upstream release, including ToolVisuals shader adaptations. The root LGPL license does not replace those terms.
+Windows MusicHUD helper source is in native/music/windows. The required prebuilt helper and its checksums are in libs/music.
+
+Bundled dependencies include copyleft and restricted-license components. No single root license grants additional rights over those components. Review their terms when redistributing or changing the bundle.

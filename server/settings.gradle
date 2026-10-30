@@ -1,0 +1,2 @@
+rootProject.name = 'ToolVisuals-Emotes'
+include 'common', 'paper'

@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.he3hauka.toolvisuals.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "vignette.DamageVignetteMixin",
+    "hud.PortraitStateMixin",
+    "hud.PortraitBlitMixin",
+    "betterhud.ChatOpeningMixin",
+    "chat.ChatSizeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "protocol": 1,
+  "file": "ToolVisualsMedia.exe",
+  "bytes": 46080,
+  "sha256": "dfa6a140895eff1a3e160eeeed65ff19adf163b1b3b71db251b34703e0729b95",
+  "source_sha256": "b1c5ad3d91f1dc4d4dd55d85c1c4e8b9b53c4298ae707a1458fd349051c70c04",
+  "runtime": ".NET Framework 4.5+",
+  "minimum_windows": "10 1809",
+  "sources": [
+    {
+      "path": "native/music/windows/MediaBridge.cs",
+      "sha256": "b1c5ad3d91f1dc4d4dd55d85c1c4e8b9b53c4298ae707a1458fd349051c70c04"
+    },
+    {
+      "path": "native/music/windows/audio/ApplicationVolume.cs",
+      "sha256": "41c927c8f921e153a14df6a9e31634beb53d81d2ec45aa2d7a37a05c8122db56"
+    },
+    {
+      "path": "native/music/windows/audio/CoreAudio.cs",
+      "sha256": "734c95e6accdbe6723d79372478ebcd2381c7af5e744470c45c5039c1330e9ce"
+    },
+    {
+      "path": "native/music/windows/audio/ProcessIdentity.cs",
+      "sha256": "35528114d7b7e4671751fca4819cd26915b30bf568e068fe652c9ce88f7ff6e0"
+    }
+  ]
+}

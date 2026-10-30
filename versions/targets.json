@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "default": "26.3",
+  "targets": [
+    {"minecraft": "26.3", "java": 25, "obfuscated": false, "fabric_api": "0.163.0+26.3"},
+    {"minecraft": "1.21.11", "java": 21, "obfuscated": true, "fabric_api": "0.141.6+1.21.11"},
+    {"minecraft": "1.21.4", "java": 21, "obfuscated": true, "fabric_api": "0.119.4+1.21.4"}
+  ]
+}

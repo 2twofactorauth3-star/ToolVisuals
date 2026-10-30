@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.he3hauka.toolvisuals.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "optimization.FrameDiagnosticsMixin",
+    "optimization.DiagnosticWindowMixin",
+    "optimization.OccludedStateMixin",
+    "optimization.OccludedLivingMixin",
+    "optimization.EarlyEquipmentMixin",
+    "optimization.EarlyAvatarMixin",
+    "optimization.EarlyHumanoidMixin",
+    "optimization.EquipmentSnapshotMixin",
+    "optimization.GroundItemBatchMixin",
+    "optimization.HiddenFacesMixin",
+    "optimization.ChunkBudgetMixin",
+    "optimization.PreparedChestMixin",
+    "optimization.ChestPreparationMixin",
+    "optimization.ExtractionDiagnosticsMixin",
+    "optimization.SubmissionDiagnosticsMixin",
+    "optimization.ParticleDiagnosticsMixin",
+    "optimization.ChunkDiagnosticsMixin",
+    "optimization.ChunkBuildDiagnosticsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

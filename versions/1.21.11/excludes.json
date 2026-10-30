@@ -1,0 +1,5 @@
+[
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplayGuiAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplayLivingAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplaySwingAccessor.java"
+]

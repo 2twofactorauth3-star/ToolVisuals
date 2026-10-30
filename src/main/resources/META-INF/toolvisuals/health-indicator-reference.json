@@ -1,0 +1,13 @@
+{
+  "project": "https://modrinth.com/mod/zakohealthindicator",
+  "version": "26.3-fabric",
+  "release_file": "ZakoHealthIndicator-26.3-fabric.jar",
+  "sha512": "e006a1bee03f2e5bb14b70aad66f653d049825e2511aa83764b890316d9c5c22d16207eb472a9da859d2db56f688154889c3a30b532e62538a22434685d79db0",
+  "authors_in_release": [
+    "_3AKO_",
+    "zyouime13"
+  ],
+  "license_in_release_metadata": "MIT",
+  "use": "Behavioral reference; implemented in ToolVisuals without bundling the original JAR, fonts or Cloth Config.",
+  "toolvisuals_rendering": "Smooth Manrope typography, positioned left and slightly below the crosshair by default."
+}

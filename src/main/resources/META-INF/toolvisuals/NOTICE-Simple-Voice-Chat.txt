@@ -1,0 +1,15 @@
+Simple Voice Chat
+Copyright (c) Max Henkel - All Rights Reserved
+
+ToolVisuals includes the original Simple Voice Chat Fabric distribution as an unmodified nested JAR.
+Simple Voice Chat, its libraries, native binaries, resources and bundled API remain the work of their respective authors and retain their own notices and terms.
+The ToolVisuals license does not replace those terms.
+
+Project: https://modrinth.com/plugin/simple-voice-chat
+Author and source: https://github.com/henkelmax/simple-voice-chat
+License: https://github.com/henkelmax/simple-voice-chat/blob/26.3/license
+Modpack inclusion permission with credit: https://dev.modrepo.de/minecraft/voicechat/faq
+The pinned version, official download URL and checksums are recorded in bundled-voicechat.json beside this notice.
+
+Simple Voice Chat does not provide support for custom clients. ToolVisuals integration issues should be reported to ToolVisuals.
+https://t.me/hplugin

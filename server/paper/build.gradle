@@ -1,0 +1,19 @@
+repositories {
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url = 'https://repo.extendedclip.com/releases/' }
+}
+base { archivesName = rootProject.pluginArchiveBaseName }
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT'
+    compileOnly 'com.zaxxer:HikariCP:7.1.0'
+    compileOnly 'me.clip:placeholderapi:2.12.3'
+    implementation project(':common')
+}
+
+tasks.named('jar') { from project(':common').sourceSets.main.output }
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('plugin.yml') { expand version: project.version }
+}

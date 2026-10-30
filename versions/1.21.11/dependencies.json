@@ -1,0 +1,122 @@
+[
+  {
+    "minecraft": "1.21.11",
+    "project": "fabric-api",
+    "id": "6qAuTtLR",
+    "version": "0.141.6+1.21.11",
+    "file": "fabric-api-0.141.6+1.21.11.jar",
+    "bytes": 2426039,
+    "sha512": "852d3682c4f353fd0ca86546af8578513e8bcf628377fa9d49c556bc59c5024c69ab56c92fc6dfba11fed19e4316a3f5636e7e07fd3d96f7043b531aef59b637",
+    "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/6qAuTtLR/fabric-api-0.141.6%2B1.21.11.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "sodium",
+    "id": "rkdTcxoT",
+    "version": "mc1.21.11-0.8.14-fabric",
+    "file": "sodium-fabric-0.8.14+mc1.21.11.jar",
+    "bytes": 1909150,
+    "sha512": "04c43f9e8534b87a52c42ffd51b0e344d4ef92dc9cc52da33d13af6a18bf74b05380d2027f1e0db982698d0aff274c42741c1e21b313b0cd75ed3af005fc98d9",
+    "url": "https://cdn.modrinth.com/data/AANobbMI/versions/rkdTcxoT/sodium-fabric-0.8.14%2Bmc1.21.11.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "immediatelyfast",
+    "id": "4EwhsTu7",
+    "version": "1.14.3+1.21.11-fabric",
+    "file": "ImmediatelyFast-Fabric-1.14.3+1.21.11.jar",
+    "bytes": 302709,
+    "sha512": "2564cb28259352c3aa5759aceca62667de08a7860a40910dad40a043af851a074b2d75cef50b9fa6f1971febb3a5ecebe4067cbd4b60e63ef711b85f4bc21407",
+    "url": "https://cdn.modrinth.com/data/5ZwdcRci/versions/4EwhsTu7/ImmediatelyFast-Fabric-1.14.3%2B1.21.11.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "entityculling",
+    "id": "CTabrwB1",
+    "version": "1.11.3",
+    "file": "entityculling-fabric-1.11.3-mc1.21.11.jar",
+    "bytes": 1529094,
+    "sha512": "4b5516bf8718d74db0e0368ad2fd2f5ce3e986c3abbf65426418ce3ec162651d29579b9be8aa0d34b88f47e310f6b7bab56bde7ff1223c35998bff0bcbed58c5",
+    "url": "https://cdn.modrinth.com/data/NNAgCjsB/versions/CTabrwB1/entityculling-fabric-1.11.3-mc1.21.11.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "lithium",
+    "id": "Ow7wA0kG",
+    "version": "mc1.21.11-0.21.4-fabric",
+    "file": "lithium-fabric-0.21.4+mc1.21.11.jar",
+    "bytes": 900462,
+    "sha512": "f14a5c3d2fad786347ca25083f902139694f618b7c103947f2fd067a7c5ee88a63e1ef8926f7d693ea79ed7d00f57317bae77ef9c2d630bf5ed01ac97a752b94",
+    "url": "https://cdn.modrinth.com/data/gvQqBUqZ/versions/Ow7wA0kG/lithium-fabric-0.21.4%2Bmc1.21.11.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "ferrite-core",
+    "id": "Ii0gP3D8",
+    "version": "8.2.0-fabric",
+    "file": "ferritecore-8.2.0-fabric.jar",
+    "bytes": 80138,
+    "sha512": "3210926a82eb32efd9bcebabe2f6c053daf5c4337eebc6d5bacba96d283510afbde646e7e195751de795ec70a2ea44fef77cb54bf22c8e57bb832d6217418869",
+    "url": "https://cdn.modrinth.com/data/uXXizFIs/versions/Ii0gP3D8/ferritecore-8.2.0-fabric.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "moreculling",
+    "id": "wOzykoLV",
+    "version": "1.6.2",
+    "file": "moreculling-fabric-1.21.11-1.6.2.jar",
+    "bytes": 340975,
+    "sha512": "58cec88e84835c543d8604411f89a0984abe51f0332860354355ede290d2442fc33a86ecda1766e0b1a82ba4edfab27f3c9f6855c0af3234e200218b892756f2",
+    "url": "https://cdn.modrinth.com/data/51shyZVL/versions/wOzykoLV/moreculling-fabric-1.21.11-1.6.2.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "dynamic-fps",
+    "id": "Fab7e5Th",
+    "version": "3.11.6",
+    "file": "dynamic-fps-3.11.6+minecraft-1.21.11-fabric.jar",
+    "bytes": 219961,
+    "sha512": "c45652252e2176cb8e2c44dfd9032c617135a100dcf161b9e6e6717803c14d1359d0f940fa10dc1aa6ad80669983f4b9c5636c0c2953d3314e06f893f0cdc736",
+    "url": "https://cdn.modrinth.com/data/LQ3K71Q1/versions/Fab7e5Th/dynamic-fps-3.11.6%2Bminecraft-1.21.11-fabric.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "simple-voice-chat",
+    "id": "CN53keBo",
+    "version": "fabric-1.21.11-2.6.22",
+    "file": "voicechat-fabric-1.21.11-2.6.22.jar",
+    "bytes": 5591115,
+    "sha512": "dab29df8577b220e1c2ad97b784c5acb837501c8ba42d83205c085f44b4a6df75bce2477b8c2c7905285d248fd2d195b3dc77f169cb11a226dc2965e23f5859a",
+    "url": "https://cdn.modrinth.com/data/9eGKb6K1/versions/CN53keBo/voicechat-fabric-1.21.11-2.6.22.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "appleskin",
+    "id": "59ti1rvg",
+    "version": "3.0.8+mc1.21.11",
+    "file": "appleskin-fabric-mc1.21.11-3.0.8.jar",
+    "bytes": 180107,
+    "sha512": "d32206cb8d6fac7f0b579f7269203135777283e1639ccb68f8605e9f5469b5b54305fd36ba82c64b48b89ae4f1a38501bfb5827284520c3ec622d95edcfa34de",
+    "url": "https://cdn.modrinth.com/data/EsAfCjCV/versions/59ti1rvg/appleskin-fabric-mc1.21.11-3.0.8.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "viafabricplus",
+    "id": "RM6hveoK",
+    "version": "4.4.15",
+    "file": "ViaFabricPlus-4.4.15.jar",
+    "bytes": 27015009,
+    "sha512": "6762685c0243a9c7ec43321f2bc011030fd6566797a647219ed275d956c2272777dae0ff43ebd82a77368350494394f5b0c1d98284ffd762a4876fcfd68958c4",
+    "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/RM6hveoK/ViaFabricPlus-4.4.15.jar"
+  },
+  {
+    "minecraft": "1.21.11",
+    "project": "cloth-config",
+    "id": "xuX40TN5",
+    "version": "21.11.153+fabric",
+    "file": "cloth-config-21.11.153-fabric.jar",
+    "bytes": 1148427,
+    "sha512": "8f455489d4b71069e998568cf4e1450116f4360a4eb481cd89117f629c6883164886cf63ca08ac4fc929dd13d1112152755a6216d4a1498ee6406ef102093e51",
+    "url": "https://cdn.modrinth.com/data/9s6osm5g/versions/xuX40TN5/cloth-config-21.11.153-fabric.jar"
+  }
+]

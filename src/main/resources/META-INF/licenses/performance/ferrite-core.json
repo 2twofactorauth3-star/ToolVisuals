@@ -1,0 +1,40 @@
+{
+  "project": "ferrite-core",
+  "version": "9.0.0-fabric",
+  "file": "ferritecore-9.0.0-fabric.jar",
+  "url": "https://cdn.modrinth.com/data/uXXizFIs/versions/d5ddUdiB/ferritecore-9.0.0-fabric.jar",
+  "sha512": "d81fa97e11784c19d42f89c2f433831d007603dd7193cee45fa177e4a6a9c52b384b198586e04a0f7f63cd996fed713322578bde9a8db57e1188854ae5cbe584",
+  "dependencies": [],
+  "fabric": {
+    "schemaVersion": 1,
+    "id": "ferritecore",
+    "version": "9.0.0",
+    "name": "FerriteCore",
+    "description": "Reduces memory usage",
+    "icon": "logo.png",
+    "authors": [
+      "malte0811"
+    ],
+    "contact": {
+      "issues": "https://github.com/malte0811/FerriteCore/issues",
+      "source": "https://github.com/malte0811/FerriteCore",
+      "homepage": "https://www.curseforge.com/minecraft/mc-mods/ferritecore-fabric"
+    },
+    "license": "MIT",
+    "environment": "*",
+    "depends": {
+      "fabricloader": ">=0.14.21",
+      "minecraft": ">=26.1 <27"
+    },
+    "breaks": {
+      "hydrogen": "<=0.3"
+    },
+    "mixins": [
+      "ferritecore.accessors.mixin.json",
+      "ferritecore.blockstatecache.mixin.json",
+      "ferritecore.fastmap.mixin.json",
+      "ferritecore.datacomponents.mixin.json",
+      "ferritecore.threaddetec.mixin.json"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "toolvisuals",
+  "version": "${version}",
+  "name": "ToolVisuals",
+  "description": "Разработано в t.me/hplugin | Developed at t.me/hplugin",
+  "authors": [
+    "He3HaukaX"
+  ],
+  "contact": {
+    "website": "https://t.me/hplugin"
+  },
+  "license": "LGPL-3.0-only",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ru.he3hauka.toolvisuals.client.ToolVisualsClient"
+    ],
+    "voicechat": [
+      "ru.he3hauka.toolvisuals.client.voice.SimpleVoicePlugin"
+    ],
+    "appleskin": [
+      "ru.he3hauka.toolvisuals.client.food.AppleSkinIntegration"
+    ]
+  },
+  "mixins": [
+    "toolvisuals-network.mixins.json",
+    "toolvisuals.mixins.json",
+    "toolvisuals-voice.mixins.json",
+    "toolvisuals-performance.mixins.json",
+    "toolvisuals-food.mixins.json",
+    "toolvisuals-ui.mixins.json",
+    "toolvisuals-hud.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": ">=${fabric_version}",
+    "viafabricplus": ">=5.1.1",
+    "minecraft": "${minecraft_version}",
+    "java": ">=25",
+    "voicechat": "${voicechat_version}",
+    "voicechat_api": ">=2.6.25",
+    "appleskin": "3.0.10+mc26.3"
+  }
+}

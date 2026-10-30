@@ -1,0 +1,3 @@
+HealthIndicator follows the integer health and threshold behavior of ZakoHealthIndicator 26.3-fabric by _3AKO_ and zyouime13.
+https://modrinth.com/mod/zakohealthindicator
+The original release declares MIT in its Fabric metadata. ToolVisuals independently implements the integer display, five health thresholds and normal/low-health size selection, using its own smooth font and placement. The original archive and bundled configuration libraries are not redistributed.

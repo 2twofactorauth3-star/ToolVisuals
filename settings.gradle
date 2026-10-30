@@ -1,0 +1,12 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+    }
+}
+include 'minecraft1214', 'minecraft12111'
+project(':minecraft1214').projectDir = file('versions/1.21.4')
+project(':minecraft12111').projectDir = file('versions/1.21.11')

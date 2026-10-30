@@ -1,0 +1,8 @@
+ToolVisuals extensions for Sodium 0.8.14+mc1.21.11
+
+The upstream project is https://github.com/CaffeineMC/sodium.
+The pinned version and official archive checksum are recorded in versions/1.21.11/dependencies.json.
+
+assets/sodium/shaders/blocks/block_layer_opaque.vsh and block_layer_opaque.fsh are derived from this native Sodium release. The upstream vertex decoding, matrices, lighting, fog, texture sampling and appearance paths retain the PolyForm Shield 1.0.0 license. That license is retained with the original nested Sodium archive and in META-INF/licenses/performance.
+
+ToolVisuals adds configurable section movement and easing, plus optional color adjustment. Section geometry and game interaction are unchanged by this shader integration.

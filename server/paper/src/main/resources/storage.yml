@@ -1,0 +1,15 @@
+type: sqlite
+sqlite:
+  file: toolvisuals.db
+  busy-timeout-millis: 5000
+mysql:
+  host: localhost
+  port: 3306
+  database: toolvisuals
+  username: toolvisuals
+  password: ''
+  ssl-mode: VERIFY_IDENTITY
+pool:
+  maximum-size: 4
+  connection-timeout-millis: 5000
+  maximum-lifetime-millis: 1800000

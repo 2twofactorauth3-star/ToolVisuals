@@ -1,0 +1,16 @@
+ZakoOpt
+Copyright (C) 2026 Zako
+Telegram: https://t.me/StarikZako
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, version 3 of the License (see COPYING.LESSER and COPYING).
+
+Any redistribution or derived work must keep this notice, credit the author
+(Zako, https://t.me/StarikZako) and state what was changed.
+
+ToolVisuals adaptations (2026): selected text and particle-light cache techniques,
+ported for Minecraft 26.3; per-Font bounded caches, reload invalidation,
+NameProtect integration and position-aware particle cache invalidation.
+Upstream: https://github.com/3ako/ZakoOpt
+Reference commit: 43f63a50699d1f3f0270cb757fdc7db3bfa95b63

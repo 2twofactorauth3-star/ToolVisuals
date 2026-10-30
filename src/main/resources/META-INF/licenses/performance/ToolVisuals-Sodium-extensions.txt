@@ -1,0 +1,17 @@
+ToolVisuals extensions for the bundled Sodium 0.9.3-beta.1+mc26.3 release
+
+The nested upstream Sodium JAR is unmodified. Its license and pinned artifact
+metadata are provided alongside this notice.
+
+assets/sodium/shaders/include/globals.glsl and
+assets/sodium/shaders/blocks/block_layer_opaque.vsh are derived from the matching
+Sodium release (https://github.com/CaffeineMC/sodium). The upstream shader layout,
+vertex decoding, texture and lighting paths retain Sodium's license:
+sodium-fabric-0.9.3-beta.1+mc26.3-LICENSE.md (PolyForm Shield 1.0.0).
+
+ToolVisuals adds chunk movement/easing in the vertex shader and two parameters
+in the existing std140 padding. Separate mixins supply their values and preserve
+animation start times across replacement mesh uploads.
+
+assets/sodium/lang/ru_ru.json is a ToolVisuals Russian translation of the option
+keys present in that pinned Sodium release.

@@ -1,0 +1,20 @@
+name: ToolVisualsEmotes
+version: '${version}'
+main: ru.he3hauka.toolvisuals.relay.paper.ToolVisualsEmotesPlugin
+api-version: '1.21'
+folia-supported: true
+author: He3HaukaX
+description: Bounded relay for built-in ToolVisuals cosmetic animations.
+softdepend: [PlaceholderAPI]
+libraries:
+  - com.zaxxer:HikariCP:7.1.0
+  - org.xerial:sqlite-jdbc:3.53.4.0
+  - com.mysql:mysql-connector-j:26.10.0
+commands:
+  toolvisuals:
+    description: Claim the reward for playing with ToolVisuals.
+    usage: /toolvisuals
+    permission: toolvisuals.reward
+permissions:
+  toolvisuals.reward:
+    default: true

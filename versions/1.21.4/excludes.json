@@ -1,0 +1,21 @@
+[
+  "ru/he3hauka/toolvisuals/client/gui/render/UiShapeBatch.java",
+  "ru/he3hauka/toolvisuals/client/optimization/items/GroundItemBatch.java",
+  "ru/he3hauka/toolvisuals/mixin/betterhud/SmoothHudItemMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/gui/GuiDrawAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/gui/GuiRendererMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/gui/UiGlyphRenderStateMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/gui/UiShapeBatchMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/hud/ExperienceBarMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/hud/LocatorBarMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/hud/PortraitBlitMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/motionblur/MotionBlurPassAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/optimization/GroundItemBatchMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/render/RenderPipelinesAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/render/RenderSetupAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/render/RenderTypeAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplayGuiAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplayLivingAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/replay/ReplaySwingAccessor.java",
+  "ru/he3hauka/toolvisuals/mixin/world/VisualWorldRendererMixin.java"
+]

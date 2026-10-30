@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.he3hauka.toolvisuals.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "appleskin.AppleSkinHudMixin",
+    "appleskin.AppleSkinTooltipMixin",
+    "appleskin.AppleSkinDebugMixin",
+    "appleskin.AppleSkinOffsetsInvoker"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

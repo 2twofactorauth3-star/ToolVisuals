@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.he3hauka.toolvisuals.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "network.EmoteConnectionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
