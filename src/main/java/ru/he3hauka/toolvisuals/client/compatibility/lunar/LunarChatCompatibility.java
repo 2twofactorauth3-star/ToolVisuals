@@ -15,7 +15,8 @@ public final class LunarChatCompatibility {
     public static boolean chatCodec(String target,String mixin) {
         return CHAT_TARGET.equals(target)&&CHAT_MIXIN.equals(mixin);
     }
-    public static boolean reviewedVersion(String version){return VERSIONS.contains(version);}
+    public static String upstreamVersion(String version){return version.replaceFirst("\\+toolvisuals\\.[0-9]+$", "");}
+    public static boolean reviewedVersion(String version){return VERSIONS.contains(upstreamVersion(version));}
 
     public static boolean lunarConfig(Iterable<String> names) {
         for(String name:names)if(LUNAR_CONFIG.equals(name))return true;

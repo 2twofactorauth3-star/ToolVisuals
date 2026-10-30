@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "revision": 1,
+  "minimum_protocol": "1.7.2",
+  "targets": {
+    "26.3": {
+      "version": "5.1.1",
+      "binary": {
+        "file": "viafabricplus-5.1.1.jar",
+        "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/5.1.1/viafabricplus-5.1.1.jar",
+        "bytes": 10331250,
+        "sha512": "b3a1b4391a0fd16dc8290f54ad47910d68ef7a3f04a2d47e141a0e85e0b23d80b3d232ef7ad730978250ec26e8aafa2474cad05122f5b6dd6daec3f7ca0cd1bd"
+      },
+      "sources": {
+        "file": "viafabricplus-5.1.1-sources.jar",
+        "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/5.1.1/viafabricplus-5.1.1-sources.jar",
+        "bytes": 934861,
+        "sha512": "ca4f39ea1543edf4ac1ad55851f7f2961c51fbebbc5bee359b45dcbecbec68fc049afd1ed7b40437400ede02144aaf350b62b8463e493f16b0ba80774150a264"
+      },
+      "related_sources": [
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-api/5.1.1/viafabricplus-api-5.1.1-sources.jar",
+          "bytes": 25879,
+          "sha512": "4730ca5f6e4f56415d30c873df714e93ce1f5ea9bc4b6814a92631d268c436607b394c51134dee91c34220ecfcecbe4becbff1c126a4d6bb9db7523df4b48640",
+          "file": "viafabricplus-api-5.1.1-sources.jar"
+        }
+      ]
+    },
+    "1.21.11": {
+      "version": "4.4.15",
+      "binary": {
+        "file": "ViaFabricPlus-4.4.15.jar",
+        "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/RM6hveoK/ViaFabricPlus-4.4.15.jar",
+        "bytes": 27015009,
+        "sha512": "6762685c0243a9c7ec43321f2bc011030fd6566797a647219ed275d956c2272777dae0ff43ebd82a77368350494394f5b0c1d98284ffd762a4876fcfd68958c4"
+      },
+      "sources": {
+        "file": "viafabricplus-4.4.15-sources.jar",
+        "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/4.4.15/viafabricplus-4.4.15-sources.jar",
+        "bytes": 878862,
+        "sha512": "8ac9ca7aed2ad2a4026a56fd7d7fc4cfd73e1d5d6d6c9e1953a8b06177f191c112317d203a39d7d64f7edd69753980956590e04eea1541d6183dae6194659090"
+      },
+      "related_sources": [
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-api/4.4.15/viafabricplus-api-4.4.15-sources.jar",
+          "bytes": 18057,
+          "sha512": "f1bcee4ad6a79ef4c3f0a54d50e9450f51673f55e204b5e516183922b192088b92375380b127e548b526cf32f64c3ddb0e7a94afe40ce3ac67b8105626128b26",
+          "file": "viafabricplus-api-4.4.15-sources.jar"
+        },
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-visuals/4.4.15/viafabricplus-visuals-4.4.15-sources.jar",
+          "bytes": 67160,
+          "sha512": "4001f789e31764272d666b7bf1f4cb55af0a186802115a12f3d966425ce8315797b7cf91c86f72e64900fc089ae91ed355beef03dc930be5955e355ec33e1a0f",
+          "file": "viafabricplus-visuals-4.4.15-sources.jar"
+        }
+      ]
+    },
+    "1.21.4": {
+      "version": "4.0.5-BACKPORT",
+      "binary": {
+        "file": "ViaFabricPlus-4.0.5-BACKPORT.jar",
+        "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/8sPJsNcy/ViaFabricPlus-4.0.5-BACKPORT.jar",
+        "bytes": 12648084,
+        "sha512": "12ec6461070b50124c0fec2173ca2b170eab0ff2bfbfd384185a5c661ec512bd670675dd88c42aa929f8db9306f3c09f9e8564f0f3e5f55d8f2921a8d3bb3597"
+      },
+      "sources": {
+        "file": "viafabricplus-4.0.5-BACKPORT-sources.jar",
+        "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/4.0.5-BACKPORT/viafabricplus-4.0.5-BACKPORT-sources.jar",
+        "bytes": 775341,
+        "sha512": "45527e477e4748defd6193f73106e93ca456cb478037e8a2aef5d7757a383a1dc479cd6467f445cb7c5c25757c0ef35896671ba2db089df8b31d5aef95e8aafe"
+      },
+      "related_sources": [
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-api/4.0.5-BACKPORT/viafabricplus-api-4.0.5-BACKPORT-sources.jar",
+          "bytes": 19190,
+          "sha512": "d6e3217ef4469caf890764e9677289bcec13c8b4bfe6d6b6867a35ef9e273f15223c52b9ca18ebc160a6d45c02572963515d2a087edb8b5486a1c20b04c8e833",
+          "file": "viafabricplus-api-4.0.5-BACKPORT-sources.jar"
+        },
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-visuals/4.0.5-BACKPORT/viafabricplus-visuals-4.0.5-BACKPORT-sources.jar",
+          "bytes": 70990,
+          "sha512": "009c9c9c6650e16aedb6d28cdf7a72d4354f1607a8699346091f42231f223936fc1eded480ed56a0eb6e55c15a58dc7cab957d4d44e25325beb2ea5eb94eea86",
+          "file": "viafabricplus-visuals-4.0.5-BACKPORT-sources.jar"
+        },
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/viafabricplus-api-legacy/4.0.5-BACKPORT/viafabricplus-api-legacy-4.0.5-BACKPORT-sources.jar",
+          "bytes": 18727,
+          "sha512": "817f2a92dd720014ac7bcb55bba6f5e40c7863743e8547caa3bbf4b4a893a3f7797f7e2a317691a72f5bd761224f67ba29655d35e8ba378ab253a90d5678c4b9",
+          "file": "viafabricplus-api-legacy-4.0.5-BACKPORT-sources.jar"
+        },
+        {
+          "url": "https://repo.viaversion.com/com/viaversion/vialoader/4.0.3-SNAPSHOT/vialoader-4.0.3-20250426.141011-6-sources.jar",
+          "bytes": 34197,
+          "sha512": "c094bd335defb06fc6dda6b2c13496b3d6868ad68f0c8047e973684e17f3b7a9ff2625861e7a7a9403bcd9558a78d864679f3848fe79a51035bf14ecd3d21578",
+          "file": "vialoader-4.0.3-20250426.141011-6-sources.jar"
+        }
+      ]
+    }
+  }
+}

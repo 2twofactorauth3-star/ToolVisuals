@@ -8,5 +8,7 @@ pluginManagement {
     }
 }
 include 'minecraft1214', 'minecraft12111'
+include 'viafabricplusFork'
+project(':viafabricplusFork').projectDir = file('components/viafabricplus')
 project(':minecraft1214').projectDir = file('versions/1.21.4')
 project(':minecraft12111').projectDir = file('versions/1.21.11')

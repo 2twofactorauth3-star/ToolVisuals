@@ -6,6 +6,7 @@ import shutil
 import zipfile
 from project import ROOT,OUT
 from distribution import VERSION,pinned_music
+from protocol_fork import resolve_rows,archive_for
 
 def mod_versions(archive):
     with zipfile.ZipFile(archive) as source:
@@ -31,9 +32,9 @@ def resources(version):
             relative=path.relative_to(source)
             if source==ROOT/'src/main/resources' and relative.as_posix().startswith('assets/sodium/shaders/'):continue
             target=destination/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(path.read_bytes())
-    rows=json.loads((ROOT/'versions'/version/'dependencies.json').read_text())
+    rows=resolve_rows(version,json.loads((ROOT/'versions'/version/'dependencies.json').read_text()))
     mods={row['project']:row for row in rows}
-    actual={project:mod_versions(ROOT/'versions'/version/'libs'/row['file']) for project,row in mods.items()}
+    actual={project:mod_versions(archive_for(version,row)) for project,row in mods.items()}
     metadata_path=destination/'fabric.mod.json'
     metadata=json.loads(metadata_path.read_text(encoding='utf-8'))
     metadata['version']=VERSION
@@ -58,7 +59,7 @@ def resources(version):
     manifest=destination/'META-INF/toolvisuals';manifest.mkdir(parents=True,exist_ok=True)
     optimization=[]
     for row in rows:
-        path=ROOT/'versions'/version/'libs'/row['file'];raw=path.read_bytes()
+        path=archive_for(version,row);raw=path.read_bytes()
         if len(raw)!=row['bytes'] or hashlib.sha512(raw).hexdigest()!=row['sha512']:raise RuntimeError('Invalid pinned archive: '+path.name)
         with zipfile.ZipFile(path) as source:identity=json.loads(source.read('fabric.mod.json'))
         if row['project'] not in {'fabric-api','viafabricplus','simple-voice-chat','appleskin','cloth-config'}:optimization.append(dict(row,id=identity['id'],preserve_archive=False))

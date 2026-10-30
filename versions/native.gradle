@@ -12,6 +12,9 @@ ext.nativeMinecraftVersion = minecraftVersion
 def generated = rootProject.layout.buildDirectory.dir('versions/' + minecraftVersion)
 def dependencyManifest = file('dependencies.json')
 def dependenciesForTarget = new groovy.json.JsonSlurper().parse(dependencyManifest)
+def protocolComponent = rootProject.project(':viafabricplusFork')
+def protocolTask = protocolComponent.forkTaskFor(minecraftVersion)
+def protocolArchive = files(protocolComponent.forkArchiveFor(minecraftVersion)).builtBy(protocolTask)
 def pythonExecutable = providers.gradleProperty('pythonExecutable').orElse('python')
 version = rootProject.version
 group = rootProject.group
@@ -35,16 +38,22 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${target.fabric_loader}"
     dependenciesForTarget.each { dependency ->
         def archive = files(file('libs/' + dependency.file)).builtBy(acquireNativeDependencies)
-        modImplementation archive
-        include archive
+        if (dependency.project == 'viafabricplus') {
+            modCompileOnly archive
+        } else {
+            modImplementation archive
+            include archive
+        }
     }
+    modRuntimeOnly protocolArchive
+    include protocolArchive
 }
 
 def generateNativeSources = tasks.register('generateNativeSources', Exec) {
-    dependsOn acquireNativeDependencies
+    dependsOn acquireNativeDependencies, protocolTask
     workingDir rootProject.projectDir
     commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion, '--resources'
-    inputs.files(rootProject.fileTree('src'), rootProject.fileTree('versions/common/main'), fileTree('main'), file('relocations.json'), file('excludes.json'), dependencyManifest, rootProject.file('gradle.properties'), rootProject.file('versions/targets.json'), rootProject.fileTree('libs/music'), rootProject.fileTree('native/music/windows'), rootProject.fileTree('build-tools/multiversion') { include '*.py' }, rootProject.file('build-tools/distribution.py'), rootProject.file('build-tools/dependencies.py'))
+    inputs.files(rootProject.fileTree('src'), rootProject.fileTree('versions/common/main'), fileTree('main'), file('relocations.json'), file('excludes.json'), dependencyManifest, rootProject.file('gradle.properties'), rootProject.file('versions/targets.json'), rootProject.fileTree('libs/music'), rootProject.fileTree('native/music/windows'), rootProject.fileTree('build-tools/multiversion') { include '*.py' }, rootProject.file('build-tools/distribution.py'), rootProject.file('build-tools/dependencies.py'), rootProject.file('build-tools/protocol_fork.py'), protocolArchive)
     outputs.dirs(generated.map { it.dir('generated-sources') }, generated.map { it.dir('resources') })
 }
 

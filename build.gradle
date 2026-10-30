@@ -53,10 +53,15 @@ def performanceManifest = new groovy.json.JsonSlurper().parse(performanceManifes
 def performanceArchives = performanceManifest.mods.collect { layout.projectDirectory.file('libs/performance/' + it.file).asFile }
 
 def pythonExecutable = providers.gradleProperty('pythonExecutable').orElse('python')
+
+evaluationDependsOn(':viafabricplusFork')
+def protocolComponent = project(':viafabricplusFork')
+def protocolTask = protocolComponent.forkTaskFor(project.minecraft_version)
+def protocolArchive = files(protocolComponent.forkArchiveFor(project.minecraft_version)).builtBy(protocolTask)
 def acquireBundledDependencies = tasks.register('acquireBundledDependencies', Exec) {
     workingDir projectDir
     commandLine pythonExecutable.get(), layout.projectDirectory.file('build-tools/dependencies.py').asFile, '--target', project.minecraft_version
-    inputs.files(performanceManifestFile, 'libs/voicechat/voicechat.json', 'libs/appleskin/appleskin.json', 'build-tools/dependencies.py')
+    inputs.files(performanceManifestFile, 'libs/voicechat/voicechat.json', 'libs/appleskin/appleskin.json', 'build-tools/dependencies.py', 'build-tools/protocol_fork.py', 'components/viafabricplus/upstream.json')
     outputs.files(performanceArchives, file("libs/voicechat/voicechat-fabric-${project.voicechat_version}.jar"), file('libs/appleskin/appleskin-fabric-mc26.3-3.0.10.jar'))
 }
 def bundledArchive = { File archive -> files(archive).builtBy(acquireBundledDependencies) }
@@ -83,8 +88,8 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}") { transitive = false }
      
-    runtimeOnly('com.viaversion:viafabricplus:5.1.1') { transitive = false }
-    include('com.viaversion:viafabricplus:5.1.1') { transitive = false }
+    runtimeOnly protocolArchive
+    include protocolArchive
     compileOnly('com.viaversion:viafabricplus-api:5.1.1') { transitive = false }
     compileOnly('com.viaversion:viaversion-common:5.12.1-20260927.122410-10') { transitive = false }
 

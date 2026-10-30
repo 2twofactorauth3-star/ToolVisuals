@@ -9,6 +9,7 @@ Manrope is covered by the SIL Open Font License 1.1, retained in src/main/resour
 Gradle Wrapper terms are retained in gradle/wrapper/NOTICE.
 
 Fabric API, ViaFabricPlus, Simple Voice Chat, AppleSkin and performance dependencies retain their own licenses. Their pinned download manifests are in libs and versions/<minecraft>/dependencies.json. Original notices and licenses are also retained inside nested dependency archives; ToolVisuals notices are under src/main/resources/META-INF.
+ViaFabricPlus is distributed as the modified ToolVisuals Protocols component. Its pinned upstream binaries and corresponding source archives, build transformations, GPL terms and attribution are in components/viafabricplus. The component is built automatically and embedded in the single client JAR. Its GPL-3.0-or-later terms are retained independently of the ToolVisuals-authored LGPL code.
 Version-specific Sodium shaders retain the PolyForm Shield 1.0.0 license of the matching upstream release, including ToolVisuals shader adaptations. The root LGPL license does not replace those terms.
 Windows MusicHUD helper source is in native/music/windows. The required prebuilt helper and its checksums are in libs/music.
 

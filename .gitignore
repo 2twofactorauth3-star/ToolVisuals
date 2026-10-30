@@ -24,6 +24,7 @@
 /build-tools/*
 !/build-tools/dependencies.py
 !/build-tools/distribution.py
+!/build-tools/protocol_fork.py
 !/build-tools/src/
 /build-tools/src/*
 !/build-tools/src/main/
@@ -70,6 +71,19 @@
 !/libs/music/music-helper.json
 !/libs/music/ToolVisualsMedia.exe
 !/native/
+!/components/
+/components/*
+!/components/viafabricplus/
+/components/viafabricplus/*
+!/components/viafabricplus/build.gradle
+!/components/viafabricplus/build.py
+!/components/viafabricplus/upstream.json
+!/components/viafabricplus/README.md
+!/components/viafabricplus/NOTICE
+!/components/viafabricplus/COPYING
+!/components/viafabricplus/src/
+/components/viafabricplus/src/*
+!/components/viafabricplus/src/main/
 /native/*
 !/native/music/
 /native/music/*

@@ -81,7 +81,7 @@ public final class JarCompactor {
         int configurationsBefore=compatibilityConfigurations;
         boolean via=metadata!=null&&"viafabricplus".equals(metadata.get("id").getAsString());
         if(via&&!LunarChatCompatibility.reviewedVersion(metadata.get("version").getAsString()))throw new IOException("ViaFabricPlus compatibility requires a reviewed catalog version");
-        boolean configureVia=via&&LunarChatCompatibility.VIA_VERSION.equals(metadata.get("version").getAsString());
+        boolean configureVia=via&&LunarChatCompatibility.VIA_VERSION.equals(LunarChatCompatibility.upstreamVersion(metadata.get("version").getAsString()));
         if(configureVia)expectedCompatibilityConfigurations++;
         if(metadata!=null&&java.util.Set.of("voicechat","appleskin","fabric-api").contains(metadata.get("id").getAsString()))return original;
         var duplicates = new HashSet<String>();

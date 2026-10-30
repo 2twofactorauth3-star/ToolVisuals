@@ -1,0 +1,46 @@
+plugins { id 'java' }
+
+java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.14.0'
+    implementation 'org.ow2.asm:asm:9.10.1'
+    implementation 'org.ow2.asm:asm-tree:9.10.1'
+    implementation 'org.ow2.asm:asm-analysis:9.10.1'
+    implementation 'org.ow2.asm:asm-commons:9.10.1'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(25)
+}
+
+tasks.named('jar') { enabled = false }
+
+def manifest = new groovy.json.JsonSlurper().parse(file('upstream.json'), 'UTF-8')
+def pythonExecutable = rootProject.providers.gradleProperty('pythonExecutable').orElse('python')
+ext.forkArchiveFor = { String target ->
+    rootProject.layout.buildDirectory.file("components/viafabricplus/${target}/ToolVisualsProtocols-${manifest.targets[target].version}+toolvisuals.${manifest.revision}.jar")
+}
+ext.forkTaskFor = { String target -> tasks.named('fork' + target.replace('.', '')) }
+
+manifest.targets.each { String target, profile ->
+    def input = rootProject.layout.buildDirectory.dir("components/viafabricplus/${target}/upstream")
+    def prepare = tasks.register('prepare' + target.replace('.', ''), Exec) {
+        workingDir rootProject.projectDir
+        commandLine pythonExecutable.get(), file('build.py'), target, '--acquire'
+        inputs.files('upstream.json', 'build.py', rootProject.file('build-tools/protocol_fork.py'), rootProject.file('build-tools/dependencies.py'))
+        outputs.files(([profile.binary, profile.sources] + (profile.related_sources ?: [])).collect { entry -> input.map { it.file(entry.file) } })
+    }
+    tasks.register('fork' + target.replace('.', ''), JavaExec) {
+        dependsOn tasks.named('classes'), prepare
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = 'ru.he3hauka.toolvisuals.protocols.build.ForkBuilder'
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }
+        args input.get().file(profile.binary.file).asFile, projectDir, target, forkArchiveFor(target).get().asFile
+        inputs.files(fileTree('src/main/java'), 'upstream.json', 'NOTICE', 'COPYING', input.map { it.file(profile.binary.file) })
+        outputs.file(forkArchiveFor(target))
+    }
+}

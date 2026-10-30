@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 import com.viaversion.viafabricplus.ViaFabricPlus;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import com.viaversion.viaversion.api.protocol.version.VersionType;
 import net.minecraft.network.Connection;
 
 public final class ConnectionVersions {
@@ -17,8 +16,8 @@ public final class ConnectionVersions {
     public static List<Choice> choices(){return catalog(ProtocolVersion.getProtocols());}
     static List<Choice> catalog(List<ProtocolVersion> protocols) {
         var maximum=ProtocolVersion.getClosest("@MINECRAFT@");
-        return protocols.stream().filter(protocol->protocol!=ProtocolVersion.unknown&&!protocol.isSnapshot()&&protocol.getVersionType()!=VersionType.SPECIAL&&protocol.olderThanOrEqualTo(maximum))
-                .distinct().sorted(Comparator.reverseOrder()).map(Choice::new).toList();
+        return ProtocolPolicy.catalog(protocols,maximum).stream()
+                .sorted(Comparator.reverseOrder()).map(Choice::new).toList();
     }
     public static String label(){return label(null);}
     public static String label(Connection connection) {
@@ -27,6 +26,7 @@ public final class ConnectionVersions {
     }
     public static boolean selected(Choice choice){return ViaFabricPlus.getImpl().getTargetVersion().equals(choice.protocol);}
     public static void select(Choice choice) {
+        if(!ProtocolPolicy.supported(choice.protocol,ProtocolVersion.getClosest("@MINECRAFT@")))throw new IllegalArgumentException("Unsupported Java protocol");
         var client=net.minecraft.client.Minecraft.getInstance();
         if(client.level!=null||client.getConnection()!=null)throw new IllegalStateException("Disconnect before changing protocol");
         ViaFabricPlus.getImpl().setTargetVersion(choice.protocol);
