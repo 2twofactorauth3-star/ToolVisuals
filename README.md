@@ -2,6 +2,8 @@
 
 Клиентский мод Fabric: настраиваемый HUD, визуальные эффекты, плащи, косметика и внутриигровое меню. Открытие меню — правый Shift; клавишу можно изменить в управлении Minecraft.
 
+Разработка: **[2twofactorauth3-star](https://github.com/2twofactorauth3-star) + [OpenAI Codex](https://openai.com/codex/)**. ToolVisuals создаётся с помощью ИИ (AI-assisted).
+
 | Minecraft | Java | Клиентский JAR |
 | --- | --- | --- |
 | 26.3 | 25 | ToolVisuals-1.4+fabric-26.3.jar |
