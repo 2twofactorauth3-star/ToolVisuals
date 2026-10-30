@@ -25,6 +25,13 @@ tasks.register('release') {
     dependsOn tasks.named('build'), tasks.named('buildServerPlugin')
 }
 
+tasks.register('buildLauncher', Exec) {
+    dependsOn tasks.named('build')
+    workingDir projectDir
+    commandLine providers.gradleProperty('pythonExecutable').orElse('python').get(), file('launcher/build.py')
+    outputs.file(layout.buildDirectory.file('libs/ToolLauncher-1.0.0-win-x64.exe'))
+}
+
 base {
     archivesName = project.archives_base_name
 }
@@ -90,8 +97,7 @@ dependencies {
      
     runtimeOnly protocolArchive
     include protocolArchive
-    compileOnly('com.viaversion:viafabricplus-api:5.1.1') { transitive = false }
-    compileOnly('com.viaversion:viaversion-common:5.12.1-20260927.122410-10') { transitive = false }
+    compileOnly files(protocolComponent.forkCompileArchiveFor(project.minecraft_version)).builtBy(protocolTask)
 
      
      

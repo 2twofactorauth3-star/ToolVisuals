@@ -1,0 +1,20 @@
+package com.viaversion.viafabricplus.protocoltranslator.impl.provider.viaversion;
+
+import net.minecraft.client.Minecraft;
+
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.protocols.v1_15_2to1_16.provider.PlayerAbilitiesProvider;
+
+public final class ViaFabricPlusPlayerAbilitiesProvider extends PlayerAbilitiesProvider {
+
+    @Override
+    public float getFlyingSpeed(UserConnection connection) {
+        return Minecraft.getInstance().player.getAbilities().getFlyingSpeed();
+    }
+
+    @Override
+    public float getWalkingSpeed(UserConnection connection) {
+        return Minecraft.getInstance().player.getAbilities().getWalkingSpeed();
+    }
+
+}

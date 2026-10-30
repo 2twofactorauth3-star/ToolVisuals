@@ -1,11 +1,11 @@
 ToolVisuals Protocols
 
-This component creates a modified ViaFabricPlus distribution from pinned official archives. ViaFabricPlus and derived modifications retain the upstream GPL-3.0-or-later terms; see COPYING. The ToolVisuals root license does not replace those terms.
+This component compiles the ViaFabricPlus source fork included in this repository. ViaFabricPlus, retained ViaLoader code and derived modifications retain the upstream GPL-3.0-or-later terms; see COPYING and the verbatim original notices in ATTRIBUTION. The ToolVisuals root license does not replace those terms.
 
 ViaFabricPlus: https://github.com/ViaVersion/ViaFabricPlus
 Copyright (C) 2021-2026 the original authors, Florian Reuth / FlorianMichael / EnZaXD, RK_01 / RaphiMC.
 Copyright (C) 2023-2026 ViaVersion and contributors.
 
-The upstream source archives, binary inputs, versions and checksums are specified in upstream.json. The transformations are provided as source in this component. Original license notices of retained libraries remain in their archives.
+The source origins, versions and checksums are specified in upstream.json. Building does not acquire ViaFabricPlus binary or source archives. Java protocol libraries and build inputs are pinned separately in libraries.json, toolchain.json and game-inputs.json. Original license notices of retained libraries remain in their archives.
 
 ToolVisuals modifications: Java release protocols starting with 1.7.2, guarded saved and per-server selections, removal of Bedrock transports and platform libraries, and integration with the ToolVisuals version menu. The modified distribution is identified in Fabric metadata and its embedded component manifest.

@@ -100,14 +100,9 @@
     "url": "https://cdn.modrinth.com/data/EsAfCjCV/versions/59ti1rvg/appleskin-fabric-mc1.21.11-3.0.8.jar"
   },
   {
-    "minecraft": "1.21.11",
     "project": "viafabricplus",
-    "id": "RM6hveoK",
-    "version": "4.4.15",
-    "file": "ViaFabricPlus-4.4.15.jar",
-    "bytes": 27015009,
-    "sha512": "6762685c0243a9c7ec43321f2bc011030fd6566797a647219ed275d956c2272777dae0ff43ebd82a77368350494394f5b0c1d98284ffd762a4876fcfd68958c4",
-    "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/RM6hveoK/ViaFabricPlus-4.4.15.jar"
+    "component": "components/viafabricplus",
+    "minecraft": "1.21.11"
   },
   {
     "minecraft": "1.21.11",

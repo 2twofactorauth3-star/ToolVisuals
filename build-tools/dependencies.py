@@ -39,21 +39,22 @@ def entries(root,target):
             manifest=root/'libs'/name/(name+'.json');row=json.loads(manifest.read_text(encoding='utf-8'));result.append((manifest.parent/row['file'],row))
         return result
     manifest=root/'versions'/target/'dependencies.json'
-    return [(manifest.parent/'libs'/row['file'],row) for row in json.loads(manifest.read_text(encoding='utf-8'))]
+    return [(None if row.get('project')=='viafabricplus' else manifest.parent/'libs'/row['file'],row) for row in json.loads(manifest.read_text(encoding='utf-8'))]
 
 def acquire(target,root=ROOT):
     rows=entries(root,target)
     def fetch(entry):
         path,row=entry
+        if row.get('project')=='viafabricplus':return row
         if path.name!=row['file'] or '/' in row['file'] or '\\' in row['file'] or not row['file'].endswith('.jar'):raise ValueError('Invalid dependency filename')
         if not re.fullmatch('[0-9a-f]{128}',row['sha512']):raise ValueError('Invalid pinned SHA-512: '+path.name)
         download(row.get('url') or row.get('download') or row['source'],path,'sha512',row['sha512'],row['bytes'])
         return row
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:result=list(pool.map(fetch,rows))
-    from protocol_fork import build_component
+    from protocol_fork import build_component,resolve_rows
     build_component(target, root)
     print('DEPENDENCIES_READY',target,len(result),flush=True)
-    return result
+    return resolve_rows(target,result,root)
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser()

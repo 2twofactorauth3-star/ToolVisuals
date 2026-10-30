@@ -29,7 +29,7 @@ def acquireNativeDependencies = tasks.register('acquireNativeDependencies', Exec
     workingDir rootProject.projectDir
     commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion
     inputs.files(dependencyManifest, rootProject.file('versions/targets.json'), rootProject.file('build-tools/dependencies.py'), rootProject.fileTree('build-tools/multiversion') { include '*.py' })
-    outputs.files(dependenciesForTarget.collect { file('libs/' + it.file) })
+    outputs.files(dependenciesForTarget.findAll { it.project != 'viafabricplus' }.collect { file('libs/' + it.file) })
 }
 
 dependencies {
@@ -37,10 +37,10 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${target.fabric_loader}"
     dependenciesForTarget.each { dependency ->
-        def archive = files(file('libs/' + dependency.file)).builtBy(acquireNativeDependencies)
         if (dependency.project == 'viafabricplus') {
-            modCompileOnly archive
+            modCompileOnly files(protocolComponent.forkCompileArchiveFor(minecraftVersion)).builtBy(protocolTask)
         } else {
+            def archive = files(file('libs/' + dependency.file)).builtBy(acquireNativeDependencies)
             modImplementation archive
             include archive
         }

@@ -1,0 +1,154 @@
+package com.viaversion.viafabricplus.screen;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.PlainTextButton;
+import net.minecraft.client.gui.screens.AlertScreen;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import com.viaversion.viafabricplus.ViaFabricPlusImpl;
+import java.awt.*;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
+
+public class VFPScreen extends Screen {
+
+    private static final String MOD_URL = "https://github.com/ViaVersion/ViaFabricPlus";
+
+    private final boolean backButton;
+    public Screen prevScreen;
+
+    private Component subtitle;
+    private Button.OnPress subtitlePressAction;
+
+    private PlainTextButton subtitleWidget;
+
+    public VFPScreen(final String title, final boolean backButton) {
+        this(Component.nullToEmpty(title), backButton);
+    }
+
+    public VFPScreen(final Component title, final boolean backButton) {
+        super(title);
+        this.backButton = backButton;
+    }
+
+    public void setupDefaultSubtitle() {
+        this.setupUrlSubtitle(MOD_URL);
+    }
+
+    public void setupUrlSubtitle(final String subtitle) {
+        this.setupSubtitle(Component.nullToEmpty(subtitle), ConfirmLinkScreen.confirmLink(this, subtitle));
+    }
+
+    public void setupSubtitle(@Nullable final Component subtitle) {
+        this.setupSubtitle(subtitle, null);
+    }
+
+    public void setupSubtitle(@Nullable final Component subtitle, @Nullable final Button.OnPress subtitlePressAction) {
+        this.subtitlePressAction = subtitlePressAction;
+
+        if (subtitleWidget != null) {
+            removeWidget(subtitleWidget);
+            subtitleWidget = null;
+        }
+        if (subtitlePressAction == null) {
+            this.subtitle = subtitle;
+        } else {
+            this.subtitle = null;
+            final int subtitleWidth = font.width(subtitle);
+            this.addRenderableWidget(subtitleWidget = new PlainTextButton(width / 2 - (subtitleWidth / 2), (font.lineHeight + 2) * 2 + 3, subtitleWidth, font.lineHeight + 2, subtitle, subtitlePressAction, font));
+        }
+    }
+
+    public void open(final Screen prevScreen) {
+        this.prevScreen = prevScreen;
+        setScreen(this);
+    }
+
+    public Screen get(final Screen prevScreen) {
+        this.prevScreen = prevScreen;
+        return this;
+    }
+
+    public static void setScreen(final Screen screen) {
+        final Minecraft client = Minecraft.getInstance();
+
+        client.execute(() -> client.setScreen(screen));
+    }
+
+    @Override
+    protected void init() {
+        if (backButton) {
+            this.addRenderableWidget(Button.builder(Component.nullToEmpty("<-"), button -> this.onClose()).pos(5, 5).size(20, 20).build());
+        }
+    }
+
+    public void addRefreshButton(final Runnable click) {
+        this.addRenderableWidget(Button.builder(Component.translatable("base.viafabricplus.refresh"), button -> {
+            click.run();
+            minecraft.setScreen(this);
+        }).pos(width - 60 - 5, 5).size(60, 20).build());
+    }
+
+    @Override
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+
+        this.renderTitle(context);
+    }
+
+    @Override
+    public void onClose() {
+        if (prevScreen instanceof VFPScreen vfpScreen) {
+            vfpScreen.open(vfpScreen.prevScreen);
+        } else {
+            Minecraft.getInstance().setScreen(prevScreen);
+        }
+    }
+
+    public void renderTitle(final GuiGraphics context) {
+        final Matrix3x2fStack matrices = context.pose();
+
+        matrices.pushMatrix();
+        matrices.scale(2F, 2F);
+        context.drawCenteredString(font, "ViaFabricPlus", width / 4, 3, Color.ORANGE.getRGB());
+        matrices.popMatrix();
+
+        renderSubtitle(context);
+    }
+
+    public void renderSubtitle(final GuiGraphics context) {
+        if (subtitle != null && subtitlePressAction == null) {
+            final int startY = (font.lineHeight + 2) * 2 + 3;
+            context.drawCenteredString(font, subtitle, width / 2, subtitleCentered() ? this.height / 2 - startY : startY, -1);
+        }
+    }
+
+    protected boolean subtitleCentered() {
+
+        return false;
+    }
+
+    public void renderScreenTitle(final GuiGraphics context) {
+        context.drawCenteredString(this.font, this.title, this.width / 2, 70, 16777215);
+    }
+
+    public @Nullable Component getSubtitle() {
+        return subtitle;
+    }
+
+    public @Nullable PlainTextButton getSubtitleWidget() {
+        return subtitleWidget;
+    }
+
+    public static void showErrorScreen(final Component title, final Throwable throwable, final Screen next) {
+        ViaFabricPlusImpl.INSTANCE.getLogger().error("Something went wrong!", throwable);
+
+        final Minecraft client = Minecraft.getInstance();
+        client.execute(() -> client.setScreen(new AlertScreen(() -> client.setScreen(next), title, Component.translatable("base.viafabricplus.something_went_wrong").append("\n" + throwable.getMessage()), Component.translatable("base.viafabricplus.cancel"), false)));
+    }
+
+}

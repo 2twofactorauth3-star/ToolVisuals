@@ -20,6 +20,8 @@ import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.config.ConfigProfiles;
 import ru.he3hauka.toolvisuals.client.connection.AccountStore;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;
+import ru.he3hauka.toolvisuals.client.connection.ui.ProtocolUi;
+import ru.he3hauka.toolvisuals.protocols.client.ProtocolMenus;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsScreen;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPipelines;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
@@ -58,6 +60,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientErrors.initialize();
+        ProtocolMenus.install(ProtocolUi::open);
         var startupPreset=new ru.he3hauka.toolvisuals.client.optimization.preset.StartupPreset(FabricLoader.getInstance().getConfigDir());
         RenderPipelinesAccessor.toolvisuals$register(UiPipelines.TEXT);
         RenderPipelinesAccessor.toolvisuals$register(UiPipelines.RASTER_TEXT);

@@ -1,16 +1,10 @@
 {
-  "schema": 1,
-  "revision": 1,
+  "schema": 2,
+  "revision": 2,
   "minimum_protocol": "1.7.2",
   "targets": {
     "26.3": {
       "version": "5.1.1",
-      "binary": {
-        "file": "viafabricplus-5.1.1.jar",
-        "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/5.1.1/viafabricplus-5.1.1.jar",
-        "bytes": 10331250,
-        "sha512": "b3a1b4391a0fd16dc8290f54ad47910d68ef7a3f04a2d47e141a0e85e0b23d80b3d232ef7ad730978250ec26e8aafa2474cad05122f5b6dd6daec3f7ca0cd1bd"
-      },
       "sources": {
         "file": "viafabricplus-5.1.1-sources.jar",
         "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/5.1.1/viafabricplus-5.1.1-sources.jar",
@@ -28,12 +22,6 @@
     },
     "1.21.11": {
       "version": "4.4.15",
-      "binary": {
-        "file": "ViaFabricPlus-4.4.15.jar",
-        "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/RM6hveoK/ViaFabricPlus-4.4.15.jar",
-        "bytes": 27015009,
-        "sha512": "6762685c0243a9c7ec43321f2bc011030fd6566797a647219ed275d956c2272777dae0ff43ebd82a77368350494394f5b0c1d98284ffd762a4876fcfd68958c4"
-      },
       "sources": {
         "file": "viafabricplus-4.4.15-sources.jar",
         "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/4.4.15/viafabricplus-4.4.15-sources.jar",
@@ -57,12 +45,6 @@
     },
     "1.21.4": {
       "version": "4.0.5-BACKPORT",
-      "binary": {
-        "file": "ViaFabricPlus-4.0.5-BACKPORT.jar",
-        "url": "https://cdn.modrinth.com/data/rIC2XJV4/versions/8sPJsNcy/ViaFabricPlus-4.0.5-BACKPORT.jar",
-        "bytes": 12648084,
-        "sha512": "12ec6461070b50124c0fec2173ca2b170eab0ff2bfbfd384185a5c661ec512bd670675dd88c42aa929f8db9306f3c09f9e8564f0f3e5f55d8f2921a8d3bb3597"
-      },
       "sources": {
         "file": "viafabricplus-4.0.5-BACKPORT-sources.jar",
         "url": "https://repo.viaversion.com/com/viaversion/viafabricplus/4.0.5-BACKPORT/viafabricplus-4.0.5-BACKPORT-sources.jar",
@@ -97,36 +79,5 @@
       ]
     }
   },
-  "tool_dependencies": [
-    {
-      "file": "gson-2.14.0.jar",
-      "url": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.14.0/gson-2.14.0.jar",
-      "bytes": 313604,
-      "sha512": "d040d19a47ca2df33365493f9813a1d0a40b91685f7d87ca445b98d37b4c1b801314aef87940dc8b43dd1b0b96f6d5e6e4296778bf1af8dbfb1091425b37da21"
-    },
-    {
-      "file": "asm-9.10.1.jar",
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar",
-      "bytes": 126151,
-      "sha512": "8db6efa37d4d569bf2b95d90931b8064f87ed928d20bbf8d8e7fa6182e9a11d32e6a2cc034a3d173a38ee70ce2ea9f20f52f9d8730d9401d2bc6060674c18928"
-    },
-    {
-      "file": "asm-tree-9.10.1.jar",
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar",
-      "bytes": 51958,
-      "sha512": "2ffe5bbfac53bbacc1e4e474628b4247fb1c5f592017f393a327b3f2d2a72a338263f2f6549a42cea57a42f676b967153a10a22aae46affed83608f74daf3768"
-    },
-    {
-      "file": "asm-analysis-9.10.1.jar",
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/9.10.1/asm-analysis-9.10.1.jar",
-      "bytes": 35140,
-      "sha512": "0542a90be38f81e39ef43a9253630a2d59f82c17c24492f005c67619561308afbbd23bf8504d3e83b1d4cebe5746126da76037473ddac3071b028c2ae279296b"
-    },
-    {
-      "file": "asm-commons-9.10.1.jar",
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar",
-      "bytes": 74840,
-      "sha512": "8540a8f9a63b22bae54fc501f2da405c2c1c45fa13921a1193629cfbfbb716473f8a19984559af7b0b1ea3814d439ec445ea1cfeb159bf922bb7e60a40acf823"
-    }
-  ]
+  "build": "included-source"
 }

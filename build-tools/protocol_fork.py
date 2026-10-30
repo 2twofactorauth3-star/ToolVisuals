@@ -6,6 +6,8 @@ import re
 import shutil
 import subprocess
 import zipfile
+import contextlib
+import time
 from dependencies import download
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,35 +35,24 @@ def artifact(version, root=ROOT):
 
 def source_digest(root=ROOT):
     folder = component(root)
-    paths = [folder / name for name in ['upstream.json', 'NOTICE', 'COPYING']]
-    paths += list((folder / 'src/main/java').rglob('*.java'))
+    paths = [folder / name for name in ['upstream.json', 'libraries.json', 'toolchain.json', 'game-inputs.json', 'NOTICE', 'COPYING', 'ATTRIBUTION', 'build.gradle', 'build.py']]
+    paths += [root / 'build-tools' / name for name in ['protocol_fork.py', 'protocol_source.py', 'protocol_mappings.py', 'dependencies.py']]
+    paths += [path for path in (folder / 'src').rglob('*') if path.is_file()]
     digest = hashlib.sha256()
-    for path in sorted(paths, key=lambda path: path.relative_to(folder).as_posix()):
-        digest.update(path.relative_to(folder).as_posix().encode())
+    for path in sorted(paths, key=lambda path: path.relative_to(root).as_posix()):
+        digest.update(path.relative_to(root).as_posix().encode())
         digest.update(b'\0')
-        digest.update(path.read_text(encoding='utf-8').replace('\r\n', '\n').encode('utf-8'))
+        data = path.read_bytes()
+        if b'\0' not in data:
+            data = data.replace(b'\r\n', b'\n')
+        digest.update(data)
         digest.update(b'\0')
     return digest.hexdigest()
 
 
 def acquire_inputs(version, root=ROOT):
-    row = profile(version, root)
-    results = []
-    inputs = [('binary', row['binary']), ('sources', row['sources'])] + [('sources', entry) for entry in row.get('related_sources', [])]
-    for kind, entry in inputs:
-        if Path(entry['file']).name != entry['file']:
-            raise ValueError('Invalid protocol input filename')
-        target = directory(version, root) / 'upstream' / entry['file']
-        if not target.is_file() and kind == 'binary':
-            candidates = [root / 'versions' / version / 'libs' / entry['file'], root / 'build/local-dependencies' / entry['file']]
-            for cached in candidates:
-                if cached.is_file() and cached.stat().st_size == entry['bytes'] and hashlib.sha512(cached.read_bytes()).hexdigest() == entry['sha512']:
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copyfile(cached, target)
-                    break
-        download(entry['url'], target, 'sha512', entry['sha512'], entry['bytes'])
-        results.append(target)
-    return results
+    from protocol_source import acquire
+    return acquire(version, root)
 
 
 def java_tools():
@@ -82,35 +73,44 @@ def java_tools():
 
 
 def build_component(version, root=ROOT):
-    try:
+    with build_lock(root):
+        try:
+            describe(version, root)
+            return artifact(version, root)
+        except (ValueError, OSError, zipfile.BadZipFile, KeyError, json.JSONDecodeError):
+            pass
+        from protocol_source import build
+        result = build(version, root)
         describe(version, root)
-        return artifact(version, root)
-    except (ValueError, OSError, zipfile.BadZipFile, KeyError, json.JSONDecodeError):
-        pass
-    original = acquire_inputs(version, root)[0]
-    java, compiler = java_tools()
-    tools = root / 'build/components/viafabricplus/tools'
-    classes = tools / 'classes'
-    classes.mkdir(parents=True, exist_ok=True)
-    libraries = []
-    for row in manifest(root)['tool_dependencies']:
-        target = tools / 'libraries' / row['file']
-        cached = root / 'build/local-dependencies' / row['file']
-        if not target.exists() and cached.is_file() and cached.stat().st_size == row['bytes'] and hashlib.sha512(cached.read_bytes()).hexdigest() == row['sha512']:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(cached, target)
-        download(row['url'], target, 'sha512', row['sha512'], row['bytes'])
-        libraries.append(target)
-    classpath = os.pathsep.join(map(str, libraries))
-    stamp = tools / 'source-digest.txt'
-    fingerprint = source_digest(root)
-    if not stamp.is_file() or stamp.read_text().strip() != fingerprint or not (classes / 'ru/he3hauka/toolvisuals/protocols/build/ForkBuilder.class').is_file():
-        sources = sorted((component(root) / 'src/main/java').rglob('*.java'))
-        subprocess.run([str(compiler), '-encoding', 'UTF-8', '--release', '25', '-proc:none', '-classpath', classpath, '-d', str(classes), *map(str, sources)], cwd=root, check=True)
-        stamp.write_text(fingerprint + '\n')
-    subprocess.run([str(java), '-cp', os.pathsep.join([str(classes), classpath]), 'ru.he3hauka.toolvisuals.protocols.build.ForkBuilder', str(original), str(component(root)), version, str(artifact(version, root))], cwd=root, check=True)
-    describe(version, root)
-    return artifact(version, root)
+        return result
+
+
+@contextlib.contextmanager
+def build_lock(root):
+    path = root / 'build/components/viafabricplus/source-build.lock'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('a+b') as stream:
+        stream.seek(0, 2)
+        if stream.tell() == 0: stream.write(b'0'); stream.flush()
+        started = time.monotonic()
+        while True:
+            try:
+                stream.seek(0)
+                if os.name == 'nt':
+                    import msvcrt
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except OSError:
+                if time.monotonic() - started > 900: raise TimeoutError('Timed out waiting for the protocol source compiler')
+                time.sleep(0.1)
+        try: yield
+        finally:
+            stream.seek(0)
+            if os.name == 'nt': msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+            else: fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
 def describe(version, root=ROOT):
@@ -120,11 +120,14 @@ def describe(version, root=ROOT):
     with zipfile.ZipFile(path) as jar:
         provenance = json.loads(jar.read('META-INF/toolvisuals/protocol-component.json'))
         metadata = json.loads(jar.read('fabric.mod.json'))
-    if provenance['upstream'] != profile(version, root) or provenance['patch_sources_sha256'] != source_digest(root):
+    if provenance['upstream'] != profile(version, root) or provenance['source_tree_sha256'] != source_digest(root):
         raise ValueError('The protocol component is stale; rebuild ' + version)
+    api = directory(version, root) / 'compile-api.jar'
+    if not api.is_file() or provenance['compile_api_sha512'] != hashlib.sha512(api.read_bytes()).hexdigest():
+        raise ValueError('The protocol compilation API is missing or stale; rebuild ' + version)
     return {'project': 'viafabricplus', 'file': path.name, 'version': metadata['version'], 'bytes': path.stat().st_size,
             'sha512': hashlib.sha512(path.read_bytes()).hexdigest(), 'source': 'components/viafabricplus/upstream.json',
-            'upstream': profile(version, root)['binary']}
+            'upstream': {'version': profile(version, root)['version'], 'source': profile(version, root)['sources']}}
 
 
 def resolve_rows(version, rows, root=ROOT):

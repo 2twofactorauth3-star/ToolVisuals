@@ -12,3 +12,6 @@ gradlew.bat text eol=crlf
 *.ttf binary
 *.jar binary
 *.exe binary
+**/META-INF/MANIFEST.MF -whitespace
+launcher/licenses/* -whitespace
+components/viafabricplus/src/targets/**/resources/assets/viafabricplus/lang/*.json -whitespace

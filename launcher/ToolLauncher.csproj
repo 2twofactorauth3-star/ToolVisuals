@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ToolLauncher</AssemblyName>
+    <RootNamespace>ToolLauncher</RootNamespace>
+    <Version>1.0.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="bundle\*.jar" LogicalName="ToolLauncher.Clients.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="bundle\clients.json" LogicalName="ToolLauncher.Clients.clients.json" Condition="Exists('bundle\clients.json')" />
+    <EmbeddedResource Include="..\LICENSE" LogicalName="ToolLauncher.Licenses.LICENSE" />
+    <EmbeddedResource Include="..\COPYING" LogicalName="ToolLauncher.Licenses.COPYING" />
+    <EmbeddedResource Include="..\NOTICE" LogicalName="ToolLauncher.Licenses.NOTICE" />
+    <EmbeddedResource Include="licenses\*" LogicalName="ToolLauncher.Licenses.%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "com_viaversion_vialoader",
+  "version": "4.0.3-20250426.141011-6",
+  "name": "vialoader",
+  "custom": {
+    "fabric-loom:generated": true
+  }
+}
