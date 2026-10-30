@@ -11,6 +11,8 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.mixin.holyworld.HandshakeServerAddressAccessor;
+import ru.he3hauka.toolvisuals.mixin.holyworld.ServerAddressAccessor;
 
 public final class HolyWorldClient {
     private static final HolyWorldSession SESSION = new HolyWorldSession(ToolVisualsClient.CONFIG.serverPolicy);
@@ -36,7 +38,7 @@ public final class HolyWorldClient {
     }
 
     private static void begin(Object connection, Minecraft client) {
-        SESSION.begin(connection, address(client));
+        SESSION.begin(connection, address(connection, client));
         announced = false;
     }
 
@@ -50,8 +52,17 @@ public final class HolyWorldClient {
         return server == null ? "" : server.ip;
     }
 
-    public static boolean captureAllowed(Minecraft client) {
-        return !HolyWorldHosts.matches(address(client));
+    private static String address(Object handler, Minecraft client) {
+        var data = switch (handler) {
+            case ServerAddressAccessor access -> access.toolvisuals$serverData();
+            case HandshakeServerAddressAccessor access -> access.toolvisuals$serverData();
+            case null, default -> null;
+        };
+        return data == null ? address(client) : data.ip;
+    }
+
+    public static boolean captureAllowed(Minecraft client, net.minecraft.network.Connection connection) {
+        return !HolyWorldHosts.matches(address(connection.getPacketListener(), client));
     }
     public static boolean protectedServer() { return SESSION.protectedServer(); }
     public static void status() {
@@ -61,6 +72,7 @@ public final class HolyWorldClient {
 
     private static void tick(Minecraft client) {
         if (ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active()) return;
+        SESSION.identify(address(client));
         if (client.getConnection() == null || client.player == null || client.level == null) return;
         SESSION.advertise(ClientPlayNetworking.canSend(FeatureControlPayload.TYPE));
         byte[] request = SESSION.request(System.nanoTime());

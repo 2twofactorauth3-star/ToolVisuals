@@ -6,6 +6,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.discord.ipc.RpcTransport;
@@ -49,7 +50,15 @@ public final class DiscordPresence {
     private static String gameVersion(Minecraft client,DiscordActivity.Mode mode){
         if(mode==DiscordActivity.Mode.SINGLEPLAYER||mode==DiscordActivity.Mode.REPLAY)return MINECRAFT;
         var connection=client.getConnection();
-        return ConnectionVersions.label(connection==null?null:connection.getConnection());
+        return DiscordActivity.resolveVersion(MINECRAFT,()->ConnectionVersions.label(connection==null?null:connection.getConnection()),
+                error->ClientErrors.report("Resolve protocol version for Discord RPC; using native Minecraft version",error));
+    }
+    public static void diagnostic() {
+        var status=RPC.status();
+        org.slf4j.LoggerFactory.getLogger("ToolVisuals/DiscordRPC").info("RPC diagnostic: status={}, application_id={}, game_pid={}, native_minecraft={}, mod_version={}",
+                status,DiscordBrand.APPLICATION_ID,ProcessHandle.current().pid(),MINECRAFT,VERSION);
+        ChatMessages.notice("discord.status",status.name(),MINECRAFT);
+        if(status==DiscordRpc.Status.CONNECTED)ChatMessages.notice("discord.competing");
     }
 
     private static DiscordActivity.Mode mode(Minecraft client){

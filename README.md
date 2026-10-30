@@ -4,13 +4,15 @@
 
 Разработка: **[2twofactorauth3-star](https://github.com/2twofactorauth3-star) + [OpenAI Codex](https://openai.com/codex/)**. ToolVisuals создаётся с помощью ИИ (AI-assisted).
 
-| Minecraft | Java | Клиентский JAR |
-| --- | --- | --- |
-| 26.3 | 25 | ToolVisuals-1.4+fabric-26.3.jar |
-| 1.21.11 | 21 | ToolVisuals-1.4+fabric-1.21.11.jar |
-| 1.21.4 | 21 | ToolVisuals-1.4+fabric-1.21.4.jar |
+| Minecraft | Java | Fabric Loader | Клиентский JAR |
+| --- | --- | --- | --- |
+| 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4+fabric-26.3.jar |
+| 1.21.11 | 21 | 0.19.5+ | ToolVisuals-1.4+fabric-1.21.11.jar |
+| 1.21.4 | 21 | 0.19.3+ | ToolVisuals-1.4+fabric-1.21.4.jar |
 
-Установите Fabric Loader 0.19.5 или новее и один JAR под свою версию Minecraft. Fabric API и зависимости уже включены в готовые клиентские сборки.
+Установите Fabric Loader из таблицы или новее и один JAR под свою версию Minecraft. Fabric API и зависимости уже включены в готовые клиентские сборки.
+
+Диагностика Discord RPC: `.toolvisuals rpc` показывает состояние подключения и записывает подробности в стандартный `logs/latest.log`. `CONNECTED` означает, что Discord подтвердил нашу активность; выбор отображаемой активности остаётся за Discord. При конкуренции с Lunar отключите **Discord Rich Presence** в настройках его лаунчера ([инструкция Lunar](https://www.lunarclient.com/news/how-to-use-the-new-lunar-client-launcher)). Ошибка определения версии через ViaFabricPlus не отключает RPC: используется родная версия Minecraft.
 
 ## Функции
 

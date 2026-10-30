@@ -37,7 +37,8 @@ def resources(version):
     metadata_path=destination/'fabric.mod.json'
     metadata=json.loads(metadata_path.read_text(encoding='utf-8'))
     metadata['version']=VERSION
-    metadata['depends'].update({'fabricloader':'>=0.19.5','fabric-api':'>='+actual['fabric-api']['fabric-api'],'minecraft':version,'java':'>=21','viafabricplus':actual['viafabricplus']['viafabricplus'],'voicechat':actual['simple-voice-chat']['voicechat'],'voicechat_api':'>='+actual['simple-voice-chat']['voicechat_api'],'appleskin':actual['appleskin']['appleskin']})
+    target=next(target for target in json.loads((ROOT/'versions/targets.json').read_text(encoding='utf-8'))['targets'] if target['minecraft']==version)
+    metadata['depends'].update({'fabricloader':'>='+target['fabric_loader'],'fabric-api':'>='+actual['fabric-api']['fabric-api'],'minecraft':version,'java':'>=21','viafabricplus':actual['viafabricplus']['viafabricplus'],'voicechat':actual['simple-voice-chat']['voicechat'],'voicechat_api':'>='+actual['simple-voice-chat']['voicechat_api'],'appleskin':actual['appleskin']['appleskin']})
     metadata['jars']=[{'file':'META-INF/jars/'+row['file']} for row in rows]
     metadata_path.write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     from sources import contents

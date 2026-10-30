@@ -19,6 +19,16 @@ public record DiscordActivity(String name,String details,String state,String ima
         String name=(DiscordBrand.NAME+" "+clean(context.nativeVersion,32)).strip();
         return new DiscordActivity(name,details,state,name+" · "+clean(context.clientVersion,24),started,UiI18n.text(language,"toolvisuals.discord.download"));
     }
+    public static String resolveVersion(String nativeVersion,java.util.function.Supplier<String> protocol,
+                                        java.util.function.Consumer<Throwable> failure) {
+        try {
+            String version=clean(protocol.get(),32);
+            return version.isEmpty()||version.equalsIgnoreCase("unknown")?nativeVersion:version;
+        } catch(RuntimeException|LinkageError error) {
+            failure.accept(error);
+            return nativeVersion;
+        }
+    }
     public JsonObject json(){
         var activity=new JsonObject();activity.addProperty("name",name);activity.addProperty("type",0);activity.addProperty("details",details);activity.addProperty("state",state);
         var assets=new JsonObject();assets.addProperty("large_image",DiscordBrand.LARGE_IMAGE);assets.addProperty("large_text",imageText);activity.add("assets",assets);

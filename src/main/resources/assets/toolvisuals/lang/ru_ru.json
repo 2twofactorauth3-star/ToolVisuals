@@ -1786,5 +1786,7 @@
   "toolvisuals.holyworld.confirmed": "Связь с API HolyWorld подтверждена. Ограничений для подключения: %s.",
   "toolvisuals.holyworld.fallback": "Действуют локальные ограничения HolyWorld (%s). Подтверждения API пока нет.",
   "toolvisuals.holyworld.unconfirmed": "Подключение к API HolyWorld не подтверждено. Ограничений для подключения: %s.",
-  "toolvisuals.command.usage": "Настройки и функции ToolVisuals доступны в меню клиента."
+  "toolvisuals.command.usage": "Настройки и функции ToolVisuals доступны в меню клиента.",
+  "toolvisuals.discord.status": "Discord RPC: %s · Minecraft %s. Подробности записаны в latest.log.",
+  "toolvisuals.discord.competing": "Discord подтвердил активность ToolVisuals. Если вместо неё виден Lunar, выключите Discord Rich Presence в настройках лаунчера Lunar."
 }

@@ -32,7 +32,7 @@ def acquireNativeDependencies = tasks.register('acquireNativeDependencies', Exec
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc:fabric-loader:${target.fabric_loader}"
     dependenciesForTarget.each { dependency ->
         def archive = files(file('libs/' + dependency.file)).builtBy(acquireNativeDependencies)
         modImplementation archive
@@ -44,7 +44,7 @@ def generateNativeSources = tasks.register('generateNativeSources', Exec) {
     dependsOn acquireNativeDependencies
     workingDir rootProject.projectDir
     commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion, '--resources'
-    inputs.files(rootProject.fileTree('src'), rootProject.fileTree('versions/common/main'), fileTree('main'), file('relocations.json'), file('excludes.json'), dependencyManifest, rootProject.file('gradle.properties'), rootProject.fileTree('libs/music'), rootProject.fileTree('native/music/windows'), rootProject.fileTree('build-tools/multiversion') { include '*.py' }, rootProject.file('build-tools/distribution.py'), rootProject.file('build-tools/dependencies.py'))
+    inputs.files(rootProject.fileTree('src'), rootProject.fileTree('versions/common/main'), fileTree('main'), file('relocations.json'), file('excludes.json'), dependencyManifest, rootProject.file('gradle.properties'), rootProject.file('versions/targets.json'), rootProject.fileTree('libs/music'), rootProject.fileTree('native/music/windows'), rootProject.fileTree('build-tools/multiversion') { include '*.py' }, rootProject.file('build-tools/distribution.py'), rootProject.file('build-tools/dependencies.py'))
     outputs.dirs(generated.map { it.dir('generated-sources') }, generated.map { it.dir('resources') })
 }
 

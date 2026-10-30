@@ -15,6 +15,7 @@ public final class LocalCommands {
         String line=text.strip();String[] tokens=line.split("\\s+",3);
         if(!tokens[0].toLowerCase(Locale.ROOT).equals(".toolvisuals"))return false;
         if(tokens.length>=2&&tokens[1].equalsIgnoreCase("holyworld")){ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.status();return true;}
+        if(tokens.length>=2&&tokens[1].equalsIgnoreCase("rpc")){ru.he3hauka.toolvisuals.client.discord.DiscordPresence.diagnostic();return true;}
         if(tokens.length>=2){
             String feature=FEATURES.get(tokens[1].toLowerCase(Locale.ROOT));
             if(feature!=null&&!ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG.serverPolicy.allows(feature)){

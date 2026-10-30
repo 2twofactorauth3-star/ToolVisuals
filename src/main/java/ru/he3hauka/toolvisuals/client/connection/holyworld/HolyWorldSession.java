@@ -34,6 +34,12 @@ public final class HolyWorldSession {
         if (pending == null) { due = 0; attempts = 0; }
     }
 
+    public void identify(String address) {
+        if (connection == null || holyWorld || !HolyWorldHosts.matches(address)) return;
+        holyWorld = true;
+        policy.update(true, policy.blocked());
+    }
+
     public byte[] request(long now) {
         if (connection == null || now < due) return null;
         if (pending != null && attempts >= 3) {
