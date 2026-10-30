@@ -23,8 +23,9 @@ public final class PairInvitationChat {
     private static final String COMMAND = "toolvisuals_pair";
     private PairInvitationChat() {}
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, BiPredicate<UUID, Boolean> answer) {
-        var root = literal(COMMAND);
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, BiPredicate<UUID, Boolean> answer,
+                                java.util.function.BooleanSupplier available) {
+        var root = literal(COMMAND).requires(source -> available.getAsBoolean());
         for (boolean accept : new boolean[] {true, false}) root.then(literal(action(accept))
                 .then(argument("invitation", UuidArgument.uuid()).executes(context -> answer.test(context.getArgument("invitation", UUID.class), accept) ? 1 : 0)));
         dispatcher.register(root);

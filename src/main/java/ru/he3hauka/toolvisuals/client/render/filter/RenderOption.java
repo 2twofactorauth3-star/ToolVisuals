@@ -94,6 +94,7 @@ public enum RenderOption {
     public final RenderCategory category;
     public final boolean hiddenByDefault;
     public final String id = name().toLowerCase(Locale.ROOT);
+    public final String featureId = "no_render." + id;
 
     RenderOption(RenderCategory category, boolean hiddenByDefault) {
         this.category = category;

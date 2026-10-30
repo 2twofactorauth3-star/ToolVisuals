@@ -38,7 +38,7 @@ public final class FakePlayer {
             entity.setHealth(entity.getMaxHealth());
     }
     public static void spawn(Minecraft client) {
-        if (client.level == null || client.player == null) return;
+        if (client.level == null || client.player == null || !ToolVisualsClient.CONFIG.available(FAKE_PLAYER)) return;
         remove(); level = client.level; enabled = true; idleTicks = 0;
         var source = client.player;
         PlayerSkin skin = source.getSkin(); HumanoidArm arm = source.getMainArm();

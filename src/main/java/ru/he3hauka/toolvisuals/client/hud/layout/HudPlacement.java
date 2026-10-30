@@ -26,7 +26,9 @@ public final class HudPlacement {
     private HudPlacement() {}
     public static boolean preview() { return preview; }
     public static boolean samples(){return preview&&Minecraft.getInstance().gui.screen() instanceof HudEditorScreen editor&&editor.samples;}
-    public static boolean show(VisualModule module) { return preview || ToolVisualsClient.CONFIG.active(module); }
+    public static boolean show(VisualModule module) {
+        return ToolVisualsClient.CONFIG.available(module) && (preview || ToolVisualsClient.CONFIG.active(module));
+    }
     public static Map<HudElement, Bounds> bounds() { return Map.copyOf(BOUNDS); }
     public static void updateBounds(HudElement element,Bounds bounds){BOUNDS.put(element,bounds);}
     public static void beginFrame(){if(!preview)BOUNDS.clear();}

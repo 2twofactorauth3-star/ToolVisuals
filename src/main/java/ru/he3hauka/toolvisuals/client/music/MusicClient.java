@@ -64,7 +64,7 @@ public final class MusicClient {
         return switch (controller.status()) { case STARTING->"starting";case READY->snapshot().selected()==null?"idle":"ready";case UNAVAILABLE,CLOSED->"unavailable"; };
     }
     public static String feedback() { return controller==null?"":controller.feedback(System.nanoTime()); }
-    public static boolean command(MediaSnapshot snapshot,MediaSession session,MediaAction action,double value) { return controller!=null && controller.command(snapshot,session,action,value); }
+    public static boolean command(MediaSnapshot snapshot,MediaSession session,MediaAction action,double value) { return ToolVisualsClient.CONFIG.available(MUSIC_HUD) && controller!=null && controller.command(snapshot,session,action,value); }
     public static boolean command(MediaAction action) { var snapshot=snapshot();return command(snapshot,snapshot.selected(),action,0); }
     public static void select(MediaSnapshot captured,MediaSession session) { command(captured,session,MediaAction.SELECT,0); }
     public static void seek(MediaSnapshot snapshot,MediaSession session,double fraction) {

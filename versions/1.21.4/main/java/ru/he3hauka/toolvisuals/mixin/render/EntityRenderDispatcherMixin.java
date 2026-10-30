@@ -47,7 +47,7 @@ public abstract class EntityRenderDispatcherMixin {
         if (NoRender.hides(GLOWING)) state.outlineColor = EntityRenderState.NO_OUTLINE;
         if(state instanceof FriendRenderState friend) {
             friend.toolvisuals$friendLabel(null);
-            if(entity instanceof Player player) {
+            if(entity instanceof Player player && ru.he3hauka.toolvisuals.client.friends.Friends.renderAllowed(entity)) {
                 String name=player.getGameProfile().name();
                 state.nameTag=FriendLabels.name(ToolVisualsClient.FRIENDS,name,state.nameTag);
                 friend.toolvisuals$friendLabel(FriendLabels.badge(ToolVisualsClient.FRIENDS,name,state.nameTag,ToolVisualsClient.CONFIG.language()));

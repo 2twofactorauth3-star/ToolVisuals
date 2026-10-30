@@ -17,13 +17,13 @@ public final class Keybinds {
     public static void press(InputConstants.Key key){
         if(key.equals(InputConstants.UNKNOWN))return;
         var client=Minecraft.getInstance();boolean allowed=allowed(client);QUEUE.scope(client.getConnection(),allowed);if(!allowed)return;
-        for(var bind:STORE.entries())if(bind.enabled()&&bind.key().equals(key.getName()))QUEUE.offer(bind);
+        for(var bind:STORE.entries())if(bind.available(ToolVisualsClient.CONFIG)&&bind.enabled()&&bind.key().equals(key.getName()))QUEUE.offer(bind);
     }
     private static boolean allowed(Minecraft client){return client.player!=null&&client.level!=null&&client.getConnection()!=null&&client.gui.screen()==null&&client.gui.overlay()==null&&client.isWindowActive()&&ToolVisualsClient.CONFIG.active(VisualModule.KEYBINDS);}
     public static void tick(Minecraft client){
-        if(opening){opening=false;client.gui.setScreen(new ru.he3hauka.toolvisuals.client.keybinds.ui.KeybindsScreen(null));}
+        if(opening){opening=false;if(ToolVisualsClient.CONFIG.available(VisualModule.KEYBINDS))client.gui.setScreen(new ru.he3hauka.toolvisuals.client.keybinds.ui.KeybindsScreen(null));}
         QUEUE.scope(client.getConnection(),allowed(client));var bind=QUEUE.poll(System.nanoTime());if(bind==null)return;
-        if(!STORE.entries().contains(bind)||!bind.enabled())return;
+        if(!STORE.entries().contains(bind)||!bind.available(ToolVisualsClient.CONFIG)||!bind.enabled())return;
         if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(VisualModule.KEYBINDS,"execute","kind="+bind.kind());
         switch(bind.kind()){
             case MODULE->{for(var module:VisualModule.values())if(module.id.equals(bind.value())){ToolVisualsClient.CONFIG.setActive(module,!ToolVisualsClient.CONFIG.active(module));break;}}

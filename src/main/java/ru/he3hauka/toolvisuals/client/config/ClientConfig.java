@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.he3hauka.toolvisuals.client.chat.layout.ChatSize;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
+import ru.he3hauka.toolvisuals.client.connection.policy.FeatureCatalog;
+import ru.he3hauka.toolvisuals.client.connection.policy.ServerFeaturePolicy;
 import ru.he3hauka.toolvisuals.client.config.color.ColorSettings;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.crosshair.CrosshairDesign;
@@ -35,7 +38,23 @@ public final class ClientConfig {
     public final ConfigHistory history=new ConfigHistory();
     private boolean restoringHistory;
     private volatile long revision;
-    public long revision() { return revision; }
+    public final ServerFeaturePolicy serverPolicy = new ServerFeaturePolicy();
+    public long revision() { return revision + serverPolicy.revision(); }
+    public boolean available(VisualModule module) {
+        return serverPolicy.allows(module.id)
+                && (module != VisualModule.FRIENDS_LIST || available(ClientFeature.FRIENDS));
+    }
+    public boolean available(ClientFeature feature) {
+        return serverPolicy.allows(feature.id) && (feature != ClientFeature.OUTFITS
+                || available(VisualModule.CAPES) && available(VisualModule.COSMETICS));
+    }
+    public boolean available(RenderOption option) {
+        return available(VisualModule.NO_RENDER) && serverPolicy.allows(FeatureCatalog.option(option));
+    }
+    public boolean available(VisualSetting setting) {
+        return available(setting.module) && (setting != VisualSetting.NO_SWING && setting != VisualSetting.HAND_NO_SWING
+                && setting != VisualSetting.LEFT_HAND_NO_SWING || available(VisualModule.NO_SWING_ANIMATION));
+    }
      
     private volatile EnumSet<RenderOption> hidden = defaults();
     private volatile boolean enabled;
@@ -144,12 +163,13 @@ public final class ClientConfig {
     }
 
     public boolean active(VisualModule module) {
-        boolean active=module == VisualModule.NO_RENDER ? enabled : modules.contains(module);
+        boolean active=available(module) && (module == VisualModule.NO_RENDER ? enabled : modules.contains(module));
         ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.checked(this,module,active);
         return active;
     }
 
     public void setActive(VisualModule module, boolean active) {
+        if (!available(module)) return;
         if (module == VisualModule.NO_RENDER) { setEnabled(active); return; }
         boolean changed=modules.contains(module)!=active;
         var next = modules.clone();
@@ -161,7 +181,7 @@ public final class ClientConfig {
 
     public double value(VisualSetting setting) { return values.getOrDefault(setting, setting.initial); }
     public float number(VisualSetting setting) { return (float)value(setting); }
-    public boolean flag(VisualSetting setting) { return value(setting) > .5; }
+    public boolean flag(VisualSetting setting) { return available(setting) && value(setting) > .5; }
 
     public void setValue(VisualSetting setting, double value) {
         setValues(Map.of(setting,value),"setting:"+setting.id);
@@ -218,16 +238,16 @@ public final class ClientConfig {
     }
 
     public boolean enabled() {
-        ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.checked(this,VisualModule.NO_RENDER,enabled);
-        return enabled;
+        return active(VisualModule.NO_RENDER);
     }
 
     public boolean selected(RenderOption option) {
-        return hidden.contains(option);
+        return available(option) && hidden.contains(option);
     }
 
     public boolean hides(RenderOption option) {
-        if (enabled && hidden.contains(option)) return true;
+        if (!serverPolicy.allows(FeatureCatalog.option(option))) return false;
+        if (enabled() && hidden.contains(option)) return true;
         if (!active(VisualModule.NO_HURT_CAM)) return false;
         return switch (option) {
             case HURT_CAMERA -> flag(VisualSetting.CAM_HURT);
@@ -238,7 +258,7 @@ public final class ClientConfig {
     }
 
     public int selectedCount() {
-        return hidden.size();
+        return (int) hidden.stream().filter(this::available).count();
     }
 
     public boolean needsMenuBindingMigration() {
@@ -273,6 +293,7 @@ public final class ClientConfig {
     }
 
     public void setEnabled(boolean enabled) {
+        if (!available(VisualModule.NO_RENDER)) return;
         boolean changed=this.enabled!=enabled;
         this.enabled = enabled;
         if(changed&&ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(VisualModule.NO_RENDER,"toggle","enabled="+enabled);
@@ -280,6 +301,7 @@ public final class ClientConfig {
     }
 
     public void toggle(RenderOption option) {
+        if (!available(option)) return;
         EnumSet<RenderOption> next = hidden.clone();
         if (!next.remove(option)) {
             next.add(option);
@@ -291,9 +313,9 @@ public final class ClientConfig {
     public void setSelected(Collection<RenderOption> options, boolean selected) {
         EnumSet<RenderOption> next = hidden.clone();
         if (selected) {
-            next.addAll(options);
+            options.stream().filter(this::available).forEach(next::add);
         } else {
-            next.removeAll(options);
+            options.stream().filter(this::available).forEach(next::remove);
         }
         hidden = next;
         save();

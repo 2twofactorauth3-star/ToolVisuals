@@ -14,6 +14,10 @@ public final class Friends {
     private static Set<String> onlineNames = Set.of();
     private static int ticks;
     private Friends() {}
+    public static boolean available() { return ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.FRIENDS); }
+    public static boolean renderAllowed(net.minecraft.world.entity.Entity entity) {
+        return available() && (!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.protectedServer() || !entity.isInvisible());
+    }
     public static boolean online(String name) { return name!=null&&onlineNames.contains(name.toLowerCase(Locale.ROOT)); }
     public static Set<String> onlineNames() { return onlineNames; }
     public static void tick(Minecraft client) {
@@ -33,6 +37,7 @@ public final class Friends {
         }
     }
     private static void notice(String name,boolean joined) {
+        if(!available())return;
         var store=ToolVisualsClient.FRIENDS;var friend=store.get(name);var options=store.settings();
         if(friend==null||!(joined?options.join:options.leave))return;
         var nick=Component.literal(friend.name).withStyle(style->style.withColor(store.color(friend)));

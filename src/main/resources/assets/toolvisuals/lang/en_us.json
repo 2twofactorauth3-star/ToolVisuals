@@ -1780,5 +1780,11 @@
   "toolvisuals.gps.started": "GPS: %s %s %s · all worlds",
   "toolvisuals.gps.started_world": "GPS: %s %s %s · world: %s",
   "toolvisuals.gps.stopped": "GPS disabled.",
-  "toolvisuals.gps.no_world": "Join a world to set a GPS target."
+  "toolvisuals.gps.no_world": "Join a world to set a GPS target.",
+  "toolvisuals.holyworld.protected": "HolyWorld feature restrictions are active for this connection.",
+  "toolvisuals.holyworld.unavailable": "This action is unavailable on this server.",
+  "toolvisuals.holyworld.confirmed": "HolyWorld API connection confirmed. Restrictions for this connection: %s.",
+  "toolvisuals.holyworld.fallback": "Local HolyWorld restrictions are active (%s). The API has not confirmed the connection yet.",
+  "toolvisuals.holyworld.unconfirmed": "The HolyWorld API connection is not confirmed. Restrictions for this connection: %s.",
+  "toolvisuals.command.usage": "ToolVisuals settings and features are available in the client menu."
 }

@@ -1780,5 +1780,11 @@
   "toolvisuals.gps.started": "GPS: %s %s %s · все миры",
   "toolvisuals.gps.started_world": "GPS: %s %s %s · мир: %s",
   "toolvisuals.gps.stopped": "GPS выключен.",
-  "toolvisuals.gps.no_world": "Зайди в мир, чтобы задать цель GPS."
+  "toolvisuals.gps.no_world": "Зайди в мир, чтобы задать цель GPS.",
+  "toolvisuals.holyworld.protected": "Ограничения HolyWorld применены для текущего подключения.",
+  "toolvisuals.holyworld.unavailable": "Это действие недоступно на этом сервере.",
+  "toolvisuals.holyworld.confirmed": "Связь с API HolyWorld подтверждена. Ограничений для подключения: %s.",
+  "toolvisuals.holyworld.fallback": "Действуют локальные ограничения HolyWorld (%s). Подтверждения API пока нет.",
+  "toolvisuals.holyworld.unconfirmed": "Подключение к API HolyWorld не подтверждено. Ограничений для подключения: %s.",
+  "toolvisuals.command.usage": "Настройки и функции ToolVisuals доступны в меню клиента."
 }

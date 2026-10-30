@@ -13,6 +13,7 @@ public final class Gps {
     private Gps() {}
 
     public static void command(String arguments) {
+        if (!ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.GPS)) return;
         if (arguments.strip().equalsIgnoreCase("off")) {
             target = null;
             connection = null;
@@ -35,6 +36,7 @@ public final class Gps {
     }
 
     public static GpsTarget visible(Minecraft client) {
+        if (!ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.GPS)) return null;
         var current = target;
         if (current == null || connection != client.getConnection() || client.level == null || client.player == null) return null;
         var identity = PresentWorld.identity(client);

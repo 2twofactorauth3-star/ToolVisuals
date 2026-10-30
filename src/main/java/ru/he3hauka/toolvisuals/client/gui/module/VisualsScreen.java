@@ -53,6 +53,15 @@ import ru.he3hauka.toolvisuals.client.waypoint.ui.WaypointsScreen;
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
 
 public class VisualsScreen extends Screen {
+    private long serverPolicyRevision = Long.MIN_VALUE;
+    public boolean settingsAvailable() { return selectedModule == null || config.available(selectedModule); }
+    private void refreshServerPolicy() {
+        long revision = config.serverPolicy.revision();
+        if (serverPolicyRevision == revision) return;
+        serverPolicyRevision = revision;
+        if (!settingsAvailable()) selectedModule = null;
+        rebuildWidgets();
+    }
     private static final int MODULE_PITCH = 70, OPTION_PITCH = 36, SETTING_PITCH = 58;
     private static final java.net.URI FEEDBACK_URL=java.net.URI.create("https://t.me/toolvisuals");
     private static ModuleCategory lastCategory = ModuleCategory.WORLD;
@@ -101,6 +110,7 @@ public class VisualsScreen extends Screen {
     private int searchOffset() { return denseFilters() ? 34 : 62; }
 
     @Override protected void init() {
+        serverPolicyRevision = config.serverPolicy.revision();
         chrome.clear(); modules.clear(); paneControls.clear(); rows.clear(); popup.clear(); moduleIds.clear(); expandedChoice = null;
         moduleSearch=null;feedbackButton=null;
         viewport = new UiViewport(width, height, minecraft.getWindow().getGuiScale());
@@ -117,17 +127,20 @@ public class VisualsScreen extends Screen {
         add(chrome, pw - 70, 12, 26, 26, tr("ui.theme"), ICON, UiPaint.Icon.SUN, tr("ui.theme"),
                 () -> config.setLightTheme(!config.lightTheme()), null);
         add(chrome, pw - 38, 12, 26, 26, tr("ui.close"), ICON, UiPaint.Icon.CLOSE, tr("ui.close"), this::closeMenu, null);
-        hudEditorButton = add(chrome, (pw - 208) / 2, ph + 10, 208, 34, tr("hud.edit"), CHIP, UiPaint.Icon.HUD,
-                tr("hud.edit_hint"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null);
+        hudEditorButton = config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR)
+                ? add(chrome, (pw - 208) / 2, ph + 10, 208, 34, tr("hud.edit"), CHIP, UiPaint.Icon.HUD,
+                tr("hud.edit_hint"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null) : null;
         if (!(compact && selectedModule != null)) {
-            var categories = ModuleCategory.values();
+            var categories = Arrays.stream(ModuleCategory.values()).filter(next -> next != ModuleCategory.FRIENDS
+                    || config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.FRIENDS)).toArray(ModuleCategory[]::new);
             int available = moduleWidth - 32;
             int[] widths = Arrays.stream(categories).mapToInt(tab -> (int)Math.ceil(UiTextRasterizer.metrics(13).width(tab.label().getString())) + 32).toArray();
             boolean stacked = Arrays.stream(widths).sum() > available;
             if (stacked) widths = Arrays.stream(categories).mapToInt(tab -> (int)Math.ceil(UiTextRasterizer.metrics(12).width(tab.label().getString())) + 14).toArray();
             int minimum = Arrays.stream(widths).sum(), remaining = available - minimum, tabX = 16;
-            for (ModuleCategory next : categories) {
-                int i = next.ordinal(), tabWidth = widths[i] + (i + 1) * remaining / categories.length - i * remaining / categories.length;
+            for (int i = 0; i < categories.length; i++) {
+                ModuleCategory next = categories[i];
+                int tabWidth = widths[i] + (i + 1) * remaining / categories.length - i * remaining / categories.length;
                 var tab = add(chrome, tabX, 58, tabWidth - 2, 30, next.label(), TAB,
                         categoryIcon(next), next.description(), () -> selectCategory(next), () -> moduleQuery.isBlank()&&category == next);
                 tab.stackedTab = stacked;
@@ -168,7 +181,10 @@ public class VisualsScreen extends Screen {
     }
     private void selectCategory(ModuleCategory next) {
         if (next == ModuleCategory.CONFIGS) { minecraft.gui.setScreen(new ConfigScreen(this)); return; }
-        if (next == ModuleCategory.FRIENDS) { minecraft.gui.setScreen(new FriendsScreen(this)); return; }
+        if (next == ModuleCategory.FRIENDS) {
+            if (config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.FRIENDS)) minecraft.gui.setScreen(new FriendsScreen(this));
+            return;
+        }
         category = lastCategory = next; selectedModule = null; filter = null;
         moduleQuery="";
         moduleScrollTarget = 0; moduleScroll.snap(0); rebuildWidgets();
@@ -176,6 +192,7 @@ public class VisualsScreen extends Screen {
     private void buildModules() {
         int cardWidth = (moduleWidth - 36 - (columns - 1) * 10) / columns, index = 0;
         for (VisualModule module : moduleQuery.isBlank()?List.of(VisualModule.values()):ModuleSearch.find(moduleQuery)) {
+            if (!config.available(module)) continue;
             if (moduleQuery.isBlank()&&(category == ModuleCategory.FAVORITES ? !config.favorite(module) : module.category != category)) continue;
             int x = 18 + index % columns * (cardWidth + 10), y = 104 + index / columns * MODULE_PITCH;
             var button = add(modules, x, y, cardWidth - 32, 62, Component.literal(module.title), MODULE, null,
@@ -194,6 +211,7 @@ public class VisualsScreen extends Screen {
         if (moduleScroll.value() > maxModuleScroll()) moduleScroll.snap(moduleScrollTarget);
     }
     private void openSettings(VisualModule module) {
+        if (!config.available(module)) return;
         if(module==VisualModule.CUSTOM_HAND){minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.hand.ui.HandSettingsScreen(this));return;}
         if (module == VisualModule.DAMAGE_VIGNETTE) {
             minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.render.vignette.ui.DamageVignetteScreen(this));return;
@@ -265,7 +283,7 @@ public class VisualsScreen extends Screen {
         listX = paneX; listWidth = paneWidth; listY = paneTop + (noRender() ? denseFilters() ? 106 : 172 : crosshair() ? ph < 380 ? 110 : 180 : 68); listBottom = paneBottom - 42;
         if (noRender()) {
             String needle = query.strip().toLowerCase(Locale.ROOT);
-            filtered = Arrays.stream(RenderOption.values()).filter(option -> filter == null || option.category == filter)
+            filtered = Arrays.stream(RenderOption.values()).filter(config::available).filter(option -> filter == null || option.category == filter)
                     .filter(option -> needle.isEmpty() || option.id.contains(needle)
                             || option.label().getString().toLowerCase(Locale.ROOT).contains(needle)
                             || option.description().getString().toLowerCase(Locale.ROOT).contains(needle)).toList();
@@ -274,7 +292,7 @@ public class VisualsScreen extends Screen {
             contentHeight = rows.size() * OPTION_PITCH;
         } else {
             if(selectedModule==VisualModule.MINI_GAMES)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.minigames.open"),CHIP,UiPaint.Icon.WORLD,Component.empty(),()->ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient.open(this),null)));
-            if(selectedModule==VisualModule.CAPES||selectedModule==VisualModule.COSMETICS)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.outfits.title"),CHIP,UiPaint.Icon.STAR,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this)),null)));
+            if((selectedModule==VisualModule.CAPES||selectedModule==VisualModule.COSMETICS)&&config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.outfits.title"),CHIP,UiPaint.Icon.STAR,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this)),null)));
             if(selectedModule==VisualModule.CLIENT_LIST)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.client_list.open"),CHIP,UiPaint.Icon.PLAYER,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.social.presence.ui.ClientBrowserScreen(this)),null)));
             if(selectedModule==VisualModule.SESSION_STATS)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.session.reset"),GHOST,UiPaint.Icon.RESET,Component.empty(),ru.he3hauka.toolvisuals.client.session.SessionStats::reset,null)));
             if(selectedModule==VisualModule.MUSIC_HUD)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.music.open"),CHIP,UiPaint.Icon.MUSIC,Component.empty(),()->ru.he3hauka.toolvisuals.client.music.MusicClient.open(this),null)));
@@ -284,7 +302,7 @@ public class VisualsScreen extends Screen {
             if(selectedModule==VisualModule.COSMETICS)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.cosmetics.open"),CHIP,UiPaint.Icon.PLAYER,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.accessory.ui.CosmeticsScreen(this)),null)));
             if(selectedModule==VisualModule.CAPES)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.capes.open"),CHIP,UiPaint.Icon.RENDER,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cape.ui.CapeEditorScreen(this)),null)));
             if(crosshair())rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.editor.draw_open"),CHIP,UiPaint.Icon.RENDER,Component.empty(),()->minecraft.gui.setScreen(new CrosshairEditorScreen(this)),null)));
-            if(selectedModule!=null&&selectedModule.category==ModuleCategory.HUD)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,tr("utility.hud_preview"),CHIP,UiPaint.Icon.HUD,Component.empty(),()->minecraft.gui.setScreen(new HudEditorScreen(this)),null)));
+            if(selectedModule!=null&&selectedModule.category==ModuleCategory.HUD&&config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR))rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,tr("utility.hud_preview"),CHIP,UiPaint.Icon.HUD,Component.empty(),()->minecraft.gui.setScreen(new HudEditorScreen(this)),null)));
             if (selectedModule == VisualModule.NAME_PROTECT) {
                 protectedNameField = addWidget(new ProtectedNameField()); rows.add(protectedNameField);
             }
@@ -296,7 +314,7 @@ public class VisualsScreen extends Screen {
                 pairKey.setTooltip(net.minecraft.client.gui.components.Tooltip.create(tr("emotes.pair_key_hint")));rows.add(pairKey);
             }
             for (VisualSetting setting : VisualSetting.values()) {
-                if (setting.module != selectedModule) continue;
+                if (setting.module != selectedModule || !config.available(setting)) continue;
                 if (selectedModule == VisualModule.DROP_PROTECT && !ru.he3hauka.toolvisuals.client.items.dropprotect.DropCategory.visible(config, setting)) continue;
                 if(setting==VisualSetting.ZOOM_FACTOR&&config.value(VisualSetting.ZOOM_RANGE_MODE)!=2
                         ||setting==VisualSetting.ZOOM_DISTANCE&&config.value(VisualSetting.ZOOM_RANGE_MODE)!=1)continue;
@@ -395,6 +413,7 @@ public class VisualsScreen extends Screen {
         g.fill(0, 0, width, height, UiPaint.alpha(0x48060910, opening.value()));
     }
     @Override public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float partial) {
+        refreshServerPolicy();
         if (width != g.guiWidth() || height != g.guiHeight()) { resize(g.guiWidth(), g.guiHeight()); return; }
         long now = System.nanoTime(); elapsed = Math.clamp((now - lastFrame) / 1_000_000_000f, 0, 1); lastFrame = now;
         opacity = opening.step(closing ? 0 : 1, elapsed, 20);

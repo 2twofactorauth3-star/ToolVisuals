@@ -38,6 +38,7 @@ public final class KeybindEditorScreen extends VisualEditorScreen {
     private void save(){
         final ActionBind bind;
         try{bind=new ActionBind(id,name,key,kind,value,enabled);InputConstants.getKey(key);}catch(RuntimeException error){status=text("invalid").getString();return;}
+        if(!bind.available(ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG)){status=text("invalid").getString();return;}
         var input=InputConstants.getKey(key);var conflicts=BindingConflicts.find(input,null,id);
         Runnable write=()->{try{Keybinds.STORE.put(bind);onClose();}catch(java.io.IOException error){status=text("io_error").getString();}catch(IllegalStateException error){status=text("limit").getString();}};
         if(approved.containsAll(conflicts))write.run();else BindingConflicts.confirm(this,input,conflicts,()->{approved=conflicts;write.run();});
@@ -54,7 +55,7 @@ public final class KeybindEditorScreen extends VisualEditorScreen {
     @Override public boolean mouseClicked(MouseButtonEvent event,boolean twice){if(listening){assign(InputConstants.Type.MOUSE.getOrCreate(event.button()));return true;}return super.mouseClicked(event,twice);}
     @Override protected void paint(GuiGraphicsExtractor g,int mx,int my){
         label(g,text("name"),24,62,572);label(g,text(kind==ActionBind.Kind.MODULE?"module_hint":"value"),24,198,572);
-        String detail=kind==ActionBind.Kind.MODULE?Arrays.stream(VisualModule.values()).filter(module->module.id.equalsIgnoreCase(value)||module.title.equalsIgnoreCase(value)).map(module->module.title).findFirst().orElse(text("module_example").getString()):text("shared_hint").getString();
+        String detail=kind==ActionBind.Kind.MODULE?Arrays.stream(VisualModule.values()).filter(ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG::available).filter(module->module.id.equalsIgnoreCase(value)||module.title.equalsIgnoreCase(value)).map(module->module.title).findFirst().orElse(text("module_example").getString()):text("shared_hint").getString();
         label(g,Component.literal(detail),24,276,572);label(g,Component.literal(status),24,310,572);
     }
     private void label(GuiGraphicsExtractor g,Component label,int x,int y,int width){UiPaint.baseline(g,UiPaint.fit(g,label,width,.78f),px+x,UiPaint.textBaseline(g,py+y,24,.78f),.78f,palette.muted,1);}

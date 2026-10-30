@@ -64,6 +64,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ArmorRenderTypes.initialize();
         ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryPipeline.initialize();
         CONFIG.load();
+        ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.initialize();
         ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService::tick);
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.voice.BundledVoiceChat::tick);
@@ -131,7 +132,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         pairedEmoteKey=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.toolvisuals.paired_emotes",InputConstants.Type.KEYBOARD,InputConstants.KEY_K,category));
         replayKey=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.toolvisuals.replay",InputConstants.Type.KEYBOARD,InputConstants.KEY_F8,category));
         ClientTickEvents.END_CLIENT_TICK.register(client->{
-            while(replayKey.consumeClick())if(client.gui.overlay()==null&&client.isWindowActive()
+            while(replayKey.consumeClick())if(CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.REPLAY)&&client.gui.overlay()==null&&client.isWindowActive()
                     &&!(client.gui.screen() instanceof ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen)) {
                 KeyMapping.releaseAll();client.gui.setScreen(new ru.he3hauka.toolvisuals.client.replay.ui.ReplayLibraryScreen(client.gui.screen()));
             }

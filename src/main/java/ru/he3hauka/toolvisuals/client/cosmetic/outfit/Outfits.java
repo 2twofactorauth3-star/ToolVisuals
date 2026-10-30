@@ -6,6 +6,7 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 public final class Outfits {
     private Outfits() {}
     public static void wear(OutfitStore.Entry entry) throws IOException {
+        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))return;
         if(entry.cape()==null)ToolVisualsClient.CAPES.select(null);
         else {
             var matching=ToolVisualsClient.CAPES.entries().stream().filter(cape->cape.design().equals(entry.cape())).findFirst();

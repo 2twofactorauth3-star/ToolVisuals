@@ -36,6 +36,9 @@ public final class AuctionHelper {
         return client.getConnection()==null || client.isLocalServer() || server==null ? "" : AuctionPlan.server(server.ip);
     }
     public static void tick(Minecraft client) {
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.AUCTION_HELPER)){
+            recording=null;recordConnection=null;RUNNER.tick(null,false,null,false);return;
+        }
         boolean enabled=ToolVisualsClient.CONFIG.active(VisualModule.AUCTION_HELPER);
         if(!enabled&&recording==null){RUNNER.tick(null,false,null,false);return;}
         String server=server();
@@ -48,6 +51,7 @@ public final class AuctionHelper {
     public static String status() { return recording!=null?"recording":RUNNER.status(); }
     public static long remainingSeconds() { return RUNNER.remainingSeconds(); }
     public static void startRecording(AuctionPlan base) {
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.AUCTION_HELPER))return;
         String server=server();
         if(server.isEmpty() || !server.equals(base.server)) {notice("wrong_server");return;}
         RUNNER.interrupt(); recording=new AuctionRecording(base); recordConnection=Minecraft.getInstance().getConnection();
@@ -64,6 +68,7 @@ public final class AuctionHelper {
         if(!line.toLowerCase(Locale.ROOT).matches("^\\.toolvisuals(?:\\s.*)?$"))return false;
         String[] tokens=line.split("\\s+",3);
         if(tokens.length<2 || !tokens[1].equalsIgnoreCase("auction")){notice("usage");return true;}
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.AUCTION_HELPER))return true;
         String id=tokens.length==3?tokens[2].strip():"";
         if(id.equalsIgnoreCase("cancel")){cancelRecording("record_cancelled");return true;}
         if(id.toLowerCase(Locale.ROOT).startsWith("use ")) {

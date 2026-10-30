@@ -22,6 +22,7 @@ public final class BossBars {
         var entries=events.stream().map(e->new BossBarGroups.Entry(e.getName().getString(),color(e.getColor().name()),e.getProgress(),e.getOverlay().name())).toList();drawEntries(g,entries);
     }
     public static void preview(GuiGraphicsExtractor g) {
+        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.BOSS_BAR_CUSTOMIZER))return;
         drawEntries(g,List.of(new BossBarGroups.Entry("Wither",0xff9674f5,.7f,"PROGRESS"),new BossBarGroups.Entry("Wither",0xff9674f5,.5f,"PROGRESS"),new BossBarGroups.Entry("Ender Dragon",0xffe680d2,.85f,"PROGRESS")));
     }
     private static void drawEntries(GuiGraphicsExtractor g,List<BossBarGroups.Entry> entries) {

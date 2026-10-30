@@ -30,7 +30,7 @@ import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class ArmorSettingsScreen extends Screen {
     private final Screen parent;
-    private final boolean status;
+    public final boolean status;
     private final ClientConfig config = ToolVisualsClient.CONFIG;
     private final List<VisualsButton> buttons = new ArrayList<>();
     private final List<EditBox> fields = new ArrayList<>();
@@ -52,7 +52,7 @@ public final class ArmorSettingsScreen extends Screen {
         button(596, 12, 38, 28, Component.empty(), this::onClose, null);
         var module = status ? ARMOR_COLOR : ARMOR_HUD;
         button(466, 12, 120, 28, tr("enabled"), () -> config.setActive(module, !config.active(module)), () -> config.active(module));
-        if (!status) button(20, 380, 296, 30, tr("move"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null);
+        if (!status&&config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR)) button(20, 380, 296, 30, tr("move"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null);
         button(status ? 20 : 332, 380, status ? 608 : 296, 30, UiI18n.tr("toolvisuals.reset"), () -> { config.reset(module); rebuildWidgets(); }, null);
         if (status) {
             for (int i = 0; i < 5; i++) {

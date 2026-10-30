@@ -20,7 +20,7 @@ import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 public abstract class VisualEditorScreen extends Screen {
-    protected final Screen parent;
+    public final Screen parent;
     protected final List<AbstractWidget> controls = new ArrayList<>();
     protected UiPalette palette = new UiPalette(0);
     protected float scale;

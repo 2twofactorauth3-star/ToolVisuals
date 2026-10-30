@@ -50,20 +50,22 @@ public final class PlayerCardScreen extends VisualEditorScreen {
         var info=connection==minecraft.getConnection()&&minecraft.getConnection()!=null?minecraft.getConnection().getPlayerInfo(actor):null;
         boolean online=info!=null&&minecraft.level!=null;
         friend.setMessage(text(ToolVisualsClient.FRIENDS.get(name)==null?"add_friend":"remove_friend"));
-        friend.active=minecraft.player==null||!actor.equals(minecraft.player.getUUID());pair.active=online&&canInvite();
+        friend.visible=ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.FRIENDS);
+        pair.visible=ToolVisualsClient.CONFIG.available(ANIMATIONS);
+        friend.active=friend.visible&&(minecraft.player==null||!actor.equals(minecraft.player.getUUID()));pair.active=online&&canInvite();
         UiPaint.rounded(g,px+24,py+66,288,306,9,palette.field);
         UiPaint.baseline(g,UiPaint.fit(g,Component.literal(NameProtect.text(name)),298,1.2f),px+336,UiPaint.textBaseline(g,py+72,36,1.2f),1.2f,palette.text,1);
         line(g,text(online?"online":"offline"),336,118,.8f,online?palette.accentText:palette.muted);
         if(info!=null)line(g,text("ping",info.getLatency()),336,148,.8f,palette.muted);
         line(g,text("client"),336,178,.8f,palette.accentText);
-        line(g,text(pair.active?"invite_hint":"nearby_hint"),336,306,.71f,palette.muted);
+        if(pair.visible)line(g,text(pair.active?"invite_hint":"nearby_hint"),336,306,.71f,palette.muted);
         line(g,text("preview_hint"),336,334,.69f,palette.muted);
         if(online){
             if(preview==null||preview.level()!=minecraft.level)preview=new RemotePlayer(minecraft.level,info.getProfile());
             var state=PlayerPreview.prepare(preview,false,false);state.bodyRot=yaw;
             double seconds=(System.nanoTime()-opened)/1e9;
-            var look=AccessoryClient.look(actor);if(look!=null&&!look.empty())((AccessoryVisualState)state).toolvisuals$accessories(new AccessoryFrame(look,seconds,0,false,true,false));
-            var design=CapeClient.design(actor);if(design!=null)cape.apply(state,design);
+            var look=ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.COSMETICS)?AccessoryClient.look(actor):null;if(look!=null&&!look.empty())((AccessoryVisualState)state).toolvisuals$accessories(new AccessoryFrame(look,seconds,0,false,true,false));
+            var design=ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.CAPES)?CapeClient.design(actor):null;if(design!=null)cape.apply(state,design);
             PlayerPreview.draw(g,state,px+30,py+72,276,292,110,1.05f);
         }
         if(!status.isEmpty())line(g,Component.literal(status),24,390,.72f,palette.muted);

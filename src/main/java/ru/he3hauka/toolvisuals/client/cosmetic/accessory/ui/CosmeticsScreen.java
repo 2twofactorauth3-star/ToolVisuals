@@ -70,7 +70,7 @@ public final class CosmeticsScreen extends VisualEditorScreen {
         button(20,568,136,28,UiI18n.tr("toolvisuals.editor.cancel"),null,this::onClose,null);
         save=button(166,568,154,28,UiI18n.tr("toolvisuals.editor.apply"),UiPaint.Icon.CHECK,()->{ToolVisualsClient.CONFIG.setAccessories(draft());onClose();},null);
         button(350,568,140,28,text("clear"),UiPaint.Icon.RESET,()->{load(AccessoryLook.EMPTY);rebuildWidgets();},null);
-        button(498,568,160,28,UiI18n.tr("toolvisuals.outfits.title"),UiPaint.Icon.STAR,()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this,this::draft,this::load)),null);
+        if(ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))button(498,568,160,28,UiI18n.tr("toolvisuals.outfits.title"),UiPaint.Icon.STAR,()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this,this::draft,this::load)),null);
         button(666,568,162,28,UiI18n.tr("toolvisuals.capes.title"),UiPaint.Icon.RENDER,()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cape.ui.CapeEditorScreen(this)),null);
     }
     private void catalog(boolean headSlot){

@@ -19,7 +19,7 @@ public abstract class FriendArmorMixin {
     private void toolvisuals$friendArmor(LivingEntity entity,LivingEntityRenderState state,float partial,CallbackInfo ci) {
         if(state instanceof FriendRenderState colored) {
             int armor=0,body=0;
-            if(entity instanceof Player player) {
+            if(entity instanceof Player player && ru.he3hauka.toolvisuals.client.friends.Friends.renderAllowed(entity)) {
                 String name=player.getGameProfile().name();
                 armor=ToolVisualsClient.FRIENDS.armorTint(name);
                 boolean equipped=!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()||!player.getItemBySlot(EquipmentSlot.CHEST).isEmpty()

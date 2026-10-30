@@ -39,7 +39,8 @@ public final class MiniGamesClient {
         PayloadTypeRegistry.clientboundPlay().register(MiniGamePayload.State.TYPE, MiniGamePayload.State.CODEC);
         ClientPlayNetworking.registerGlobalReceiver(MiniGamePayload.State.TYPE, (payload, context) -> receive(context.client(), payload.value()));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> reset());
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> MiniGameInvitation.register(dispatcher));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> MiniGameInvitation.register(dispatcher,
+                () -> ToolVisualsClient.CONFIG.available(MINI_GAMES)));
         ClientTickEvents.END_CLIENT_TICK.register(MiniGamesClient::tick);
     }
 
@@ -67,6 +68,7 @@ public final class MiniGamesClient {
     public static void open(Screen parent) { Minecraft.getInstance().gui.setScreen(new MiniGameLibraryScreen(parent)); }
 
     public static void startSolo(GameKind kind) {
+        if(!ToolVisualsClient.CONFIG.available(MINI_GAMES))return;
         ToolVisualsClient.CONFIG.setActive(MINI_GAMES, true); stop();
         solo = new GameRound(kind, UUID.randomUUID().getLeastSignificantBits()); observe(solo);
         Minecraft.getInstance().gui.setScreen(new MiniGamePlayScreen(null));

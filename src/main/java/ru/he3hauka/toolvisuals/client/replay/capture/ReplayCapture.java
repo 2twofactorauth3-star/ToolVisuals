@@ -48,6 +48,7 @@ public final class ReplayCapture {
     public static synchronized void protocol(Connection connection, ProtocolInfo<?> protocol) {
         if (connection instanceof VirtualReplayConnection || connection.getReceiving() != PacketFlow.CLIENTBOUND
                 || protocol.id() != ConnectionProtocol.CONFIGURATION || directory == null || !ToolVisualsClient.CONFIG.active(REPLAY)) return;
+        if (!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.captureAllowed(Minecraft.getInstance())) return;
         if (session != null && session.connection == connection) return;
         stop();
         try {

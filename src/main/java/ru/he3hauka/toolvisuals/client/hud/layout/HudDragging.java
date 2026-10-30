@@ -19,6 +19,7 @@ public final class HudDragging {
         for(var element:PICK_ORDER){var box=bounds.get(element);if(box!=null&&eligible.test(element)&&box.contains(x,y))return element;}return null;
     }
     public static boolean enabled(HudElement element,ClientConfig config){
+        if(!config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR))return false;
         if(!config.active(element.module))return false;
         var part=InfoHudPart.forElement(element);
         if(part!=null)return part.enabled(config)&&config.flag(part.separate);

@@ -23,7 +23,7 @@ public final class KeybindsScreen extends UtilityScreen {
         refresh();
     }
     private void refresh(){
-        clearRows();var entries=Keybinds.STORE.entries();pages(entries.size(),this::refresh);
+        clearRows();var entries=Keybinds.STORE.entries().stream().filter(bind->bind.available(ToolVisualsClient.CONFIG)).toList();pages(entries.size(),this::refresh);
         for(int index=0;index<7&&page*7+index<entries.size();index++){
             var bind=entries.get(page*7+index);int y=114+index*40;
             var edit=row(index,24,330,Component.literal(bind.name()),()->minecraft.gui.setScreen(new KeybindEditorScreen(this,bind)));

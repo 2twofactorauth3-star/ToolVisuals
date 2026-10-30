@@ -50,7 +50,8 @@ public final class SocialClient {
             if(reply.result()!=SocialCommandWire.Result.ACCEPTED){COMMANDS.clear();PlaybackClient.revokeConsent();ClientActions.notice("pairs.command_failed");}
         });
         ClientPlayNetworking.registerGlobalReceiver(SocialPayload.State.TYPE, (payload, context) -> receive(payload.value()));
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> PairInvitationChat.register(dispatcher, SocialClient::answerFromChat));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> PairInvitationChat.register(dispatcher, SocialClient::answerFromChat,
+                () -> ToolVisualsClient.CONFIG.available(ANIMATIONS)));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> reset());
         ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity, world) -> badge(entity.getUUID(),false));
     }

@@ -20,8 +20,8 @@ public final class MiniGameInvitation {
     private static final String COMMAND = "toolvisuals_minigame";
     private MiniGameInvitation() {}
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        var root = literal(COMMAND);
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, java.util.function.BooleanSupplier available) {
+        var root = literal(COMMAND).requires(source -> available.getAsBoolean());
         for (boolean accept : new boolean[]{true, false}) root.then(literal(action(accept)).then(argument("invitation", UuidArgument.uuid())
                 .executes(context -> MiniGamesClient.answer(context.getArgument("invitation", UUID.class), accept) ? 1 : 0)));
         dispatcher.register(root);

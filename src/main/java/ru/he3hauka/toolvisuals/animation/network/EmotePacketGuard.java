@@ -37,12 +37,14 @@ public final class EmotePacketGuard {
     private boolean allowSingle(Packet<?> packet, long now) {
         if (packet instanceof ServerboundCustomPayloadPacket request) {
             var value=request.payload();
+            if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload)return assetRequests.allow(now);
             if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.Request)return requests.allow(now);
             if(value instanceof EmoteRequestPayload||value instanceof SocialPayload.Request||value instanceof PlaybackPayload.Request||value instanceof SocialCommandPayload.Request)return requests.allow(now);
             if(value instanceof CapePayload.Request||value instanceof CapePayload.AnimatedRequest||value instanceof AccessoryPayload.Request||value instanceof PresencePayload.Request)return assetRequests.allow(now);
         }
         if (packet instanceof ClientboundCustomPayloadPacket state) {
             var value=state.payload();
+            if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload features)return controls.allow(now)&&bytes.allow(now,features.bytes().length);
             if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.State)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.MAX_STATE);
             if(value instanceof ru.he3hauka.toolvisuals.client.presents.network.WorldContextMessage)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.network.world.WorldContextWire.MAX_NAMED_BYTES);
             if(value instanceof PlaybackPayload.Reply||value instanceof SocialCommandPayload.Reply||value instanceof CapePayload.Ack||value instanceof AccessoryPayload.Ack)return controls.allow(now);

@@ -12,7 +12,7 @@ import ru.he3hauka.toolvisuals.client.utility.ui.UtilityScreen;
 import ru.he3hauka.toolvisuals.mixin.chat.ChatMessagesAccessor;
 
 public final class ChatToolsScreen extends UtilityScreen {
-    private final boolean privacy;
+    public final boolean privacy;
     private EditBox input;
     private String draft;
     public ChatToolsScreen(Screen parent,boolean privacy){super(parent,privacy?"privacy_names":"chat");this.privacy=privacy;}
