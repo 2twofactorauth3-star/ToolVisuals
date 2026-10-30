@@ -92,9 +92,11 @@ public final class ForkBuilder {
                 || builder.bedrock.accounts != 1 || builder.bedrock.arrays < 3 || builder.bedrock.providers < 1))
             throw new IOException("Expected Bedrock platform removal was not applied");
         output.toAbsolutePath().getParent().toFile().mkdirs();
-        var temporary = output.resolveSibling(output.getFileName() + ".tmp");
-        Files.write(temporary, result);
-        Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING);
+        if (!Files.isRegularFile(output) || !java.util.Arrays.equals(Files.readAllBytes(output), result)) {
+            var temporary = output.resolveSibling(output.getFileName() + ".tmp");
+            Files.write(temporary, result);
+            Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING);
+        }
         System.out.printf(java.util.Locale.ROOT, "PROTOCOL_FORK_OK minecraft=%s before=%d after=%d removed_libraries=%d removed_classes=%d guards=%d catalogs=%d routes=%d sha512=%s%n",
                 minecraft, original.length, result.length, builder.removedLibraries.size(), builder.removedTypes.size(), builder.protocols.guards, builder.protocols.catalogs, builder.protocols.routes, sha512(result));
     }

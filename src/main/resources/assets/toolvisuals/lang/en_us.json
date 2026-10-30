@@ -1788,5 +1788,6 @@
   "toolvisuals.holyworld.unconfirmed": "The HolyWorld API connection is not confirmed. Restrictions for this connection: %s.",
   "toolvisuals.command.usage": "ToolVisuals settings and features are available in the client menu.",
   "toolvisuals.discord.status": "Discord RPC: %s · Minecraft %s. Details were written to latest.log.",
-  "toolvisuals.discord.competing": "Discord has acknowledged ToolVisuals. If Lunar is displayed instead, disable Discord Rich Presence in the Lunar launcher settings."
+  "toolvisuals.discord.competing": "Discord has acknowledged ToolVisuals. If Lunar is displayed instead, disable Discord Rich Presence in the Lunar launcher settings.",
+  "toolvisuals.connection.disconnect_first": "Leave the current world before changing the server protocol."
 }

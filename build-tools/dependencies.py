@@ -50,8 +50,8 @@ def acquire(target,root=ROOT):
         download(row.get('url') or row.get('download') or row['source'],path,'sha512',row['sha512'],row['bytes'])
         return row
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:result=list(pool.map(fetch,rows))
-    from protocol_fork import acquire_inputs
-    acquire_inputs(target, root)
+    from protocol_fork import build_component
+    build_component(target, root)
     print('DEPENDENCIES_READY',target,len(result),flush=True)
     return result
 

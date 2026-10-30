@@ -96,5 +96,37 @@
         }
       ]
     }
-  }
+  },
+  "tool_dependencies": [
+    {
+      "file": "gson-2.14.0.jar",
+      "url": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.14.0/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha512": "d040d19a47ca2df33365493f9813a1d0a40b91685f7d87ca445b98d37b4c1b801314aef87940dc8b43dd1b0b96f6d5e6e4296778bf1af8dbfb1091425b37da21"
+    },
+    {
+      "file": "asm-9.10.1.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha512": "8db6efa37d4d569bf2b95d90931b8064f87ed928d20bbf8d8e7fa6182e9a11d32e6a2cc034a3d173a38ee70ce2ea9f20f52f9d8730d9401d2bc6060674c18928"
+    },
+    {
+      "file": "asm-tree-9.10.1.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar",
+      "bytes": 51958,
+      "sha512": "2ffe5bbfac53bbacc1e4e474628b4247fb1c5f592017f393a327b3f2d2a72a338263f2f6549a42cea57a42f676b967153a10a22aae46affed83608f74daf3768"
+    },
+    {
+      "file": "asm-analysis-9.10.1.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/9.10.1/asm-analysis-9.10.1.jar",
+      "bytes": 35140,
+      "sha512": "0542a90be38f81e39ef43a9253630a2d59f82c17c24492f005c67619561308afbbd23bf8504d3e83b1d4cebe5746126da76037473ddac3071b028c2ae279296b"
+    },
+    {
+      "file": "asm-commons-9.10.1.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar",
+      "bytes": 74840,
+      "sha512": "8540a8f9a63b22bae54fc501f2da405c2c1c45fa13921a1193629cfbfbb716473f8a19984559af7b0b1ea3814d439ec445ea1cfeb159bf922bb7e60a40acf823"
+    }
+  ]
 }
