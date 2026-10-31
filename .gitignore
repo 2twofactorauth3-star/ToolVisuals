@@ -106,6 +106,7 @@
 !/launcher/licenses/*.TXT
 !/launcher/Assets/ToolVisuals.jpg
 !/launcher/Assets/ToolVisuals.ico
+!/launcher/Assets/ToolVisuals.Executable.ico
 /launcher/bin/
 /launcher/obj/
 /launcher/bundle/
