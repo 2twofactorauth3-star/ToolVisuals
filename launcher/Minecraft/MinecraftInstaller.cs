@@ -1,7 +1,5 @@
 using ToolLauncher.Diagnostics;
 using System.Collections.Concurrent;
-using System.IO.Compression;
-using System.Text;
 using System.Text.Json;
 using ToolLauncher.Core;
 using ToolLauncher.Network;
@@ -84,10 +82,9 @@ public sealed class MinecraftInstaller(LauncherPaths paths, RemoteClient remote,
         progress.Report(new("visuals"));
         await BundledClient.InstallAsync(profile, target, token);
         string executable = await new JavaRuntime(paths, remote, log).ResolveAsync(target, settings, progress, token);
-        string classpathJar = Path.Combine(profile, ".toollauncher", "classpath.jar");
-        WriteClasspath(classpathJar, classpath.Distinct().OrderBy(path => path, StringComparer.Ordinal));
+        string launchClasspath = LaunchClasspath.Compose(classpath);
         log.Info("Prepared Minecraft " + target.Minecraft + ", Fabric " + target.Loader + ", Java " + target.Java);
-        return new(target, version, fabric, profile, nativesDirectory, classpathJar, assets, executable);
+        return new(target, version, fabric, profile, nativesDirectory, launchClasspath, assets, executable);
     }
     private async Task<string> LibraryAsync(JsonElement artifact, CancellationToken token)
     {
@@ -95,22 +92,4 @@ public sealed class MinecraftInstaller(LauncherPaths paths, RemoteClient remote,
         await remote.DownloadAsync(File(artifact), destination, token); return destination;
     }
     private static RemoteFile File(JsonElement artifact) => new(RemoteClient.Trusted(artifact.GetProperty("url").GetString()!), artifact.GetProperty("sha1").GetString(), "SHA1", artifact.TryGetProperty("size", out var size) ? size.GetInt64() : null);
-    public static void WriteClasspath(string path, IEnumerable<string> jars)
-    {
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        string content = "Class-Path: " + string.Join(" ", jars.Select(jar => new Uri(Path.GetFullPath(jar)).AbsoluteUri));
-        var manifest = new StringBuilder("Manifest-Version: 1.0\r\n");
-        int position = 0;
-        while (position < content.Length)
-        {
-            int count = Math.Min(position == 0 ? 70 : 69, content.Length - position);
-            if (position > 0) manifest.Append(' ');
-            manifest.Append(content, position, count).Append("\r\n"); position += count;
-        }
-        manifest.Append("\r\n");
-        using var file = System.IO.File.Create(path);
-        using var jar = new ZipArchive(file, ZipArchiveMode.Create);
-        using var writer = new StreamWriter(jar.CreateEntry("META-INF/MANIFEST.MF").Open(), new UTF8Encoding(false));
-        writer.Write(manifest.ToString());
-    }
 }

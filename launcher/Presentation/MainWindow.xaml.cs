@@ -56,9 +56,10 @@ public partial class MainWindow : Window
     private void UpdateChrome()
     {
         var settings = services.Settings.Current;
+        RefreshAppearance();
         LanguageButton.Content = settings.Language.ToUpperInvariant();
         AccountName.Text = settings.UseMicrosoft ? settings.AccountName : settings.Nickname;
-        AccountKind.Text = settings.UseMicrosoft ? "Microsoft · Java Edition" : settings.Language == "ru" ? "Локальный аккаунт" : "Local account";
+        AccountKind.Text = settings.UseMicrosoft ? "Microsoft" : LauncherLanguage.Get("accountLocal");
         RefreshAccountChoices();
         MemoryBudgetHint.Text = string.Format(LauncherLanguage.Get("memoryBudget"), (services.Settings.Memory.TotalMiB / 1024d).ToString("0.#"), (services.Settings.Memory.MaximumMiB / 1024d).ToString("0.#"));
         SessionTitle.Text = gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "Minecraft " + settings.SelectedVersion + "  ·  ToolVisuals " + (BundledClient.Builds().FirstOrDefault(build => build.Minecraft == settings.SelectedVersion)?.Version ?? "—");
@@ -155,6 +156,7 @@ public partial class MainWindow : Window
     {
         if (busy) return;
         page = destination; search?.Cancel();
+        RefreshAppearance();
         HomePage.Visibility = destination == "home" ? Visibility.Visible : Visibility.Collapsed;
         ModsPage.Visibility = destination == "mods" ? Visibility.Visible : Visibility.Collapsed;
         InstalledPage.Visibility = destination == "installed" ? Visibility.Visible : Visibility.Collapsed;

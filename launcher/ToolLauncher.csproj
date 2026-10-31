@@ -19,6 +19,7 @@
   <ItemGroup>
     <Resource Include="Assets\ToolVisuals.ico" />
     <Resource Include="Assets\ToolVisuals.jpg" />
+    <Resource Include="Assets\Valley-dusk.png" />
     <EmbeddedResource Include="bundle\*.jar" LogicalName="ToolLauncher.Clients.%(Filename)%(Extension)" />
     <EmbeddedResource Include="bundle\clients.json" LogicalName="ToolLauncher.Clients.clients.json" Condition="Exists('bundle\clients.json')" />
     <EmbeddedResource Include="..\LICENSE" LogicalName="ToolLauncher.Licenses.LICENSE" />

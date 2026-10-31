@@ -31,7 +31,7 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
             if (jvm[index] is "-cp" or "-classpath") { index++; continue; }
             if (!jvm[index].StartsWith("-Xmx") && !jvm[index].StartsWith("-Xms")) info.ArgumentList.Add(jvm[index]);
         }
-        info.ArgumentList.Add("-cp"); info.ArgumentList.Add(game.Classpath);
+        info.ArgumentList.Add("@" + LaunchClasspath.WriteArguments(game.Profile, game.Classpath));
         info.ArgumentList.Add(game.Fabric.GetProperty("mainClass").GetString()!);
         foreach (string argument in LaunchRules.Arguments(game.Version.GetProperty("arguments").GetProperty("game"), variables)) info.ArgumentList.Add(argument);
         if (game.Fabric.TryGetProperty("arguments", out var fabricArgs) && fabricArgs.TryGetProperty("game", out var extras))
