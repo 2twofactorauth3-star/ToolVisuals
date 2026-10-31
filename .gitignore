@@ -104,6 +104,8 @@
 !/launcher/README.md
 !/launcher/licenses/*.txt
 !/launcher/licenses/*.TXT
+!/launcher/Assets/ToolVisuals.jpg
+!/launcher/Assets/ToolVisuals.ico
 /launcher/bin/
 /launcher/obj/
 /launcher/bundle/
