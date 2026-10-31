@@ -4,8 +4,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
-import ru.he3hauka.toolvisuals.client.hud.layout.HudEditorScreen;
-import ru.he3hauka.toolvisuals.client.hud.layout.HudMovement;
+import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
+import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
 import ru.he3hauka.toolvisuals.client.input.VirtualKeyScope;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
@@ -30,10 +30,10 @@ public final class AutoSprint {
     private static boolean available(Minecraft client) {
         return client.player != null && client.level != null && client.gui != null && client.gui.overlay() == null
                 && client.isWindowActive() && !client.isPaused() && !client.player.isDeadOrDying() && !client.player.isSleeping()
-                && !ReplayScope.active() && (client.gui.screen() == null || HudMovement.active(client));
+                && !ReplayScope.active() && (client.gui.screen() == null || GuiMovement.active(client));
     }
 
     private static boolean movementDown(Minecraft client, KeyMapping mapping) {
-        return client.gui.screen() instanceof HudEditorScreen ? HudMovement.down(client, mapping) : mapping.isDown();
+        return client.gui.screen() instanceof MovementScreen ? GuiMovement.down(client, mapping) : mapping.isDown();
     }
 }

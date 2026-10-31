@@ -7,11 +7,14 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
+import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
+import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
 import ru.he3hauka.toolvisuals.client.gui.module.SettingsSaveIndicator;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
@@ -19,7 +22,7 @@ import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
-public abstract class VisualEditorScreen extends Screen {
+public abstract class VisualEditorScreen extends Screen implements MovementScreen {
     public final Screen parent;
     protected final List<AbstractWidget> controls = new ArrayList<>();
     protected UiPalette palette = new UiPalette(0);
@@ -92,6 +95,7 @@ public abstract class VisualEditorScreen extends Screen {
     @Override public boolean mouseReleased(MouseButtonEvent e){return super.mouseReleased(adjusted(e));}
     @Override public boolean mouseDragged(MouseButtonEvent e,double dx,double dy){return super.mouseDragged(adjusted(e),dx/scale,dy/scale);}
     @Override public void mouseMoved(double x,double y){super.mouseMoved(x/scale,y/scale);}
+    @Override public boolean keyPressed(KeyEvent event){return GuiMovement.consumeKey(minecraft,event)||super.keyPressed(event);}
     @Override public void onClose(){minecraft.gui.setScreen(parent);}
     @Override public boolean isPauseScreen(){return false;}
 }

@@ -227,7 +227,7 @@ def translate(text,version):
         text=text.replace('.getGameProfile().name()', '.getGameProfile().getName()').replace('.getGameProfile().id()', '.getGameProfile().getId()')
 
         if '.compatibility.gui;' not in text and '@Mixin' not in text:
-            text=text.replace('extends Screen {','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyScreen {')
+            text=re.sub(r'\bextends\s+Screen(?=\s*(?:\{|implements\b))','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyScreen',text)
             text=text.replace('extends EditBox {','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyEditBox {')
             text=text.replace('extends Button {','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyButton {')
         text=legacy_pose(text)

@@ -16,6 +16,7 @@ import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import static ru.he3hauka.toolvisuals.client.keybinds.ui.KeybindsScreen.text;
 
 public final class KeybindEditorScreen extends VisualEditorScreen {
+    @Override public boolean allowsMovement(){return !listening;}
     private final UUID id;
     private final boolean enabled;
     private String name,key,value,status="";

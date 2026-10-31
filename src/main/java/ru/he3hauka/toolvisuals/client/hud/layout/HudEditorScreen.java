@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
+import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
+import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
@@ -24,7 +26,7 @@ import ru.he3hauka.toolvisuals.client.hud.layout.resize.HudResize;
 import ru.he3hauka.toolvisuals.client.hud.layout.resize.HudScale;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
-public final class HudEditorScreen extends Screen {
+public final class HudEditorScreen extends Screen implements MovementScreen {
     private final Screen parent;
     final Map<HudElement, HudPosition> positions = new EnumMap<>(HudElement.class);
     final Map<HudElement, Double> scales = new EnumMap<>(HudElement.class);
@@ -179,7 +181,7 @@ public final class HudEditorScreen extends Screen {
     }
     @Override public boolean keyPressed(KeyEvent event) {
         if (event.key() == InputConstants.KEY_ESCAPE || ToolVisualsClient.openMenuKey.matches(event)) { saveAndClose(); return true; }
-        if (ru.he3hauka.toolvisuals.client.hud.layout.HudMovement.movementKey(minecraft.options,event)) return true;
+        if (GuiMovement.movementKey(minecraft.options,event)) return true;
         if (selected != null && bounds.containsKey(selected)) {
             var box = bounds.get(selected); dragBounds = box;
             float step = snap ? 8 * viewport.scale : viewport.scale;

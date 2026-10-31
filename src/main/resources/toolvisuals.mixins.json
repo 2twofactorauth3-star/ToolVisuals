@@ -44,7 +44,7 @@
     "input.VirtualKeyToggleMixin",
     "tapemouse.TapeMouseKeyMixin",
     "tapemouse.TapeMouseGameplayMixin",
-    "hud.HudMovementInputMixin",
+    "gui.GuiMovementInputMixin",
     "player.ClientActionsMixin",
     "presents.PresentInteractionMixin",
     "pvp.CombatPacketMixin",

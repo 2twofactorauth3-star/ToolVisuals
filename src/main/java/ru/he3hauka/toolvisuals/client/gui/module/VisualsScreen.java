@@ -33,6 +33,8 @@ import ru.he3hauka.toolvisuals.client.friends.ui.FriendsScreen;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
+import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
+import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.render.UiSprites;
@@ -52,7 +54,7 @@ import ru.he3hauka.toolvisuals.client.waypoint.ui.WaypointsScreen;
 
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
 
-public class VisualsScreen extends Screen {
+public class VisualsScreen extends Screen implements MovementScreen {
     private long serverPolicyRevision = Long.MIN_VALUE;
     public boolean settingsAvailable() { return selectedModule == null || config.available(selectedModule); }
     private void refreshServerPolicy() {
@@ -663,6 +665,7 @@ public class VisualsScreen extends Screen {
         if (ToolVisualsClient.openMenuKey != null && ToolVisualsClient.openMenuKey.matches(event)
                 && (!typing || event.key() == InputConstants.KEY_RSHIFT)) { closeMenu(); return true; }
         if (protectedNameField != null && protectedNameField.isFocused() && event.isConfirmation()) { setFocused(null); return true; }
+        if(GuiMovement.consumeKey(minecraft,event))return true;
         if (expandedChoice != null) {
             int key = event.key(), index = popup.indexOf(getFocused());
             if (index < 0) index = (int)config.value(expandedChoice);
