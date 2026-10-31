@@ -5,17 +5,25 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.ProtocolInfo;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.configuration.ConfigurationProtocols;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
+import net.minecraft.network.protocol.game.GameProtocols;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.client.replay.io.*;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.REPLAY;
@@ -25,15 +33,20 @@ public final class ReplayCapture {
     private static final class Session {
         final Connection connection;
         final ReplayWriter writer;
-        final long started = System.nanoTime();
+        long started = System.nanoTime();
         final ReplaySelf self = new ReplaySelf();
-        Session(Connection connection, ReplayWriter writer) { this.connection = connection; this.writer = writer; }
+        final ProtocolInfo<?> dispatched;
+        Session(Connection connection, ReplayWriter writer, ProtocolInfo<?> dispatched) {
+            this.connection = connection; this.writer = writer; this.dispatched = dispatched;
+        }
         long millis() { return Math.clamp((System.nanoTime() - started) / 1000000, 0, ReplayFormat.MAX_DURATION_MILLIS); }
     }
 
     private static volatile Session session;
     private static volatile CompletableFuture<ReplaySnapshot> last;
     private static volatile Path directory;
+    private static final ReplayStartGate START = new ReplayStartGate();
+    private static ReplayJoinState joined;
 
     private ReplayCapture() {}
 
@@ -49,22 +62,63 @@ public final class ReplayCapture {
         if (connection instanceof VirtualReplayConnection || connection.getReceiving() != PacketFlow.CLIENTBOUND
                 || protocol.id() != ConnectionProtocol.CONFIGURATION || directory == null || !ToolVisualsClient.CONFIG.active(REPLAY)) return;
         if (!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.captureAllowed(Minecraft.getInstance(), connection)) return;
-        if (session != null && session.connection == connection) return;
+        if (session != null && session.connection == connection && session.dispatched == null) return;
         stop();
         try {
-            var client = Minecraft.getInstance(); var user = client.getUser(); var version = SharedConstants.getCurrentVersion();
-            var header = new ReplayHeader(UUID.randomUUID(), user.getProfileId(), user.getName(), version.name(), version.protocolVersion(), System.currentTimeMillis());
-            var file = directory.resolve(header.createdMillis + "-" + header.recording + ".tvr");
-            session = new Session(connection, new ReplayWriter(file, header, (long)ToolVisualsClient.CONFIG.value(REPLAY_FILE_LIMIT) * 1024 * 1024));
+            START.started(connection);
+            session = create(Minecraft.getInstance(), connection, null);
         } catch (RuntimeException error) {
-            org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot start replay recording", error);
+            ClientErrors.report("Start replay recording", error);
             Minecraft.getInstance().execute(() -> ChatMessages.notice("replay.record_error"));
         }
     }
 
+    private static Session create(Minecraft client, Connection connection, ProtocolInfo<?> dispatched) {
+        var user = client.getUser(); var version = SharedConstants.getCurrentVersion();
+        var header = new ReplayHeader(UUID.randomUUID(), user.getProfileId(), user.getName(), version.name(), version.protocolVersion(), System.currentTimeMillis());
+        var file = directory.resolve(header.createdMillis + "-" + header.recording + ".tvr");
+        return new Session(connection, new ReplayWriter(file, header,
+                (long) ToolVisualsClient.CONFIG.value(REPLAY_FILE_LIMIT) * 1024 * 1024), dispatched);
+    }
+
+    public static void login(ClientPacketListener listener, ClientboundLoginPacket packet) {
+        joined = new ReplayJoinState(listener, packet);
+    }
+
+    public static void respawn(ClientPacketListener listener, ClientboundRespawnPacket packet) {
+        if (joined != null && joined.listener == listener) joined.respawn = packet;
+    }
+
+    private static synchronized void startInWorld(Minecraft client) {
+        var listener = client.getConnection();
+        if (session != null || directory == null || joined == null || joined.listener != listener) return;
+        Session starting = null;
+        try {
+            var play = GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(listener.registryAccess()));
+            var configuration = ConfigurationProtocols.CLIENTBOUND_TEMPLATE.bind(FriendlyByteBuf::new);
+            starting = create(client, listener.getConnection(), play);
+            var writer = starting.writer;
+            var self = starting.self;
+            ReplayBootstrap.capture(client, joined,
+                    packet -> offer(writer, ReplayPacketEncoder.encode(configuration, packet, 0)),
+                    packet -> offer(writer, ReplayPacketEncoder.encode(play, packet, 0)),
+                    () -> offer(writer, self.capture(client.player, 0)));
+            starting.started = System.nanoTime();
+            session = starting;
+        } catch (RuntimeException error) {
+            if (starting != null) starting.writer.finish();
+            ClientErrors.report("Start replay in the current world", error);
+            ChatMessages.notice("replay.record_error");
+        }
+    }
+
+    private static void offer(ReplayWriter writer, ReplayFrame frame) {
+        if (!writer.offer(frame)) throw new IllegalStateException("Replay writer rejected the initial world snapshot", writer.failure());
+    }
+
     private static Session current(Connection connection, ProtocolInfo<?> protocol, Packet<?> packet) {
         var current = session;
-        if (current == null || current.connection != connection || !ToolVisualsClient.CONFIG.active(REPLAY)
+        if (current == null || current.dispatched != null || current.connection != connection || !ToolVisualsClient.CONFIG.active(REPLAY)
                 || protocol == null || protocol.id() != ConnectionProtocol.CONFIGURATION && protocol.id() != ConnectionProtocol.PLAY) return null;
         var id = packet.type().id();
         return ReplayPacketPolicy.allow(protocol.id() == ConnectionProtocol.CONFIGURATION, id.getNamespace(), id.getPath(),
@@ -81,17 +135,24 @@ public final class ReplayCapture {
                 ? ReplayFrame.Kind.CONFIGURATION : ReplayFrame.Kind.PLAY, current.millis(), bytes));
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public static void memory(Connection connection, ProtocolInfo<?> protocol, Packet<?> packet) {
         if (packet instanceof BundlePacket<?> bundle) { for (var part : bundle.subPackets()) memory(connection, protocol, part); return; }
         var current = current(connection, protocol, packet);
         if (current == null) return;
-        ByteBuf buffer = Unpooled.buffer(256, ReplayFormat.MAX_PACKET_BYTES);
         try {
-            ((net.minecraft.network.codec.StreamCodec)protocol.codec()).encode(buffer, packet);
-            raw(connection, protocol, packet, buffer, 0, buffer.writerIndex());
+            current.writer.offer(ReplayPacketEncoder.encode(protocol, packet, current.millis()));
         } catch (RuntimeException error) { fail(current, error); }
-        finally { buffer.release(); }
+    }
+
+    public static void dispatched(ClientPacketListener listener, Packet<?> packet) {
+        var current = session;
+        if (current == null || current.dispatched == null || current.connection != listener.getConnection()
+                || ReplayScope.active() || !ToolVisualsClient.CONFIG.active(REPLAY)) return;
+        var id = packet.type().id();
+        if (!ReplayPacketPolicy.allow(false, id.getNamespace(), id.getPath(), ToolVisualsClient.CONFIG.flag(REPLAY_CHAT))) return;
+        try {
+            current.writer.offer(ReplayPacketEncoder.encode(current.dispatched, packet, current.millis()));
+        } catch (RuntimeException error) { fail(current, error); }
     }
 
     public static CompletableFuture<ReplaySnapshot> snapshot() {
@@ -114,14 +175,27 @@ public final class ReplayCapture {
     private static synchronized void fail(Session expected, Throwable error) {
         if (session != expected) return;
         stop();
-        org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Replay recording stopped; the existing recording was preserved", error);
+        ClientErrors.report("Record replay; existing recording preserved", error);
         Minecraft.getInstance().execute(() -> ChatMessages.notice("replay.record_error"));
     }
 
     public static void tick(Minecraft client) {
+        if (ReplayScope.active()) return;
+        boolean enabled = ToolVisualsClient.CONFIG.active(REPLAY);
+        if (!enabled) { START.begin(false, null); stop(); }
+        var listener = client.getConnection();
+        if (listener == null && client.level == null) joined = null;
         var current = session;
+        if (current == null && enabled && listener != null && client.player != null && client.level != null
+                && joined != null && joined.listener == listener && listener.getConnection().isConnected()
+                && ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.captureAllowed(client, listener.getConnection())
+                && START.begin(true, listener.getConnection())) {
+            startInWorld(client);
+            current = session;
+        }
         if (current == null) return;
-        if (!ToolVisualsClient.CONFIG.active(REPLAY) || !current.connection.isConnected()) { stop(); return; }
+        START.started(current.connection);
+        if (!current.connection.isConnected()) { stop(); return; }
         if (current.writer.failure() != null) { fail(current, current.writer.failure()); return; }
         if (client.player != null && client.player.connection.getConnection() == current.connection) {
             try { current.writer.offer(current.self.capture(client.player, current.millis())); }
