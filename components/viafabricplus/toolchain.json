@@ -2,7 +2,7 @@
   "schema": 1,
   "compilers": {
     "26.3": {"mixin": "sponge-mixin-0.17.4+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.5.jar"},
-    "1.21.11": {"mixin": "sponge-mixin-0.17.4+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.5.jar"},
+    "1.21.11": {"mixin": "sponge-mixin-0.17.2+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.4.jar"},
     "1.21.4": {"mixin": "sponge-mixin-0.16.3+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.0.jar"}
   },
   "libraries": {
@@ -83,6 +83,24 @@
       "url": "https://repo.maven.apache.org/maven2/io/github/llamalad7/mixinextras-fabric/0.5.0/mixinextras-fabric-0.5.0.jar",
       "bytes": 723339,
       "sha512": "662569eac1cf6cee5e8ce56925b2cf522e6c35279094b8b518b679d59cb1f453c34b91eecdd3226cafb4b4063044b418d25ce6ffaea410c7ac2670180533c30a"
+    },
+    "fabric-loader-0.19.2.jar": {
+      "file": "fabric-loader-0.19.2.jar",
+      "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.19.2/fabric-loader-0.19.2.jar",
+      "bytes": 1968930,
+      "sha512": "94218809023a812da065bc4afe22cd04da5413f84d5bf6a7339ecc60d653f0895dcd1f74d6259e0ffe0c0704f4f9fe495f462f3f2fc109ef8242a4c04ff33a01"
+    },
+    "sponge-mixin-0.17.2+mixin.0.8.7.jar": {
+      "file": "sponge-mixin-0.17.2+mixin.0.8.7.jar",
+      "url": "https://maven.fabricmc.net/net/fabricmc/sponge-mixin/0.17.2+mixin.0.8.7/sponge-mixin-0.17.2+mixin.0.8.7.jar",
+      "bytes": 1540039,
+      "sha512": "89044dca9a63bd5f2ceec09bfcb5807f1b294026665294bae7a9a980da89bd86c6d441eb38c92c89ca0efe86884c0730dab348d27633ef1e3970ed9eb5c30a4e"
+    },
+    "mixinextras-fabric-0.5.4.jar": {
+      "file": "mixinextras-fabric-0.5.4.jar",
+      "url": "https://repo.maven.apache.org/maven2/io/github/llamalad7/mixinextras-fabric/0.5.4/mixinextras-fabric-0.5.4.jar",
+      "bytes": 727805,
+      "sha512": "31b929374c2526ebb532185cd54b752c0a5ca7f56a48c99ed6a73f598a4155c9db88ab4c8ea5904fa2e2f78310424393238b2db6cd435c0f3ad87d1391ea3320"
     },
     "fabric-loader-0.19.5.jar": {
       "file": "fabric-loader-0.19.5.jar",

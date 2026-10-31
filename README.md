@@ -7,7 +7,7 @@
 | Minecraft | Java | Fabric Loader | Клиентский JAR |
 | --- | --- | --- | --- |
 | 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4+fabric-26.3.jar |
-| 1.21.11 | 21 | 0.19.5+ | ToolVisuals-1.4+fabric-1.21.11.jar |
+| 1.21.11 | 21 | 0.19.2+ | ToolVisuals-1.4+fabric-1.21.11.jar |
 | 1.21.4 | 21 | 0.17.2+ | ToolVisuals-1.4+fabric-1.21.4.jar |
 
 Установите Fabric Loader из таблицы или новее и один JAR под свою версию Minecraft. Fabric API и зависимости уже включены в готовые клиентские сборки.

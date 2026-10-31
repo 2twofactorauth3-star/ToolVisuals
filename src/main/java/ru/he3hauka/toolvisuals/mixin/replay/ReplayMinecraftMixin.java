@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.mixin.replay;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.server.IntegratedServer;
@@ -13,7 +14,7 @@ import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 @Mixin(Minecraft.class)
 public abstract class ReplayMinecraftMixin {
     @Inject(method = "setLevel", at = @At("HEAD"), cancellable = true)
-    private void toolvisuals$replayLevel(ClientLevel level, CallbackInfo callback) {
+    private void toolvisuals$replayLevel(CallbackInfo callback, @Local(argsOnly = true) ClientLevel level) {
         if (ReplayScope.active()) { ReplayScope.scene().level(level); callback.cancel(); }
     }
     @Inject(method="clearClientLevel",at=@At("HEAD"),cancellable=true)

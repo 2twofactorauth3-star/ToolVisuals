@@ -1,6 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.gui;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +27,7 @@ public abstract class GuiRendererMixin {
             target = "Lnet/minecraft/client/gui/render/GuiRenderer;getGuiScaleInvalidatingItemAtlasIfChanged()I"))
     private int toolvisuals$itemResolution(int original) { return Math.max(2, original); }
     @Inject(method = "executeDraw", at = @At("HEAD"), cancellable = true)
-    private void toolvisuals$skipEmptyClip(@Coerce Object draw, RenderPass pass, CallbackInfo ci) {
+    private void toolvisuals$skipEmptyClip(@Coerce Object draw, RenderPass pass, GpuBuffer buffer, VertexFormat.IndexType indexType, CallbackInfo ci) {
         var clip = ((GuiDrawAccessor)draw).toolvisuals$scissorArea();
         if (clip == null) return;
         var window = Minecraft.getInstance().getWindow();
