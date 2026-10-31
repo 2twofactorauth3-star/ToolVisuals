@@ -1542,6 +1542,7 @@
   "toolvisuals.setting.opt_hidden_faces": "Hidden model faces",
   "toolvisuals.setting.opt_static_block_entities": "Static chest preparation",
   "toolvisuals.setting.opt_chunk_budget": "Smooth background chunk work",
+  "toolvisuals.setting.opt_hide_precipitation": "Hide rain and snow",
   "toolvisuals.module.apple_skin": "Food values, saturation, exhaustion and held-food hunger/health previews. Powered by AppleSkin.",
   "toolvisuals.setting.apple_saturation": "Saturation overlay",
   "toolvisuals.setting.apple_exhaustion": "Exhaustion overlay",

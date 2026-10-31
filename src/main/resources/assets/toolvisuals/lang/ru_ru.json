@@ -1542,6 +1542,7 @@
   "toolvisuals.setting.opt_hidden_faces": "Невидимые грани моделей",
   "toolvisuals.setting.opt_static_block_entities": "Подготовка статики сундуков",
   "toolvisuals.setting.opt_chunk_budget": "Плавная фоновая работа чанков",
+  "toolvisuals.setting.opt_hide_precipitation": "Скрывать дождь и снег",
   "toolvisuals.module.apple_skin": "Пищевая ценность, насыщение, истощение и прогноз восстановления голода и здоровья от еды. На основе AppleSkin.",
   "toolvisuals.setting.apple_saturation": "Отображать насыщение",
   "toolvisuals.setting.apple_exhaustion": "Отображать истощение",

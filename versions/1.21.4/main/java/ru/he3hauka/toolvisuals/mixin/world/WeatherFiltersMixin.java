@@ -15,6 +15,8 @@ import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
 @Mixin(WeatherEffectRenderer.class)
 public abstract class WeatherFiltersMixin {
+    @Inject(method="render",at=@At("HEAD"),cancellable=true)
+    private void toolvisuals$skipPrecipitation(CallbackInfo callback){if(toolvisuals$clear()||NoRender.hides(RAIN)&&NoRender.hides(SNOW))callback.cancel();}
     private static boolean toolvisuals$clear(){return ToolVisualsClient.CONFIG.active(WORLD_CUSTOMIZER)&&ToolVisualsClient.CONFIG.flag(CLEAR_WEATHER);}
     @Inject(method="getPrecipitationAt",at=@At("RETURN"),cancellable=true) private void toolvisuals$weather(CallbackInfoReturnable<Biome.Precipitation> callback){var weather=callback.getReturnValue();if(toolvisuals$clear()||weather==Biome.Precipitation.RAIN&&NoRender.hides(RAIN)||weather==Biome.Precipitation.SNOW&&NoRender.hides(SNOW))callback.setReturnValue(Biome.Precipitation.NONE);}
     @Inject(method="tickRainParticles",at=@At("HEAD"),cancellable=true) private void toolvisuals$rainParticles(CallbackInfo callback){if(toolvisuals$clear()||NoRender.hides(RAIN))callback.cancel();}

@@ -17,7 +17,8 @@ public final class NoRender {
     }
 
     public static boolean hides(RenderOption option) {
-        return ToolVisualsClient.CONFIG.hides(option);
+        return ToolVisualsClient.CONFIG.hides(option)
+                || ru.he3hauka.toolvisuals.client.render.weather.PrecipitationVisibility.hides(ToolVisualsClient.CONFIG, option);
     }
 
     public static boolean hidesEntity(Entity entity) {

@@ -79,6 +79,7 @@
     "hud.HudMixin",
     "hud.ExtraTabMixin",
     "world.ClientLevelMixin",
+    "world.WeatherFiltersMixin",
     "world.LightmapExtractorMixin",
     "customhand.CustomHandMixin",
     "camera.AspectRatioMixin",

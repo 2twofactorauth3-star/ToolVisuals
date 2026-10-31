@@ -17,7 +17,9 @@ public abstract class ClientLevelMixin {
     private void toolvisuals$clearWeather(CallbackInfo ci) {
         var config = ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG;
         if (config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.WORLD_CUSTOMIZER)
-                && config.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.CLEAR_WEATHER)) ci.cancel();
+                && config.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.CLEAR_WEATHER)
+                || NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.RAIN)
+                && NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.SNOW)) ci.cancel();
     }
     @Inject(method = "getSkyFlashTime", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$hideLightningFlash(CallbackInfoReturnable<Integer> cir) {
