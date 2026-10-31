@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using ToolLauncher.Accounts;
@@ -153,8 +151,11 @@ public partial class MainWindow : Window
         InstalledPage.Visibility = destination == "installed" ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = destination == "settings" ? Visibility.Visible : Visibility.Collapsed;
         foreach (var button in new[] { HomeNav, ModsNav, InstalledNav, SettingsNav })
-            button.Background = (string)button.Tag == destination ? new SolidColorBrush(Color.FromRgb(38, 37, 53)) : Brushes.Transparent;
-        PageHost.BeginAnimation(OpacityProperty, new DoubleAnimation(0.25, 1, TimeSpan.FromMilliseconds(180)));
+        {
+            bool selected = (string)button.Tag == destination;
+            button.SetResourceReference(BackgroundProperty, selected ? "NavSelected" : "Sidebar");
+            button.SetResourceReference(ForegroundProperty, selected ? "Accent" : "Muted");
+        }
         if (destination == "installed") TryAction("Read profile mods", RefreshInstalled);
         if (destination == "settings") PopulateSettings();
         if (destination == "mods") { offset = 0; await SearchAsync(); }
