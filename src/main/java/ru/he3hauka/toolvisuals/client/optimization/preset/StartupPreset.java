@@ -40,7 +40,7 @@ public final class StartupPreset {
             }
             options.cloudStatus().set(CloudStatus.OFF);
             options.entityShadows().set(false);
-            options.particles().set(ParticleStatus.DECREASED);
+            options.particles().set(ParticleStatus.MINIMAL);
             options.biomeBlendRadius().set(0);
             StartupQuality.apply(options);
             options.enableVsync().set(false);

@@ -15,7 +15,7 @@ public static class InitialGameOptions
             ["renderDistance"] = "6",
             ["simulationDistance"] = "4",
             ["guiScale"] = "2",
-            ["particles"] = "1",
+            ["particles"] = "2",
             ["biomeBlendRadius"] = "0",
             ["fov"] = "0.5",
             ["bobView"] = "false",

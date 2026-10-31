@@ -17,7 +17,7 @@ public abstract class ParticleEngineMixin {
     @Inject(method = "createParticle", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$hideParticleType(ParticleOptions options, double x, double y, double z,
             double dx, double dy, double dz, CallbackInfoReturnable<Particle> cir) {
-        if (NoRender.hidesParticle(BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType()).getPath())) {
+        if (NoRender.hidesParticle(BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType()).toString())) {
             cir.setReturnValue(null);
         }
     }

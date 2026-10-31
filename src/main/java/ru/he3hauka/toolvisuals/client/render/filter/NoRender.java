@@ -1,7 +1,5 @@
 package ru.he3hauka.toolvisuals.client.render.filter;
 
-import java.util.Locale;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -11,6 +9,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.render.particles.ParticleVisibility;
 
 public final class NoRender {
     private NoRender() {
@@ -67,25 +66,6 @@ public final class NoRender {
     }
 
     public static boolean hidesParticle(String name) {
-        if (!ToolVisualsClient.CONFIG.enabled()) {
-            return false;
-        }
-        if (hides(RenderOption.ALL_PARTICLES)) {
-            return true;
-        }
-        if (!hides(RenderOption.SMOKE_PARTICLES) && !hides(RenderOption.EXPLOSION_PARTICLES)
-                && !hides(RenderOption.FIREWORK_PARTICLES) && !hides(RenderOption.POTION_PARTICLES)
-                && !hides(RenderOption.PORTAL_PARTICLES) && !hides(RenderOption.TOTEM_PARTICLES)
-                && !hides(RenderOption.BLOCK_PARTICLES)) {
-            return false;
-        }
-        String id = name.toLowerCase(Locale.ROOT);
-        return (id.contains("smoke") || id.contains("ash")) && hides(RenderOption.SMOKE_PARTICLES)
-                || (id.contains("explosion") || id.contains("explode") || id.contains("gust")) && hides(RenderOption.EXPLOSION_PARTICLES)
-                || (id.contains("firework") || id.contains("flash")) && hides(RenderOption.FIREWORK_PARTICLES)
-                || (id.contains("effect") || id.contains("spell") || id.contains("dragonbreath") || id.contains("dragon_breath")) && hides(RenderOption.POTION_PARTICLES)
-                || id.contains("portal") && hides(RenderOption.PORTAL_PARTICLES)
-                || id.contains("totem") && hides(RenderOption.TOTEM_PARTICLES)
-                || (id.contains("terrain") || id.contains("block") || id.contains("fallingdust") || id.contains("falling_dust")) && hides(RenderOption.BLOCK_PARTICLES);
+        return ParticleVisibility.hides(ToolVisualsClient.CONFIG, name);
     }
 }
