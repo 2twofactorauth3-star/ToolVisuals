@@ -37,6 +37,7 @@ def source_digest(root=ROOT):
     folder = component(root)
     paths = [folder / name for name in ['upstream.json', 'libraries.json', 'toolchain.json', 'game-inputs.json', 'NOTICE', 'COPYING', 'ATTRIBUTION', 'build.gradle', 'build.py']]
     paths += [root / 'build-tools' / name for name in ['protocol_fork.py', 'protocol_source.py', 'protocol_mappings.py', 'dependencies.py']]
+    paths.append(root / 'versions/targets.json')
     paths += [path for path in (folder / 'src').rglob('*') if path.is_file()]
     digest = hashlib.sha256()
     for path in sorted(paths, key=lambda path: path.relative_to(root).as_posix()):

@@ -16,7 +16,7 @@ manifest.targets.each { String target, profile ->
     tasks.register('fork' + target.replace('.', ''), Exec) {
         workingDir rootProject.projectDir
         commandLine pythonExecutable.get(), file('build.py'), target, '--build'
-        inputs.files(fileTree('src'), 'upstream.json', 'libraries.json', 'toolchain.json', 'game-inputs.json', 'NOTICE', 'COPYING', 'build.gradle', 'build.py',
+        inputs.files(fileTree('src'), 'upstream.json', 'libraries.json', 'toolchain.json', 'game-inputs.json', 'NOTICE', 'COPYING', 'ATTRIBUTION', 'build.gradle', 'build.py', rootProject.file('versions/targets.json'),
                 rootProject.file('build-tools/protocol_fork.py'), rootProject.file('build-tools/protocol_source.py'), rootProject.file('build-tools/protocol_mappings.py'), rootProject.file('build-tools/dependencies.py'))
         outputs.files(forkArchiveFor(target), forkCompileArchiveFor(target))
     }

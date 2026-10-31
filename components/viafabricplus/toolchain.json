@@ -1,5 +1,10 @@
 {
   "schema": 1,
+  "compilers": {
+    "26.3": {"mixin": "sponge-mixin-0.17.4+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.5.jar"},
+    "1.21.11": {"mixin": "sponge-mixin-0.17.4+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.5.jar"},
+    "1.21.4": {"mixin": "sponge-mixin-0.16.3+mixin.0.8.7.jar", "mixinextras": "mixinextras-fabric-0.5.0.jar"}
+  },
   "libraries": {
     "tiny-remapper-0.14.0.jar": {
       "file": "tiny-remapper-0.14.0.jar",
@@ -61,11 +66,23 @@
       "bytes": 95628,
       "sha512": "7330ded981ddeb01b302cba12d56b419207b6b02ebfaf814cbbc3d2d2d1055e055294ce108ac9e4de9e1d0f3c4e0064f133e87e8085922241c1a2e5fa1fedd2c"
     },
-    "fabric-loader-0.19.3.jar": {
-      "file": "fabric-loader-0.19.3.jar",
-      "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.19.3/fabric-loader-0.19.3.jar",
-      "bytes": 1976502,
-      "sha512": "39edb4dba380ac942c02e6cf385b98e9c5f0e84e7fd00f9262bba2197187fda8825ae025f8865d3f047bcdf166c0367266fb1bbfcb80d243266191f677bd8ef3"
+    "fabric-loader-0.17.2.jar": {
+      "file": "fabric-loader-0.17.2.jar",
+      "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.17.2/fabric-loader-0.17.2.jar",
+      "bytes": 1915305,
+      "sha512": "9e9b85b2d26379e80a5bf5dddead9c7401a813959ade74ec31c9974ff3931a056793ef46704e03cf635bf5265cb7ace5b5ada6338a0902eb6a5b966eea23998c"
+    },
+    "sponge-mixin-0.16.3+mixin.0.8.7.jar": {
+      "file": "sponge-mixin-0.16.3+mixin.0.8.7.jar",
+      "url": "https://maven.fabricmc.net/net/fabricmc/sponge-mixin/0.16.3+mixin.0.8.7/sponge-mixin-0.16.3+mixin.0.8.7.jar",
+      "bytes": 1504156,
+      "sha512": "525186f69ed9f06f5f9b1afd714fab9bd89cc2b453f3b052561729332cd0e6ef312d728eaf8c2cb68d3f06cb5da844862931de36373e4e14a8bb3793af266b1a"
+    },
+    "mixinextras-fabric-0.5.0.jar": {
+      "file": "mixinextras-fabric-0.5.0.jar",
+      "url": "https://repo.maven.apache.org/maven2/io/github/llamalad7/mixinextras-fabric/0.5.0/mixinextras-fabric-0.5.0.jar",
+      "bytes": 723339,
+      "sha512": "662569eac1cf6cee5e8ce56925b2cf522e6c35279094b8b518b679d59cb1f453c34b91eecdd3226cafb4b4063044b418d25ce6ffaea410c7ac2670180533c30a"
     },
     "fabric-loader-0.19.5.jar": {
       "file": "fabric-loader-0.19.5.jar",

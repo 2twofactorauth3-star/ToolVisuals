@@ -15,6 +15,22 @@ def read_json(path):
     return json.loads(path.read_text(encoding='utf-8'))
 
 
+def toolchain_libraries(version, root):
+    data = read_json(root / 'components/viafabricplus/toolchain.json')
+    target = next(row for row in read_json(root / 'versions/targets.json')['targets'] if row['minecraft'] == version)
+    compiler = data['compilers'][version]
+    selected = {'fabric-loader-' + target['fabric_loader'] + '.jar', compiler['mixin'], compiler['mixinextras']}
+    if selected - data['libraries'].keys():
+        raise ValueError('The protocol compiler is missing pinned runtime libraries for ' + version)
+    result = {}
+    for name, row in data['libraries'].items():
+        if name.startswith(('fabric-loader-', 'sponge-mixin-', 'mixinextras-')) and name not in selected: continue
+        if name.startswith('intermediary-') and name != 'intermediary-' + version + '-v2.jar': continue
+        if name.startswith('yarn-') and version != '1.21.4': continue
+        result[name] = row
+    return result
+
+
 def fetch(root, row, destination):
     algorithm = 'sha512' if 'sha512' in row else 'sha1'
     expected = row[algorithm]
@@ -37,14 +53,10 @@ def acquire(version, root):
     component = root / 'components/viafabricplus'
     cache = root / 'build/components/viafabricplus'
     libraries = read_json(component / 'libraries.json')
-    toolchain = read_json(component / 'toolchain.json')['libraries']
+    toolchain = toolchain_libraries(version, root)
     game = read_json(component / 'game-inputs.json')['targets'][version]
     tasks = [(libraries['libraries'][name], cache / 'libraries' / name) for name in libraries['targets'][version]]
-    loader = '0.19.3' if version == '1.21.4' else '0.19.5'
     for name, row in toolchain.items():
-        if name.startswith('intermediary-') and name != 'intermediary-' + version + '-v2.jar': continue
-        if name.startswith('yarn-') and version != '1.21.4': continue
-        if name.startswith('fabric-loader-') and name != 'fabric-loader-' + loader + '.jar': continue
         tasks.append((row, cache / 'toolchain' / name))
     tasks.append((game['client'], cache / 'games' / version / 'client.jar'))
     tasks += [(row, cache / 'games/libraries' / row['path']) for row in game['libraries']]
@@ -75,11 +87,8 @@ def write_changed(path, data):
 
 
 def tool_classpath(version, root):
-    component = root / 'components/viafabricplus'
     cache = root / 'build/components/viafabricplus/toolchain'
-    names = read_json(component / 'toolchain.json')['libraries']
-    loader = '0.19.3' if version == '1.21.4' else '0.19.5'
-    return [cache / name for name in names if not name.startswith(('intermediary-', 'yarn-')) and (not name.startswith('fabric-loader-') or name == 'fabric-loader-' + loader + '.jar')]
+    return [cache / name for name in toolchain_libraries(version, root) if not name.startswith(('intermediary-', 'yarn-'))]
 
 
 def run_compiler(java, compiler_classpath, arguments, sources, destination, classpath, release, log):
@@ -99,9 +108,9 @@ def prepare_tools(version, root, java, javac):
     classes = folder / 'classes'
     classes.mkdir(exist_ok=True)
     sources = sorted((component / 'src/main/java').rglob('*.java'))
-    fingerprint = hashlib.sha256(b''.join(path.read_bytes().replace(b'\r\n', b'\n') for path in sources) + (component / 'toolchain.json').read_bytes().replace(b'\r\n', b'\n')).hexdigest()
-    stamp = folder / 'fingerprint.txt'
     libraries = tool_classpath(version, root)
+    fingerprint = hashlib.sha256(b''.join(path.read_bytes().replace(b'\r\n', b'\n') for path in sources) + (component / 'toolchain.json').read_bytes().replace(b'\r\n', b'\n') + '\n'.join(path.name for path in libraries).encode()).hexdigest()
+    stamp = folder / 'fingerprint.txt'
     classpath = os.pathsep.join(map(str, [classes, *libraries]))
     if not stamp.is_file() or stamp.read_text().strip() != fingerprint:
         bootstrap = next(path for path in sources if path.name == 'SourceCompiler.java')
