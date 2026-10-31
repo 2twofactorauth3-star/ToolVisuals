@@ -4,6 +4,7 @@ import re
 from project import ROOT,OUT
 
 REPLACEMENTS=[
+    ('Screens.getWidgets(', 'Screens.getButtons('),
     ('GuiGraphicsExtractor','GuiGraphics'),
     ('net.minecraft.client.gui.Hud','net.minecraft.client.gui.Gui'),
     ('AvatarModel','PlayerModel'),

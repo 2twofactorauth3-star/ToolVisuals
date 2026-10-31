@@ -25,6 +25,7 @@ import ru.he3hauka.toolvisuals.protocols.client.ProtocolMenus;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsScreen;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPipelines;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.menu.multiplayer.MultiplayerVersionsButton;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
 import ru.he3hauka.toolvisuals.client.pvp.PvPSave;
@@ -88,6 +89,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         try{CAPES.load();}catch(java.io.IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot load cape library; original file preserved",error);}
         try{OUTFITS.load();}catch(java.io.IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot load outfits; original file preserved",error);}
         UiI18n.use(CONFIG.language());
+        MultiplayerVersionsButton.initialize();
         ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.initialize();
         ru.he3hauka.toolvisuals.client.discord.DiscordPresence.initialize();
         ru.he3hauka.toolvisuals.client.music.MusicClient.initialize();
