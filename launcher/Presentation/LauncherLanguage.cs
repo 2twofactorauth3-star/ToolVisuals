@@ -7,14 +7,7 @@ public static class LauncherLanguage
     private static readonly Dictionary<string, (string En, string Ru)> Texts = new()
     {
         ["home"] = ("Overview", "Главная"), ["mods"] = ("Discover mods", "Каталог модов"), ["installed"] = ("My mods", "Мои моды"), ["settings"] = ("Settings", "Настройки"),
-        ["community"] = ("Community ↗", "Сообщество ↗"), ["source"] = ("Source code ↗", "Исходный код ↗"), ["tagline"] = ("Make Minecraft yours.", "Твой Minecraft. Твои правила."),
-        ["heroTitle"] = ("Back to\nyour world.", "Вернись\nв свой мир."), ["heroBody"] = ("Everything you need to make it yours.", "Всё для твоей игры — уже здесь."),
-        ["heroEyebrow"] = ("Minecraft, your way", "Minecraft по-твоему"), ["heroIncluded"] = ("Visuals. Performance. Your own style.", "Визуалы. Плавность. Твой стиль."), ["navigation"] = ("YOUR SPACE", "ТВОЁ ПРОСТРАНСТВО"),
-        ["choose"] = ("Where do we go next?", "С какой версии начнём?"), ["versionHint"] = ("Your worlds, settings and mods stay separate for each version.", "Миры, настройки и моды хранятся отдельно для каждой версии."),
-        ["ready"] = ("Ready when you are", "Можно начинать"), ["selectFirst"] = ("Choose a version to get started", "Выбери версию для начала"), ["play"] = ("Play", "Играть"), ["cancel"] = ("Cancel", "Отменить"),
-        ["exploreMods"] = ("Explore mods  ↗", "Больше модов  ↗"),
-        ["visualsTitle"] = ("ToolVisuals, built in", "ToolVisuals уже внутри"), ["visualsBody"] = ("Fabric, visuals and performance mods, ready to go.", "Fabric, визуалы и оптимизация — в комплекте."),
-        ["modsTitle"] = ("Make it your Minecraft", "Собери свой Minecraft"), ["modsBody"] = ("Explore mods on Modrinth, CurseForge and GitHub.", "Моды из Modrinth, CurseForge и GitHub."),
+        ["community"] = ("Community ↗", "Сообщество ↗"), ["source"] = ("Source code ↗", "Исходный код ↗"), ["choose"] = ("Minecraft version", "Версия Minecraft"), ["ready"] = ("Ready when you are", "Можно начинать"), ["selectFirst"] = ("Choose a version to get started", "Выбери версию для начала"), ["play"] = ("Play", "Играть"), ["cancel"] = ("Cancel", "Отменить"),
         ["search"] = ("Search mods…", "Поиск модов…"), ["searchButton"] = ("Search", "Найти"), ["install"] = ("Install", "Установить"), ["website"] = ("Website ↗", "На сайт ↗"), ["import"] = ("Import JAR", "Импорт JAR"),
         ["openProfile"] = ("Open profile", "Папка профиля"), ["openLogs"] = ("Open logs", "Папка логов"), ["refresh"] = ("Refresh", "Обновить"), ["enable"] = ("Enable", "Включить"), ["disable"] = ("Disable", "Выключить"), ["remove"] = ("Remove", "Убрать"),
         ["emptyMods"] = ("No mods found. Try a different name.", "Моды не найдены. Попробуй другое название."), ["emptyInstalled"] = ("Launch this profile once to install ToolVisuals, or add your own mods.", "Запусти профиль, чтобы установить ToolVisuals, или добавь свои моды."),
@@ -34,14 +27,16 @@ public static class LauncherLanguage
         ["importDisclosure"] = ("Choose which account names to import. Microsoft accounts need a new sign-in. Your other launchers stay unchanged.", "Выбери, какие аккаунты перенести. Для Microsoft понадобится войти заново. Данные других лаунчеров останутся на месте."),
         ["importFolder"] = ("Choose launcher folder", "Указать папку лаунчера"), ["importSkip"] = ("Skip", "Пропустить"), ["importAccounts"] = ("Import accounts", "Импорт аккаунтов"),
         ["catalogUnavailable"] = ("The mod catalog is temporarily unavailable. Try again shortly.", "Каталог модов временно недоступен. Попробуй чуть позже."),
-        ["cfKey"] = ("CurseForge API key", "API-ключ CurseForge"), ["cfHint"] = ("Optional. Kept encrypted on this PC. Modrinth works without a key.", "Необязательно. Хранится зашифрованным на этом ПК. Modrinth работает без ключа."), ["rpcHint"] = ("Always enabled. Uses the ToolVisuals application and follows your selected Minecraft version.", "Всегда включён. Общее приложение ToolVisuals, активность зависит от выбранной версии Minecraft."),
-        ["save"] = ("Save settings", "Сохранить настройки"), ["saved"] = ("Settings saved", "Настройки сохранены"), ["error"] = ("Could not complete the operation", "Не удалось завершить действие"), ["done"] = ("Done", "Готово"), ["busy"] = ("Preparing your session…", "Готовим всё для игры…"),
+        ["cfKey"] = ("CurseForge API key", "API-ключ CurseForge"), ["cfHint"] = ("Optional. Kept encrypted on this PC. Modrinth works without a key.", "Необязательно. Хранится зашифрованным на этом ПК. Modrinth работает без ключа."), ["save"] = ("Save settings", "Сохранить настройки"), ["saved"] = ("Settings saved", "Настройки сохранены"), ["error"] = ("Could not complete the operation", "Не удалось завершить действие"), ["done"] = ("Done", "Готово"), ["busy"] = ("Preparing your session…", "Готовим всё для игры…"),
         ["metadata"] = ("Checking Minecraft and Fabric", "Проверяем Minecraft и Fabric"), ["libraries"] = ("Downloading libraries", "Загружаем библиотеки"), ["assets"] = ("Downloading game resources", "Загружаем ресурсы игры"), ["minecraft"] = ("Downloading Minecraft", "Загружаем Minecraft"), ["visuals"] = ("Installing ToolVisuals", "Устанавливаем ToolVisuals"), ["javaDownload"] = ("Installing Java", "Устанавливаем Java"), ["modDownload"] = ("Resolving and downloading mods", "Проверяем и загружаем моды"),
         ["auth"] = ("Signing in…", "Входим в аккаунт…"), ["running"] = ("Minecraft is running", "Minecraft запущен"), ["exitError"] = ("Minecraft closed with an error. Details are in the launcher log.", "Minecraft закрылся с ошибкой. Подробности — в логе лаунчера."), ["previous"] = ("← Previous", "← Назад"), ["next"] = ("Next →", "Далее →"), ["browse"] = ("Browse…", "Обзор…"),
-        ["protection"] = ("Verified downloads · separate profiles", "Проверка загрузок · отдельные профили"), ["installedHint"] = ("Disabling keeps the file. Removing moves it to the profile backup folder.", "Выключение сохраняет файл. Удалённые моды перемещаются в резервную папку профиля."), ["chooseAccount"] = ("Manage account", "Настроить аккаунт"), ["clearVersion"] = ("Clear selection", "Снять выбор"), ["sourceHint"] = ("Fabric mods compatible with your selected Minecraft version.", "Fabric-моды, совместимые с выбранной версией Minecraft.")
+        ["installedHint"] = ("Disabling keeps the file. Removing moves it to the profile backup folder.", "Выключение сохраняет файл. Удалённые моды перемещаются в резервную папку профиля."), ["chooseAccount"] = ("Manage account", "Настроить аккаунт"), ["clearVersion"] = ("Clear selection", "Снять выбор"),
     };
+
     public static string Current { get; private set; } = "en";
+
     public static string Get(string key) => Texts.TryGetValue(key, out var text) ? Current == "ru" ? text.Ru : text.En : key;
+
     public static void Apply(string language)
     {
         Current = language;

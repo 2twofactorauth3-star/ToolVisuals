@@ -4,6 +4,7 @@ using System.Text.Json;
 using ToolLauncher.Core;
 using ToolLauncher.Network;
 using ToolLauncher.Storage;
+using ToolLauncher.Minecraft.Settings;
 
 namespace ToolLauncher.Minecraft;
 
@@ -81,6 +82,7 @@ public sealed class MinecraftInstaller(LauncherPaths paths, RemoteClient remote,
         foreach (string native in nativeJars.Distinct()) await Task.Run(() => ArchiveFiles.Extract(native, nativesDirectory, true, token), token);
         progress.Report(new("visuals"));
         await BundledClient.InstallAsync(profile, target, token);
+        if (InitialGameOptions.Apply(profile, target)) log.Info("Applied initial Minecraft options for " + target.Minecraft);
         string executable = await new JavaRuntime(paths, remote, log).ResolveAsync(target, settings, progress, token);
         string launchClasspath = LaunchClasspath.Compose(classpath);
         log.Info("Prepared Minecraft " + target.Minecraft + ", Fabric " + target.Loader + ", Java " + target.Java);

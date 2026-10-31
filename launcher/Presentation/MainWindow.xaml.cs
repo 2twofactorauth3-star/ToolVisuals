@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Microsoft.Win32;
 using ToolLauncher.Accounts;
 using ToolLauncher.Core;
@@ -19,7 +18,6 @@ namespace ToolLauncher.Presentation;
 public partial class MainWindow : Window
 {
     private readonly LauncherServices services;
-    private readonly DispatcherTimer statusTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private bool initializing = true;
     private bool busy;
     private bool gameRunning;
@@ -45,12 +43,10 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             if (services.Settings.LoadError != null) Notice(services.Settings.LoadError.Message + "\n" + services.Paths.Settings);
-            statusTimer.Start();
             if (services.Settings.LoadError == null && !services.Settings.Current.AccountImportCompleted) await AccountImportOverlay.OpenAsync(services);
         };
         Closing += OnClosing;
-        Closed += (_, _) => { statusTimer.Stop(); search?.Cancel(); AccountImportOverlay.Cancel(); };
-        statusTimer.Tick += (_, _) => RpcStatus.Text = "Discord RPC · " + (services.Presence?.Status ?? "Offline preview");
+        Closed += (_, _) => { search?.Cancel(); AccountImportOverlay.Cancel(); };
     }
     private GameTarget Selected() => VersionList.SelectedItem as GameTarget ?? throw new InvalidOperationException(LauncherLanguage.Get("selectFirst"));
     private void UpdateChrome()
@@ -65,7 +61,9 @@ public partial class MainWindow : Window
         SessionTitle.Text = gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "Minecraft " + settings.SelectedVersion + "  ·  ToolVisuals " + (BundledClient.Builds().FirstOrDefault(build => build.Minecraft == settings.SelectedVersion)?.Version ?? "—");
         bool signInRequired = settings.UseMicrosoft && string.IsNullOrEmpty(settings.RefreshToken);
         PlayButton.IsEnabled = !busy && !gameRunning && !signInRequired && settings.SelectedVersion != null;
-        if (!busy) StatusText.Text = LauncherLanguage.Get(signInRequired ? "accountSignInRequired" : "protection");
+        StatusText.Visibility = busy || signInRequired || gameRunning ? Visibility.Visible : Visibility.Collapsed;
+        if (!busy) StatusText.Text = signInRequired ? LauncherLanguage.Get("accountSignInRequired")
+            : gameRunning ? LauncherLanguage.Get("running") : "";
         PageHost.IsEnabled = !busy;
         LanguageButton.IsEnabled = !busy;
         CancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;

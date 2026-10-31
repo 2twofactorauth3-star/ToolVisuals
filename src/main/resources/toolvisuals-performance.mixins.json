@@ -4,6 +4,7 @@
   "package": "ru.he3hauka.toolvisuals.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
+    "optimization.SimulationDistanceMixin",
     "optimization.FrameDiagnosticsMixin",
     "optimization.DiagnosticWindowMixin",
     "optimization.OccludedStateMixin",

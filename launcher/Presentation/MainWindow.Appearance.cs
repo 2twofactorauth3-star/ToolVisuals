@@ -12,6 +12,7 @@ public partial class MainWindow
         var build = BundledClient.Builds().FirstOrDefault(item => item.Minecraft == services.Settings.Current.SelectedVersion)
             ?? BundledClient.Builds().FirstOrDefault();
         HeroBuildLabel.Text = build == null ? "TOOLVISUALS" : "TOOLVISUALS " + build.Version;
+        HeroTitleText.Text = services.Settings.Current.SelectedVersion is { } version ? "Minecraft\n" + version : "Minecraft";
         CurrentPageTitle.Text = LauncherLanguage.Get(page);
     }
 
@@ -23,8 +24,8 @@ public partial class MainWindow
     private void ResizeHero(double height)
     {
         if (HeroSurface == null || HeroTitleText == null) return;
-        HeroSurface.Height = Math.Clamp(height - 500, 240, 350);
-        HeroTitleText.FontSize = height < 800 ? 38 : 46;
+        HeroSurface.Height = Math.Clamp(height - 540, 180, 280);
+        HeroTitleText.FontSize = height < 800 ? 36 : 44;
         HeroTitleText.LineHeight = HeroTitleText.FontSize + 6;
     }
 

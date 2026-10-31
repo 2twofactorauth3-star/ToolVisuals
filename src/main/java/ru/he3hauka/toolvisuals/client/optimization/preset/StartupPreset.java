@@ -33,8 +33,10 @@ public final class StartupPreset {
             var sodium=SodiumClientMod.options();
             if(sodium.isReadOnly()) { LOGGER.warn("Performance preset skipped: Sodium configuration is read-only");return; }
             var options=client.options;
-            options.renderDistance().set(10);
-            options.simulationDistance().set(5);
+            if(!Files.isRegularFile(client.gameDirectory.toPath().resolve(".toollauncher/default-options.json"))) {
+                options.renderDistance().set(10);
+                options.simulationDistance().set(5);
+            }
             options.cloudStatus().set(CloudStatus.OFF);
             options.entityShadows().set(false);
             options.particles().set(ParticleStatus.DECREASED);

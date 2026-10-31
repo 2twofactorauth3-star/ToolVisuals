@@ -9,7 +9,7 @@
     <SolidColorBrush x:Key="Accent" Color="#BBA9F4" />
     <Style TargetType="TextBlock">
       <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-      <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
+      <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
       <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
     </Style>
     <Style TargetType="ToolTip">
@@ -55,7 +55,7 @@
           </ControlTemplate>
         </Setter.Value>
       </Setter>
-      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
     <Style x:Key="Primary" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
