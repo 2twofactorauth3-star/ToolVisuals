@@ -21,6 +21,7 @@ public final class CapeClient {
     private record Publication(boolean receive,CapeDesign design){}
     private static final ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica<CapeWire.State> REMOTE=new ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica<>(256);
     private static final Map<UUID,CapeTexture> TEXTURES=new HashMap<>();
+    private static final ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<UUID> TRANSFERS=new ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<>(64);
     private static Object connection,player,world;
     private static UUID server;
     private static long epoch,sequence,lastSent;
@@ -29,13 +30,15 @@ public final class CapeClient {
     private static boolean confirmed;
     private CapeClient(){}
     public static void initialize(){
+        PayloadTypeRegistry.serverboundPlay().register(CapePayload.FragmentRequest.TYPE,CapePayload.FragmentRequest.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(CapePayload.FragmentState.TYPE,CapePayload.FragmentState.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(CapePayload.Request.TYPE,CapePayload.Request.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(CapePayload.AnimatedRequest.TYPE,CapePayload.AnimatedRequest.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.AnimatedState.TYPE,CapePayload.AnimatedState.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.State.TYPE,CapePayload.State.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.Ack.TYPE,CapePayload.Ack.CODEC);
         ClientPlayNetworking.registerGlobalReceiver(CapePayload.State.TYPE,(payload,context)->receive(payload.value()));
-        ClientPlayNetworking.registerGlobalReceiver(CapePayload.AnimatedState.TYPE,(payload,context)->receive(payload.value()));
+        ClientPlayNetworking.registerGlobalReceiver(CapePayload.FragmentState.TYPE,(payload,context)->receive(payload.value()));
         ClientPlayNetworking.registerGlobalReceiver(CapePayload.Ack.TYPE,(payload,context)->{
             var ack=payload.value();if(pending!=null&&ack.requestId()==pending.requestId()&&ack.epoch()==epoch&&Objects.equals(server,ack.server())&&ack.accepted()){pending=null;confirmed=true;}
         });
@@ -46,12 +49,12 @@ public final class CapeClient {
         ClientLifecycleEvents.CLIENT_STOPPING.register(client->reset(true));
     }
     private static void reset(boolean reconnect){
-        TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();publication=null;pending=null;confirmed=false;server=null;epoch=0;
+        TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();TRANSFERS.clear();publication=null;pending=null;confirmed=false;server=null;epoch=0;
         if(reconnect){connection=null;player=null;world=null;sequence=0;}
     }
     public static boolean shared(){return available()&&confirmed&&pending==null;}
-    public static boolean available(){return PlaybackClient.available()&&(ClientPlayNetworking.canSend(CapePayload.AnimatedRequest.TYPE)||ClientPlayNetworking.canSend(CapePayload.Request.TYPE));}
-    public static boolean animatedSharing(){return ClientPlayNetworking.canSend(CapePayload.AnimatedRequest.TYPE);}
+    public static boolean available(){return PlaybackClient.available()&&(animatedSharing()||ClientPlayNetworking.canSend(CapePayload.AnimatedRequest.TYPE)||ClientPlayNetworking.canSend(CapePayload.Request.TYPE));}
+    public static boolean animatedSharing(){return ClientPlayNetworking.canSend(CapePayload.FragmentRequest.TYPE);}
     public static void tick(Minecraft client){
         if(connection!=client.getConnection()){reset(true);connection=client.getConnection();}
         if(player!=client.player||world!=client.level||epoch!=PlaybackClient.epoch()||!Objects.equals(server,PlaybackClient.server())){
@@ -63,10 +66,22 @@ public final class CapeClient {
         var next=new Publication(enabled&&ToolVisualsClient.CONFIG.flag(CAPE_OTHERS),enabled&&ToolVisualsClient.CONFIG.flag(CAPE_SHARE)&&selected!=null?selected.design():null);
         long now=System.nanoTime();
         if(!next.equals(publication)){
-            if(publication!=null&&publication.receive!=next.receive){TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();}
+            if(publication!=null&&publication.receive!=next.receive){TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();TRANSFERS.clear();}
             if(!enabled){TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();}
             publication=next;pending=new CapeWire.Request(++sequence,epoch,next.receive,next.design);confirmed=false;lastSent=Long.MIN_VALUE;}
-        if(pending!=null&&(lastSent==Long.MIN_VALUE||now-lastSent>=2_000_000_000L)){if(animatedSharing())ClientPlayNetworking.send(new CapePayload.AnimatedRequest(pending));else ClientPlayNetworking.send(new CapePayload.Request(pending));lastSent=now;}
+        if(pending!=null&&(lastSent==Long.MIN_VALUE||now-lastSent>=2_000_000_000L)){
+            if(animatedSharing()){for(var part:CapeTransferWire.split(pending))ClientPlayNetworking.send(new CapePayload.FragmentRequest(part));}
+            else if(ClientPlayNetworking.canSend(CapePayload.Request.TYPE))ClientPlayNetworking.send(new CapePayload.Request(CapeTransferWire.legacy(pending)));
+            else ClientPlayNetworking.send(new CapePayload.AnimatedRequest(CapeTransferWire.legacy(pending)));
+            lastSent=now;
+        }
+    }
+    private static void receive(CapeTransferWire.StatePart part){
+        if(!available()||!Objects.equals(PlaybackClient.server(),part.server()))return;
+        final CapeWire.State state;
+        try{var bytes=TRANSFERS.accept(part.actor(),part.epoch(),part.revision(),part.fragment(),System.nanoTime());if(bytes==null)return;state=CapeTransferWire.assembled(part,bytes);}
+        catch(IllegalArgumentException|java.nio.BufferUnderflowException error){TRANSFERS.remove(part.actor(),part.epoch());return;}
+        receive(state);
     }
     private static void receive(CapeWire.State state){
         if(!available()||!Objects.equals(PlaybackClient.server(),state.server()))return;
@@ -75,7 +90,7 @@ public final class CapeClient {
         var client=Minecraft.getInstance();if(client.level==null||client.level.getPlayerByUUID(state.actor())==null)REMOTE.unload(state.actor());
     }
 
-    private static void release(UUID actor){var texture=TEXTURES.remove(actor);if(texture!=null)texture.close();}
+    private static void release(UUID actor){TRANSFERS.remove(actor);var texture=TEXTURES.remove(actor);if(texture!=null)texture.close();}
     public static CapeDesign design(UUID actor){
         var client=Minecraft.getInstance();if(client.player==null)return null;
         if(actor.equals(client.player.getUUID())){var selected=ToolVisualsClient.CAPES.selected();return selected==null?null:selected.design();}

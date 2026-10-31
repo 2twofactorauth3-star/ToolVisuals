@@ -37,6 +37,8 @@ public final class EmotePacketGuard {
     private boolean allowSingle(Packet<?> packet, long now) {
         if (packet instanceof ServerboundCustomPayloadPacket request) {
             var value=request.payload();
+            if(value instanceof CapePayload.FragmentRequest part)return assetRequests.allow(now)&&bytes.allow(now,16+part.value().fragment().size());
+            if(value instanceof CapePayload.AnimatedRequest animated&&animated.value().design()!=null&&animated.value().design().frameCount>1)return false;
             if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload)return assetRequests.allow(now);
             if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.Request)return requests.allow(now);
             if(value instanceof EmoteRequestPayload||value instanceof SocialPayload.Request||value instanceof PlaybackPayload.Request||value instanceof SocialCommandPayload.Request)return requests.allow(now);
@@ -51,7 +53,7 @@ public final class EmotePacketGuard {
             if(value instanceof PlaybackPayload.State playback&&playback.value().mode()==ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.Mode.STOPPED
                     ||value instanceof EmoteStatePayload emote&&emote.emote()==-1||value instanceof SocialPayload.State social&&social.value() instanceof ru.he3hauka.toolvisuals.animation.social.SocialProtocol.Stopped)return controls.allow(now);
             if(value instanceof EmoteStatePayload||value instanceof SocialPayload.State||value instanceof PlaybackPayload.State)return states.allow(now);
-            int cost=value instanceof CapePayload.AnimatedState?CapeWire.MAX_ANIMATED_STATE:value instanceof CapePayload.State?CapeWire.MAX_STATE:value instanceof AccessoryPayload.State||value instanceof AccessoryPayload.ExpandedState?AccessoryWire.MAX_STATE:value instanceof PresencePayload.State?PresenceWire.MAX_BYTES:0;
+            int cost=value instanceof CapePayload.FragmentState part?48+part.value().fragment().size():value instanceof CapePayload.AnimatedState?CapeWire.MAX_ANIMATED_STATE:value instanceof CapePayload.State?CapeWire.MAX_STATE:value instanceof AccessoryPayload.State||value instanceof AccessoryPayload.ExpandedState?AccessoryWire.MAX_STATE:value instanceof PresencePayload.State?PresenceWire.MAX_BYTES:0;
             if(cost>0)return assets.allow(now)&&bytes.allow(now,cost);
         }
         return true;

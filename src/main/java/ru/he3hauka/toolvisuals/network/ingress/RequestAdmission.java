@@ -11,6 +11,7 @@ import ru.he3hauka.toolvisuals.animation.protocol.social.SocialCommandWire;
 import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryWire;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeTransferWire;
 import ru.he3hauka.toolvisuals.network.presence.PresenceWire;
 
 public final class RequestAdmission {
@@ -21,6 +22,7 @@ public final class RequestAdmission {
         PLAYBACK(PlaybackWire.REQUEST_CHANNEL,PlaybackWire.MAX_REQUEST_BYTES),
         CAPE(CapeWire.REQUEST_CHANNEL,CapeWire.MAX_REQUEST),
         ANIMATED_CAPE(CapeWire.ANIMATED_REQUEST_CHANNEL,CapeWire.MAX_ANIMATED_REQUEST),
+        CAPE_FRAGMENT(CapeTransferWire.REQUEST_CHANNEL,CapeTransferWire.MAX_REQUEST),
         PRESENCE(PresenceWire.REQUEST_CHANNEL,1),
         ACCESSORY(AccessoryWire.REQUEST_CHANNEL,AccessoryWire.MAX_REQUEST),
         SOCIAL_COMMAND(SocialCommandWire.REQUEST_CHANNEL,SocialCommandWire.MAX_REQUEST),

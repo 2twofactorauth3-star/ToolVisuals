@@ -162,7 +162,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(peer.watch!=null)peer.watch.cancel();
     }
     private boolean current(Peer peer){return running&&!peer.closed.get()&&peers.get(peer.id)==peer;}
-    private static final Set<String> OUTPUT_CHANNELS=Set.of(ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
+    private static final Set<String> OUTPUT_CHANNELS=Set.of(ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeTransferWire.STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
     private void capabilities(Peer peer){
         peer.channels=capabilities(peer.player);
     }
@@ -254,6 +254,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(channel.equals(SocialCommandWire.REQUEST_CHANNEL)){receiveSocialCommand(player,bytes);return;}
         if(channel.equals(AccessoryWire.REQUEST_CHANNEL)){receiveAccessory(player,bytes);return;}
         if(channel.equals(PresenceWire.REQUEST_CHANNEL)){receivePresence(player,bytes);return;}
+        if(channel.equals(CapeTransferWire.REQUEST_CHANNEL)){receiveCapeFragment(player,bytes);return;}
         if(channel.equals(CapeWire.REQUEST_CHANNEL)||channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL)){receiveCape(player,bytes,channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL));return;}
         boolean social=channel.equals(SocialProtocol.REQUEST_CHANNEL);
         if(!social&&!channel.equals(REQUEST_CHANNEL)&&!channel.equals(EmoteWire.REQUEST_CHANNEL)&&!channel.equals(EmoteWire.EXTENDED_REQUEST_CHANNEL))return;
@@ -425,6 +426,21 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(!capes.accept(peer.cape,System.nanoTime())){throttled.increment();return;}
         final CapeWire.Request request;
         try{request=animated?CapeWire.animatedRequest(bytes):CapeWire.request(bytes);}catch(RuntimeException error){malformed.increment();return;}
+        acceptCape(peer,request);
+    }
+    private void receiveCapeFragment(Player player,byte[] bytes){
+        final CapeTransferWire.RequestPart part;
+        try{part=CapeTransferWire.request(bytes);}catch(IllegalArgumentException|java.nio.BufferUnderflowException error){malformed.increment();return;}
+        var peer=attach(player);if(peer==null)return;
+        final CapeRelay.Fragment transfer;
+        try{transfer=capes.fragment(peer.cape,peer.id,peer.handle.epoch(),part,System.nanoTime());}catch(IllegalArgumentException error){malformed.increment();return;}
+        if(!transfer.accepted()){throttled.increment();return;}
+        if(transfer.bytes()==null)return;
+        final CapeWire.Request request;
+        try{request=CapeTransferWire.assembled(part,transfer.bytes());}catch(IllegalArgumentException|java.nio.BufferUnderflowException error){malformed.increment();return;}
+        acceptCape(peer,request);
+    }
+    private void acceptCape(Peer peer,CapeWire.Request request){
         if(peer.cape.incoming.offer(peer.id,request))owned(peer,()->{
             capabilities(peer);
             for(var next:peer.cape.incoming.drain()){
@@ -451,7 +467,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         var task=peer.player.getScheduler().run(this,ignored->{if(current(peer))action.run();},()->retire(peer));
         if(task==null)retire(peer);
     }
-    private static boolean capeSupported(Peer peer){return peer.channels.contains(CapeWire.STATE_CHANNEL)||peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);}
+    private static boolean capeSupported(Peer peer){return peer.channels.contains(CapeTransferWire.STATE_CHANNEL)||peer.channels.contains(CapeWire.STATE_CHANNEL)||peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);}
     private void route(Iterable<PlaybackLedger.Effect> effects){
         if(!running)return;
         for(var effect:effects){
@@ -504,8 +520,13 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
                 }
                 triedCape=true;
                 if(!capes.send(peer.id,System.nanoTime())){deferred.increment();break;}
-                boolean animated=peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);
-                peer.player.sendPluginMessage(this,animated?CapeWire.ANIMATED_STATE_CHANNEL:CapeWire.STATE_CHANNEL,animated?CapeWire.encodeAnimated(cape):CapeWire.encode(cape));sent.increment();peer.cape.outgoing.sent(cape,System.nanoTime());continue;
+                if(peer.channels.contains(CapeTransferWire.STATE_CHANNEL)){
+                    for(var part:CapeTransferWire.split(cape)){peer.player.sendPluginMessage(this,CapeTransferWire.STATE_CHANNEL,CapeTransferWire.encode(part));sent.increment();}
+                }else{
+                    boolean animated=peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);
+                    peer.player.sendPluginMessage(this,animated?CapeWire.ANIMATED_STATE_CHANNEL:CapeWire.STATE_CHANNEL,animated?CapeWire.encodeAnimated(CapeTransferWire.legacy(cape)):CapeWire.encode(cape));sent.increment();
+                }
+                peer.cape.outgoing.sent(cape,System.nanoTime());continue;
             }
             String channel;byte[] bytes;UUID badgeActor=null;boolean badgeVisible=false;
             if(control instanceof SocialCommandWire.Reply reply){channel=SocialCommandWire.REPLY_CHANNEL;bytes=SocialCommandWire.encode(reply);}

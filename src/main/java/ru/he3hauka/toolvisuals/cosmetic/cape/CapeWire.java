@@ -46,8 +46,8 @@ public final class CapeWire {
     private static CapeDesign animation(ByteBuffer buffer){if(!bool(buffer))return null;byte[] bytes=new byte[buffer.remaining()];buffer.get(bytes);return CapeDesign.animation(bytes);}
     private static ByteBuffer input(byte[] bytes,int maximum){if(bytes==null||bytes.length==0||bytes.length>maximum)throw new IllegalArgumentException("Invalid cape payload size");return ByteBuffer.wrap(bytes);}
     private static boolean bool(ByteBuffer buffer){int value=Byte.toUnsignedInt(buffer.get());if(value>1)throw new IllegalArgumentException("Invalid cape flag");return value==1;}
-    private static void positive(long value){if(value<=0)throw new IllegalArgumentException("Invalid cape identity");}
-    private static void uuid(ByteBuffer buffer,UUID value){buffer.putLong(value.getMostSignificantBits()).putLong(value.getLeastSignificantBits());}
-    private static UUID uuid(ByteBuffer buffer){return new UUID(buffer.getLong(),buffer.getLong());}
+    static void positive(long value){if(value<=0)throw new IllegalArgumentException("Invalid cape identity");}
+    static void uuid(ByteBuffer buffer,UUID value){buffer.putLong(value.getMostSignificantBits()).putLong(value.getLeastSignificantBits());}
+    static UUID uuid(ByteBuffer buffer){return new UUID(buffer.getLong(),buffer.getLong());}
     private static void end(ByteBuffer buffer){if(buffer.hasRemaining())throw new IllegalArgumentException("Trailing cape bytes");}
 }

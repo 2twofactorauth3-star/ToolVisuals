@@ -7,9 +7,20 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeTransferWire;
 
 public final class CapePayload {
     private CapePayload(){}
+    public record FragmentRequest(CapeTransferWire.RequestPart value) implements CustomPacketPayload {
+        public static final Type<FragmentRequest> TYPE=new Type<>(Identifier.parse(CapeTransferWire.REQUEST_CHANNEL));
+        public static final StreamCodec<FriendlyByteBuf,FragmentRequest> CODEC=StreamCodec.of((buffer,value)->buffer.writeBytes(CapeTransferWire.encode(value.value)),buffer->{try{return new FragmentRequest(CapeTransferWire.request(read(buffer,CapeTransferWire.MAX_REQUEST)));}catch(RuntimeException error){throw new DecoderException("Invalid cape request fragment",error);}});
+        @Override public Type<FragmentRequest> type(){return TYPE;}
+    }
+    public record FragmentState(CapeTransferWire.StatePart value) implements CustomPacketPayload {
+        public static final Type<FragmentState> TYPE=new Type<>(Identifier.parse(CapeTransferWire.STATE_CHANNEL));
+        public static final StreamCodec<FriendlyByteBuf,FragmentState> CODEC=StreamCodec.of((buffer,value)->buffer.writeBytes(CapeTransferWire.encode(value.value)),buffer->{try{return new FragmentState(CapeTransferWire.state(read(buffer,CapeTransferWire.MAX_STATE)));}catch(RuntimeException error){throw new DecoderException("Invalid cape state fragment",error);}});
+        @Override public Type<FragmentState> type(){return TYPE;}
+    }
     public record AnimatedRequest(CapeWire.Request value) implements CustomPacketPayload {
         public static final Type<AnimatedRequest> TYPE=new Type<>(Identifier.parse(CapeWire.ANIMATED_REQUEST_CHANNEL));
         public static final StreamCodec<FriendlyByteBuf,AnimatedRequest> CODEC=StreamCodec.of((buffer,value)->buffer.writeBytes(CapeWire.encodeAnimated(value.value)),buffer->{try{return new AnimatedRequest(CapeWire.animatedRequest(read(buffer,CapeWire.MAX_ANIMATED_REQUEST)));}catch(RuntimeException error){throw new DecoderException("Invalid animated cape request",error);}});

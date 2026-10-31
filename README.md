@@ -6,9 +6,9 @@
 
 | Minecraft | Java | Fabric Loader | Клиентский JAR |
 | --- | --- | --- | --- |
-| 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4+fabric-26.3.jar |
-| 1.21.11 | 21 | 0.19.2+ | ToolVisuals-1.4+fabric-1.21.11.jar |
-| 1.21.4 | 21 | 0.17.2+ | ToolVisuals-1.4+fabric-1.21.4.jar |
+| 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4.1+fabric-26.3.jar |
+| 1.21.11 | 21 | 0.19.2+ | ToolVisuals-1.4.1+fabric-1.21.11.jar |
+| 1.21.4 | 21 | 0.17.2+ | ToolVisuals-1.4.1+fabric-1.21.4.jar |
 
 Установите Fabric Loader из таблицы или новее и один JAR под свою версию Minecraft. Fabric API и зависимости уже включены в готовые клиентские сборки.
 
@@ -178,7 +178,7 @@ python build-tools/dependencies.py
 
 На Windows используйте `py -3 build-tools/dependencies.py` и `gradlew.bat build`. Если команда `python` недоступна, передайте Gradle путь к Python через `-PpythonExecutable=путь`.
 
-Три клиентских JAR появятся в `build/libs`. Для отдельной версии: `./gradlew :minecraft1214:build` или `./gradlew :minecraft12111:build`. Команда `./gradlew release` дополнительно соберёт серверный плагин `ToolVisualsPlugin-1.4.jar` для Paper/Folia. Он нужен для серверной синхронизации поддерживаемых социальных функций.
+Три клиентских JAR появятся в `build/libs`. Для отдельной версии: `./gradlew :minecraft1214:build` или `./gradlew :minecraft12111:build`. Команда `./gradlew release` дополнительно соберёт серверный плагин `ToolVisualsPlugin-1.4.1.jar` для Paper/Folia. Он нужен для серверной синхронизации поддерживаемых социальных функций.
 
 Windows-помощник MusicHUD собирается командой `python native/music/windows/build.py` на Windows 10/11.
 
