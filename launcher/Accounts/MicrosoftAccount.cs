@@ -4,12 +4,13 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using ToolLauncher.Core;
 using ToolLauncher.Storage;
+using ToolLauncher.Accounts.Profiles;
 
 namespace ToolLauncher.Accounts;
 
 public sealed record DeviceCode(string Code, string VerificationUri, string Message);
 
-public sealed class MicrosoftAccount(SettingsStore settings, LauncherLog log) : IDisposable
+public sealed class MicrosoftAccount(SettingsStore settings, LauncherLog log, AccountLibrary? accounts = null) : IDisposable
 {
     private readonly HttpClient client = new(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(45) };
     private const string Authority = "https://login.microsoftonline.com/consumers/oauth2/v2.0/";
@@ -64,7 +65,7 @@ public sealed class MicrosoftAccount(SettingsStore settings, LauncherLog log) : 
         string name = profile.RootElement.GetProperty("name").GetString()!;
         string id = profile.RootElement.GetProperty("id").GetString()!;
         string refresh = oauth.TryGetProperty("refresh_token", out var refreshToken) ? refreshToken.GetString()! : SecretProtection.Open(settings.Current.RefreshToken); log.Protect(refresh);
-        settings.Save(settings.Current with { UseMicrosoft = true, AccountName = name, AccountId = id, RefreshToken = SecretProtection.Seal(refresh) });
+        (accounts ?? new AccountLibrary(settings)).RememberMicrosoft(name, id, SecretProtection.Seal(refresh));
         return new(name, id, access, "msa", claim.TryGetProperty("xid", out var xid) ? xid.GetString() ?? "" : "");
     }
     private async Task<JsonDocument> FormAsync(string route, Dictionary<string, string> values, CancellationToken token)

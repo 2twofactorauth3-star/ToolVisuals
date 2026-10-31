@@ -11,9 +11,9 @@ public sealed class ModrinthSource(RemoteClient remote) : IModSource
     private const string Api = "https://api.modrinth.com/v2/";
     public async Task<IReadOnlyList<ModProject>> SearchAsync(string query, GameTarget target, int offset, CancellationToken token)
     {
-        string facets = JsonSerializer.Serialize(new[] { new[] { "project_type:mod" }, new[] { "categories:fabric" }, new[] { "versions:" + target.Minecraft } });
+        string facets = JsonSerializer.Serialize(new[] { new[] { "project_type:mod" }, new[] { "categories:fabric" }, new[] { "versions:" + target.Minecraft }, new[] { "downloads >= " + CatalogPolicy.MinimumDownloads } });
         using var json = await remote.JsonAsync(Api + "search?limit=20&offset=" + Math.Max(0, offset) + "&query=" + Uri.EscapeDataString(query) + "&facets=" + Uri.EscapeDataString(facets), token);
-        return json.RootElement.GetProperty("hits").EnumerateArray().Select(hit => new ModProject(Name, hit.GetProperty("project_id").GetString()!, hit.GetProperty("title").GetString()!, hit.GetProperty("description").GetString()!, hit.GetProperty("author").GetString()!, hit.GetProperty("downloads").GetInt64(), "https://modrinth.com/mod/" + hit.GetProperty("slug").GetString())).ToArray();
+        return json.RootElement.GetProperty("hits").EnumerateArray().Select(hit => new ModProject(Name, hit.GetProperty("project_id").GetString()!, hit.GetProperty("title").GetString()!, hit.GetProperty("description").GetString()!, hit.GetProperty("author").GetString()!, hit.GetProperty("downloads").GetInt64(), "https://modrinth.com/mod/" + hit.GetProperty("slug").GetString())).Where(CatalogPolicy.Allows).ToArray();
     }
     public async Task<ModRelease> ResolveAsync(ModProject project, GameTarget target, string? versionId, CancellationToken token)
     {
@@ -35,11 +35,10 @@ public sealed class ModrinthSource(RemoteClient remote) : IModSource
         if (!version.GetProperty("game_versions").EnumerateArray().Any(value => value.GetString() == target.Minecraft) || !version.GetProperty("loaders").EnumerateArray().Any(value => value.GetString() == "fabric"))
             throw new InvalidDataException("The required mod release is incompatible with the selected profile");
         string projectId = version.GetProperty("project_id").GetString()!;
-        if (project.Id.Length == 0 || project.Id != projectId)
-        {
-            using var info = await remote.JsonAsync(Api + "project/" + projectId, token);
-            project = new(Name, projectId, info.RootElement.GetProperty("title").GetString()!, info.RootElement.GetProperty("description").GetString()!, "", 0, "https://modrinth.com/mod/" + info.RootElement.GetProperty("slug").GetString());
-        }
+        if (project.Id.Length > 0 && project.Id != projectId) throw new InvalidDataException("The mod version belongs to a different project");
+        using var info = await remote.JsonAsync(Api + "project/" + projectId, token);
+        project = new(Name, projectId, info.RootElement.GetProperty("title").GetString()!, info.RootElement.GetProperty("description").GetString()!, "", info.RootElement.GetProperty("downloads").GetInt64(), "https://modrinth.com/mod/" + info.RootElement.GetProperty("slug").GetString());
+        CatalogPolicy.EnsureAllowed(project);
         var files = version.GetProperty("files").EnumerateArray().ToArray();
         var file = files.FirstOrDefault(item => item.GetProperty("primary").GetBoolean());
         if (file.ValueKind == JsonValueKind.Undefined) file = files.First();

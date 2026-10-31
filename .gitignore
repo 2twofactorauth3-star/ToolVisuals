@@ -98,6 +98,7 @@
 !/launcher/**/*.cs
 !/launcher/*.xaml
 !/launcher/Presentation/*.xaml
+!/launcher/Presentation/Accounts/*.xaml
 !/launcher/ToolLauncher.csproj
 !/launcher/app.manifest
 !/launcher/build.py

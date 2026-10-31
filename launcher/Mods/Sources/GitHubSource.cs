@@ -2,18 +2,36 @@ using ToolLauncher.Minecraft;
 using ToolLauncher.Mods.Catalog;
 using ToolLauncher.Core;
 using ToolLauncher.Network;
+using System.Collections.Concurrent;
 
 namespace ToolLauncher.Mods.Sources;
 
 public sealed class GitHubSource(RemoteClient remote) : IModSource
 {
     public string Name => "GitHub";
-    private static readonly (string Repository, string Title, string Description)[] Catalog = [("isXander/Controlify", "Controlify", "Controller support from the official project"), ("CaffeineMC/sodium", "Sodium", "Official Sodium releases; included with ToolVisuals"), ("IrisShaders/Iris", "Iris", "Official Iris shader loader releases"), ("henkelmax/simple-voice-chat", "Simple Voice Chat", "Official voice chat releases; included with ToolVisuals")];
-    public Task<IReadOnlyList<ModProject>> SearchAsync(string query, GameTarget target, int offset, CancellationToken token)
-        => Task.FromResult<IReadOnlyList<ModProject>>(offset > 0 ? [] : Catalog.Where(item => (item.Title + " " + item.Description).Contains(query, StringComparison.OrdinalIgnoreCase)).Select(item => new ModProject(Name, item.Repository, item.Title, item.Description, item.Repository.Split('/')[0], 0, "https://github.com/" + item.Repository)).ToArray());
+    private readonly ConcurrentDictionary<string, (DateTimeOffset Checked, bool Allowed)> repositories = new(StringComparer.OrdinalIgnoreCase);
+    public async Task<IReadOnlyList<ModProject>> SearchAsync(string query, GameTarget target, int offset, CancellationToken token)
+    {
+        if (offset > 0) return [];
+        var projects = new List<ModProject>();
+        foreach (var item in OfficialRepositories.All.Where(item => (item.Title + " " + item.Description).Contains(query, StringComparison.OrdinalIgnoreCase)))
+            if (await CheckRepositoryAsync(item.Repository, false, token)) projects.Add(new(Name, item.Repository, item.Title, item.Description, item.Repository.Split('/')[0], 0, "https://github.com/" + item.Repository));
+        return projects;
+    }
+
+    private async Task<bool> CheckRepositoryAsync(string repository, bool refresh, CancellationToken token)
+    {
+        if (!OfficialRepositories.Contains(repository)) return false;
+        if (!refresh && repositories.TryGetValue(repository, out var cached) && DateTimeOffset.UtcNow - cached.Checked < TimeSpan.FromMinutes(10)) return cached.Allowed;
+        using var response = await remote.JsonAsync("https://api.github.com/repos/" + repository, token);
+        var info = response.RootElement;
+        bool allowed = string.Equals(info.GetProperty("full_name").GetString(), repository, StringComparison.OrdinalIgnoreCase) && !info.GetProperty("archived").GetBoolean() && !info.GetProperty("disabled").GetBoolean() && info.GetProperty("stargazers_count").GetInt64() >= CatalogPolicy.MinimumGitHubStars;
+        repositories[repository] = (DateTimeOffset.UtcNow, allowed);
+        return allowed;
+    }
     public async Task<ModRelease> ResolveAsync(ModProject project, GameTarget target, string? versionId, CancellationToken token)
     {
-        if (!Catalog.Any(item => item.Repository == project.Id)) throw new InvalidDataException("This repository is not in the official source catalog");
+        if (!await CheckRepositoryAsync(project.Id, true, token)) throw new InvalidDataException("This repository is not eligible for the official source catalog");
         using var json = await remote.JsonAsync("https://api.github.com/repos/" + project.Id + "/releases?per_page=30", token);
         foreach (var release in json.RootElement.EnumerateArray().Where(item => !item.GetProperty("draft").GetBoolean()))
         {

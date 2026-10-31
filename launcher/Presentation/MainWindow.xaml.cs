@@ -11,6 +11,8 @@ using ToolLauncher.Accounts;
 using ToolLauncher.Core;
 using ToolLauncher.Minecraft;
 using ToolLauncher.Storage;
+using ToolLauncher.Presentation.Accounts;
+using ToolLauncher.Accounts.Profiles;
 
 namespace ToolLauncher.Presentation;
 
@@ -22,6 +24,7 @@ public partial class MainWindow : Window
     private bool busy;
     private bool gameRunning;
     private bool closeRequested;
+    private bool updatingAccounts;
     private string page = "home";
     private int offset;
     private CancellationTokenSource? operation;
@@ -32,18 +35,21 @@ public partial class MainWindow : Window
     {
         this.services = services;
         InitializeComponent();
+        MemorySlider.Minimum = MemoryBudget.MinimumMiB;
+        MemorySlider.Maximum = services.Settings.Memory.MaximumMiB;
         VersionList.ItemsSource = GameTarget.All;
         VersionList.SelectedItem = GameTarget.All.SingleOrDefault(target => target.Minecraft == services.Settings.Current.SelectedVersion);
-        SourcePicker.ItemsSource = services.Sources.Select(source => source.Name); SourcePicker.SelectedIndex = 0;
         SearchInput.TextChanged += (_, _) => SearchPlaceholder.Visibility = SearchInput.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
         PopulateSettings(); initializing = false; UpdateChrome();
-        Loaded += (_, _) =>
+        AccountImportOverlay.SettingsChanged += (_, _) => { PopulateSettings(); UpdateChrome(); };
+        Loaded += async (_, _) =>
         {
             if (services.Settings.LoadError != null) Notice(services.Settings.LoadError.Message + "\n" + services.Paths.Settings);
             statusTimer.Start();
+            if (services.Settings.LoadError == null && !services.Settings.Current.AccountImportCompleted) await AccountImportOverlay.OpenAsync(services);
         };
         Closing += OnClosing;
-        Closed += (_, _) => { statusTimer.Stop(); search?.Cancel(); };
+        Closed += (_, _) => { statusTimer.Stop(); search?.Cancel(); AccountImportOverlay.Cancel(); };
         statusTimer.Tick += (_, _) => RpcStatus.Text = "Discord RPC · " + (services.Presence?.Status ?? "Offline preview");
     }
     private GameTarget Selected() => VersionList.SelectedItem as GameTarget ?? throw new InvalidOperationException(LauncherLanguage.Get("selectFirst"));
@@ -53,9 +59,12 @@ public partial class MainWindow : Window
         LanguageButton.Content = settings.Language.ToUpperInvariant();
         AccountName.Text = settings.UseMicrosoft ? settings.AccountName : settings.Nickname;
         AccountKind.Text = settings.UseMicrosoft ? "Microsoft · Java Edition" : settings.Language == "ru" ? "Локальный аккаунт" : "Local account";
+        RefreshAccountChoices();
+        MemoryBudgetHint.Text = string.Format(LauncherLanguage.Get("memoryBudget"), (services.Settings.Memory.TotalMiB / 1024d).ToString("0.#"), (services.Settings.Memory.MaximumMiB / 1024d).ToString("0.#"));
         SessionTitle.Text = gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "Minecraft " + settings.SelectedVersion + "  ·  ToolVisuals " + (BundledClient.Builds().FirstOrDefault(build => build.Minecraft == settings.SelectedVersion)?.Version ?? "—");
-        PlayButton.IsEnabled = !busy && !gameRunning && settings.SelectedVersion != null;
-        if (!busy) StatusText.Text = LauncherLanguage.Get("protection");
+        bool signInRequired = settings.UseMicrosoft && string.IsNullOrEmpty(settings.RefreshToken);
+        PlayButton.IsEnabled = !busy && !gameRunning && !signInRequired && settings.SelectedVersion != null;
+        if (!busy) StatusText.Text = LauncherLanguage.Get(signInRequired ? "accountSignInRequired" : "protection");
         PageHost.IsEnabled = !busy;
         LanguageButton.IsEnabled = !busy;
         CancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
@@ -76,7 +85,7 @@ public partial class MainWindow : Window
         string microsoft = MicrosoftIdInput.Text.Trim();
         if (microsoft.Length > 0 && !Guid.TryParse(microsoft, out _)) throw new InvalidOperationException("Invalid Microsoft application ID");
         services.Log.Protect(CurseKeyInput.Password);
-        services.Settings.Save(services.Settings.Current with { Nickname = NicknameInput.Text.Trim(), MemoryMiB = (int)MemorySlider.Value, Java21 = Java21Input.Text.Trim(), Java25 = Java25Input.Text.Trim(), AutomaticJava = AutoJavaCheck.IsChecked == true, MicrosoftClientId = microsoft, CurseForgeKey = SecretProtection.Seal(CurseKeyInput.Password) });
+        services.AccountLibrary.SavePreferences(services.Settings.Current with { Nickname = NicknameInput.Text.Trim(), MemoryMiB = (int)MemorySlider.Value, Java21 = Java21Input.Text.Trim(), Java25 = Java25Input.Text.Trim(), AutomaticJava = AutoJavaCheck.IsChecked == true, MicrosoftClientId = microsoft, CurseForgeKey = SecretProtection.Seal(CurseKeyInput.Password) });
         services.Presence?.Refresh(); UpdateChrome();
     }
     private async Task RunAsync(string name, Func<CancellationToken, Task> action)
@@ -167,23 +176,22 @@ public partial class MainWindow : Window
         using var cancellation = new CancellationTokenSource(); search = cancellation;
         CatalogList.ItemsSource = null; CatalogEmpty.Visibility = Visibility.Visible;
         if (VersionList.SelectedItem is not GameTarget target) { search = null; CatalogEmpty.Text = LauncherLanguage.Get("selectFirst"); return; }
-        var source = services.Sources[SourcePicker.SelectedIndex];
         CatalogEmpty.Text = LauncherLanguage.Get("search");
         try
         {
-            var projects = await source.SearchAsync(SearchInput.Text.Trim(), target, offset, cancellation.Token);
+            var result = await services.Catalog.SearchAsync(SearchInput.Text.Trim(), target, offset, cancellation.Token);
             if (cancellation.IsCancellationRequested || search != cancellation) return;
-            CatalogList.ItemsSource = projects; CatalogEmpty.Text = LauncherLanguage.Get("emptyMods");
-            CatalogEmpty.Visibility = projects.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            CatalogList.ItemsSource = result.Projects; CatalogEmpty.Text = LauncherLanguage.Get("emptyMods");
+            CatalogEmpty.Visibility = result.Projects.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            NextCatalogPage.IsEnabled = result.HasNext;
             PageNumber.Text = (offset / 20 + 1).ToString();
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
-        catch (Exception error) { services.Log.Error("Search " + source.Name + " mods for " + target.Minecraft, error); CatalogEmpty.Text = error.Message; Notice(error.Message); }
+        catch (Exception error) { services.Log.Error("Search unified mod catalog for " + target.Minecraft, error); CatalogEmpty.Text = LauncherLanguage.Get("catalogUnavailable"); Notice(CatalogEmpty.Text); }
         finally { if (search == cancellation) search = null; }
     }
     private async void SearchClick(object sender, RoutedEventArgs e) { offset = 0; await SearchAsync(); }
     private async void SearchKey(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) { offset = 0; await SearchAsync(); e.Handled = true; } }
-    private async void SourceChanged(object sender, SelectionChangedEventArgs e) { if (!initializing && page == "mods") { offset = 0; await SearchAsync(); } }
     private async void PreviousClick(object sender, RoutedEventArgs e) { offset = Math.Max(0, offset - 20); await SearchAsync(); }
     private async void NextClick(object sender, RoutedEventArgs e) { offset = Math.Min(10000, offset + 20); await SearchAsync(); }
     private async void InstallClick(object sender, RoutedEventArgs e)
@@ -215,7 +223,34 @@ public partial class MainWindow : Window
             UpdateChrome(); Notice(services.Settings.Current.AccountName + " · Microsoft");
         });
     }
-    private void SignOutClick(object sender, RoutedEventArgs e) => TryAction("Switch to local account", () => { services.Settings.Save(services.Settings.Current with { UseMicrosoft = false, AccountName = "", AccountId = "", RefreshToken = "" }); UpdateChrome(); });
+    private void SignOutClick(object sender, RoutedEventArgs e) => TryAction("Switch to local account", () => { services.AccountLibrary.UseLocal(NicknameInput.Text.Trim()); PopulateSettings(); UpdateChrome(); });
+    private void RefreshAccountChoices()
+    {
+        updatingAccounts = true;
+        try
+        {
+            var choices = services.AccountLibrary.Profiles.Select(profile => new SavedAccountChoice(profile, profile.Name + " · " + (profile.Kind == ToolLauncher.Accounts.Profiles.AccountKind.Microsoft ? "Microsoft" : LauncherLanguage.Get("accountLocal")))).ToArray();
+            AccountPicker.ItemsSource = choices;
+            var active = choices.FirstOrDefault(choice => choice.Profile.Identity == services.AccountLibrary.ActiveIdentity);
+            AccountPicker.SelectedItem = active;
+            AccountSelectionHint.Text = active == null ? "" : active.Profile.RequiresSignIn ? LauncherLanguage.Get("accountSignInRequired") : active.Profile.Source;
+        }
+        finally { updatingAccounts = false; }
+    }
+    private void AccountSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (initializing || updatingAccounts || AccountPicker.SelectedItem is not SavedAccountChoice selected) return;
+        TryAction("Select saved launcher account", () => { services.AccountLibrary.Select(selected.Profile.Identity); PopulateSettings(); UpdateChrome(); });
+    }
+    private void RemoveAccountClick(object sender, RoutedEventArgs e)
+    {
+        if (AccountPicker.SelectedItem is not SavedAccountChoice selected) return;
+        TryAction("Remove saved launcher account", () => { services.AccountLibrary.Remove(selected.Profile.Identity); PopulateSettings(); UpdateChrome(); });
+    }
+    private async void AccountImportClick(object sender, RoutedEventArgs e)
+    {
+        if (!busy) await AccountImportOverlay.OpenAsync(services);
+    }
     private void SaveSettingsClick(object sender, RoutedEventArgs e) => TryAction("Save launcher settings", () => { SavePreferences(); Notice(LauncherLanguage.Get("saved")); });
     private void MemoryChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { if (MemoryLabel != null) MemoryLabel.Text = (e.NewValue / 1024).ToString("0.#") + " GB"; }
     private void JavaBrowseClick(object sender, RoutedEventArgs e)

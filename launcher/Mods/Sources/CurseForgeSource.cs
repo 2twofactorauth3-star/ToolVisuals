@@ -8,20 +8,22 @@ namespace ToolLauncher.Mods.Sources;
 public sealed class CurseForgeSource(RemoteClient remote, Func<string> key) : IModSource
 {
     public string Name => "CurseForge";
+    public bool Available => !string.IsNullOrWhiteSpace(key());
     private const string Api = "https://api.curseforge.com/v1/";
     private string ApiKey() => key() is { Length: > 0 } value ? value : throw new InvalidOperationException("Add your CurseForge API key in launcher settings. You can also download the file on CurseForge and import its JAR.");
     public async Task<IReadOnlyList<ModProject>> SearchAsync(string query, GameTarget target, int offset, CancellationToken token)
     {
-        using var json = await remote.JsonAsync(Api + "mods/search?gameId=432&classId=6&modLoaderType=4&gameVersion=" + target.Minecraft + "&pageSize=20&index=" + Math.Max(0, offset) + "&sortField=2&sortOrder=desc&searchFilter=" + Uri.EscapeDataString(query), token, ApiKey());
-        return json.RootElement.GetProperty("data").EnumerateArray().Select(Project).ToArray();
+        using var json = await remote.JsonAsync(Api + "mods/search?gameId=432&classId=6&modLoaderType=4&gameVersion=" + target.Minecraft + "&pageSize=20&index=" + Math.Max(0, offset) + "&sortField=6&sortOrder=desc&searchFilter=" + Uri.EscapeDataString(query), token, ApiKey());
+        return json.RootElement.GetProperty("data").EnumerateArray().Select(Project).Where(CatalogPolicy.Allows).ToArray();
     }
-    private ModProject Project(JsonElement item) => new(Name, item.GetProperty("id").GetRawText(), item.GetProperty("name").GetString()!, item.GetProperty("summary").GetString()!, string.Join(", ", item.GetProperty("authors").EnumerateArray().Select(author => author.GetProperty("name").GetString())), item.GetProperty("downloadCount").GetInt64(), item.GetProperty("links").GetProperty("websiteUrl").GetString()!);
+    private ModProject Project(JsonElement item) => new(Name, item.GetProperty("id").GetRawText(), item.GetProperty("name").GetString()!, item.GetProperty("summary").GetString()!, string.Join(", ", item.GetProperty("authors").EnumerateArray().Select(author => author.GetProperty("name").GetString())), checked((long)decimal.Floor(item.GetProperty("downloadCount").GetDecimal())), item.GetProperty("links").GetProperty("websiteUrl").GetString()!);
     public async Task<ModRelease> ResolveAsync(ModProject project, GameTarget target, string? versionId, CancellationToken token)
     {
         string apiKey = ApiKey();
         if (!long.TryParse(project.Id, out _)) throw new InvalidDataException("Invalid CurseForge project ID");
         using var metadata = await remote.JsonAsync(Api + "mods/" + project.Id, token, apiKey);
         project = Project(metadata.RootElement.GetProperty("data"));
+        CatalogPolicy.EnsureAllowed(project);
         JsonElement file;
         if (versionId != null)
         {

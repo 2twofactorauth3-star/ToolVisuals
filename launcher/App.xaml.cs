@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 using ToolLauncher.Core;
 using ToolLauncher.Presentation;
+using ToolLauncher.Minecraft;
 
 namespace ToolLauncher;
 
@@ -16,6 +17,8 @@ public partial class App : Application
         base.OnStartup(e);
         try
         {
+            MemoryBudget memory = MemoryBudget.Detect();
+            memory.EnsureSupported();
             string? dataRoot = null;
             for (int index = 0; index < e.Args.Length; index++)
                 if (e.Args[index] == "--data-root" && index + 1 < e.Args.Length) dataRoot = Path.GetFullPath(e.Args[++index]);
@@ -23,7 +26,7 @@ public partial class App : Application
             string identity = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(paths.Root.ToLowerInvariant())))[..20];
             singleInstance = new Mutex(true, "Local\\ToolLauncher-" + identity, out bool created);
             if (!created) { MessageBox.Show("ToolLauncher is already running.", "ToolLauncher"); Shutdown(); return; }
-            services = new(paths.Root);
+            services = new(paths.Root, memory: memory);
             services.Log.Info("ToolLauncher 1.0.0 started");
             DispatcherUnhandledException += UiError;
             TaskScheduler.UnobservedTaskException += (_, args) => { services.Log.Error("Background task", args.Exception); args.SetObserved(); };
