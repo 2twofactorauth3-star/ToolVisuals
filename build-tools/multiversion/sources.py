@@ -271,8 +271,9 @@ def translate(text,version):
     text=text.replace('container.nonEmptyItemsStream()', 'container.nonEmptyStream()').replace('container.getSlots()', '(int)container.stream().count()')
     text=re.sub(r'\.rotateDegrees\((Axis\.\w+),([^;]+?)\);',r'.mulPose(\1.rotationDegrees(\2));',text)
     text=re.sub(r'(\w+)\.isSwinging\(\)',r'\1.swinging',text)
-    text=re.sub(r'(\w+)\.scoreText\s*=\s*null;',r'ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.clearScore(\1);',text)
-    text=re.sub(r'(\w+)\.scoreText\s*!=\s*null',r'ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.hasScore(\1)',text)
+    if not re.search(r'\bclass\s+VersionState\b',text):
+        text=re.sub(r'(\w+)\.scoreText\s*=\s*null;',r'ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.clearScore(\1);',text)
+        text=re.sub(r'(\w+)\.scoreText\s*!=\s*null',r'ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.hasScore(\1)',text)
     text=re.sub(r'(state\.lightCoords,\s*)camera\)',r'\1state.distanceToCameraSq,camera)',text)
     text=re.sub(r'(?:\w+\.)?cameraRenderState\.isFirstPerson|camera\.isFirstPerson',r'Minecraft.getInstance().options.getCameraType().isFirstPerson()',text)
     text=text.replace('camera.projectionMatrix','ru.he3hauka.toolvisuals.client.compatibility.render.VersionCamera.projection()')
