@@ -18,34 +18,59 @@ public static class ModArchive
         using var file = metadata.Open();
         using var json = JsonDocument.Parse(file, new JsonDocumentOptions { MaxDepth = 48 });
         var root = json.RootElement;
-        string id = root.GetProperty("id").GetString()!;
-        if (!Regex.IsMatch(id, "^[a-z][a-z0-9_-]{1,63}$")) throw new InvalidDataException("Invalid Fabric mod ID");
+        string id = ReadId(root);
         if (root.TryGetProperty("environment", out var environment) && environment.GetString() == "server") throw new InvalidDataException("This mod requires a server installation");
-        return new(id, root.TryGetProperty("name", out var name) ? name.GetString() ?? id : id, root.GetProperty("version").GetString()!, path, !path.EndsWith(".disabled"), root.TryGetProperty("depends", out var depends) ? depends.Clone() : default);
+        return new(id, root.TryGetProperty("name", out var name) ? name.GetString() ?? id : id, root.GetProperty("version").GetString()!, path, !path.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase), root.TryGetProperty("depends", out var depends) ? depends.Clone() : default);
     }
     public static HashSet<string> ProvidedIds(string archive)
     {
-        var result = new HashSet<string>(StringComparer.Ordinal);
+        return ReadIdentities(archive).Select(mod => mod.Id).ToHashSet(StringComparer.Ordinal);
+    }
+    public static IReadOnlyList<ModIdentity> ReadIdentities(string archive)
+    {
+        using var file = File.OpenRead(archive);
+        return ReadIdentities(file);
+    }
+    public static IReadOnlyList<ModIdentity> ReadIdentities(Stream archive)
+    {
+        var result = new List<ModIdentity>();
+        long nestedBytes = 0;
+        int archives = 0;
         void Scan(Stream stream, int depth)
         {
             if (depth > 4) throw new InvalidDataException("Nested mod depth is too large");
-            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+            if (++archives > 2048) throw new InvalidDataException("Too many nested archives");
+            using var zip = new ZipArchive(stream, ZipArchiveMode.Read, true);
             var metadata = zip.GetEntry("fabric.mod.json");
             if (metadata == null) return;
             if (metadata.Length > 256 * 1024) throw new InvalidDataException("Mod metadata is too large");
             using var source = metadata.Open();
-            using var json = JsonDocument.Parse(source);
-            result.Add(json.RootElement.GetProperty("id").GetString()!);
+            using var json = JsonDocument.Parse(source, new JsonDocumentOptions { MaxDepth = 48 });
+            var root = json.RootElement;
+            string id = ReadId(root);
+            var links = root.TryGetProperty("contact", out var contact) && contact.ValueKind == JsonValueKind.Object
+                ? contact.EnumerateObject().Where(item => item.Value.ValueKind == JsonValueKind.String).Select(item => item.Value.GetString()!).ToArray()
+                : [];
+            result.Add(new(id, root.TryGetProperty("name", out var name) ? name.GetString() ?? id : id, links));
             if (!json.RootElement.TryGetProperty("jars", out var jars)) return;
             if (jars.GetArrayLength() > 512) throw new InvalidDataException("Too many bundled mods");
             foreach (var nested in jars.EnumerateArray())
             {
                 var entry = zip.GetEntry(nested.GetProperty("file").GetString()!) ?? throw new InvalidDataException("Bundled mod is missing");
                 if (entry.Length > 128 * 1024 * 1024) throw new InvalidDataException("Nested mod is too large");
+                nestedBytes += entry.Length;
+                if (nestedBytes > 256 * 1024 * 1024) throw new InvalidDataException("Bundled mod data is too large");
                 using var input = entry.Open(); using var memory = new MemoryStream(); input.CopyTo(memory); memory.Position = 0; Scan(memory, depth + 1);
             }
         }
-        using var file = File.OpenRead(archive); Scan(file, 0); return result;
+        Scan(archive, 0);
+        return result;
+    }
+    private static string ReadId(JsonElement root)
+    {
+        string id = root.GetProperty("id").GetString()!;
+        if (!Regex.IsMatch(id, "^[a-z][a-z0-9_-]{1,63}$")) throw new InvalidDataException("Invalid Fabric mod ID");
+        return id;
     }
     public static void Validate(ModInfo mod, GameTarget target)
     {

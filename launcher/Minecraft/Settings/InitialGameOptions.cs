@@ -16,6 +16,7 @@ public static class InitialGameOptions
             ["simulationDistance"] = "4",
             ["guiScale"] = "2",
             ["particles"] = "1",
+            ["biomeBlendRadius"] = "0",
             ["fov"] = "0.5",
             ["bobView"] = "false",
             ["fovEffectScale"] = "0.0",
@@ -25,6 +26,7 @@ public static class InitialGameOptions
             ["autoJump"] = "false",
             ["soundCategory_music"] = "0.0"
         };
+        if (target.Minecraft != "1.21.4") defaults["cutoutLeaves"] = "false";
         AtomicJson.Write(Path.Combine(profile, ".toollauncher", "default-options.json"),
             new { schema = 1, minecraft = target.Minecraft });
         string temporary = options + "." + Guid.NewGuid().ToString("N") + ".tmp";

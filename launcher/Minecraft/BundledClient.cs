@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using ToolLauncher.Core;
 using ToolLauncher.Network;
+using System.Collections.Concurrent;
 
 namespace ToolLauncher.Minecraft;
 
@@ -12,6 +13,16 @@ public sealed record ClientBuild(string Minecraft, string File, string Version, 
 
 public static class BundledClient
 {
+    private static readonly ConcurrentDictionary<string, IReadOnlyList<ModIdentity>> Provided = new(StringComparer.Ordinal);
+
+    public static IReadOnlyList<ModIdentity> ProvidedMods(GameTarget target) => Provided.GetOrAdd(target.Minecraft, minecraft =>
+    {
+        var build = Builds().Single(item => item.Minecraft == minecraft);
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ToolLauncher.Clients." + build.File)
+            ?? throw new InvalidDataException("Bundled client archive is missing");
+        return ModArchive.ReadIdentities(stream);
+    });
+
     public static IReadOnlyList<ClientBuild> Builds()
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ToolLauncher.Clients.clients.json");

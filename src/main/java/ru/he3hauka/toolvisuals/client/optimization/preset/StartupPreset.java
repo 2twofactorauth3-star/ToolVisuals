@@ -12,6 +12,7 @@ import net.minecraft.client.Options;
 import net.minecraft.server.level.ParticleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class StartupPreset {
     private static final Logger LOGGER=LoggerFactory.getLogger("ToolVisuals");
@@ -40,7 +41,8 @@ public final class StartupPreset {
             options.cloudStatus().set(CloudStatus.OFF);
             options.entityShadows().set(false);
             options.particles().set(ParticleStatus.DECREASED);
-            options.biomeBlendRadius().set(2);
+            options.biomeBlendRadius().set(0);
+            StartupQuality.apply(options);
             options.enableVsync().set(false);
             options.framerateLimit().set(Options.UNLIMITED_FRAMERATE_CUTOFF);
             sodium.performance.animateOnlyVisibleTextures=true;
@@ -55,7 +57,7 @@ public final class StartupPreset {
             history.record(version,true);
             LOGGER.info("Applied the first-launch Minecraft/Sodium performance preset for {}",version);
         } catch(IOException|RuntimeException error) {
-            LOGGER.warn("Cannot apply the first-launch performance preset; configuration history preserved",error);
+            ClientErrors.report("Apply first-launch performance preset; configuration history preserved",error);
         }
     }
 }

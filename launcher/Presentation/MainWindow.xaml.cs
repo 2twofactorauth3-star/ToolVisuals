@@ -180,9 +180,10 @@ public partial class MainWindow : Window
         try
         {
             var result = await services.Catalog.SearchAsync(SearchInput.Text.Trim(), target, offset, cancellation.Token);
+            var available = await Task.Run(() => services.Mods.AvailableProjects(result.Projects, target), cancellation.Token);
             if (cancellation.IsCancellationRequested || search != cancellation) return;
-            CatalogList.ItemsSource = result.Projects; CatalogEmpty.Text = LauncherLanguage.Get("emptyMods");
-            CatalogEmpty.Visibility = result.Projects.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            CatalogList.ItemsSource = available; CatalogEmpty.Text = LauncherLanguage.Get("emptyMods");
+            CatalogEmpty.Visibility = available.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             NextCatalogPage.IsEnabled = result.HasNext;
             PageNumber.Text = (offset / 20 + 1).ToString();
         }
@@ -197,7 +198,9 @@ public partial class MainWindow : Window
     private async void InstallClick(object sender, RoutedEventArgs e)
     {
         var project = (ModProject)((Button)sender).DataContext;
-        await RunAsync("Install " + project.Title, async token => { await services.Mods.InstallAsync(services.Sources.Single(source => source.Name == project.Source), project, Selected(), Progress(), token); Notice(project.Title + " · " + LauncherLanguage.Get("done")); });
+        bool installed = false;
+        await RunAsync("Install " + project.Title, async token => { await services.Mods.InstallAsync(services.Sources.Single(source => source.Name == project.Source), project, Selected(), Progress(), token); installed = true; RefreshInstalled(); Notice(project.Title + " · " + LauncherLanguage.Get("done")); });
+        if (installed && page == "mods") await SearchAsync();
     }
     private void RefreshInstalled()
     {
