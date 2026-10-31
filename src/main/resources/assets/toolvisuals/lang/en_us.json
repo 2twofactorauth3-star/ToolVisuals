@@ -1745,6 +1745,8 @@
   "toolvisuals.setting.left_hand_no_equip": "Left: Static equip",
   "toolvisuals.setting.left_hand_no_swing": "Left: No swing",
   "toolvisuals.discord.download": "Download",
+  "toolvisuals.discord.join": "Join",
+  "toolvisuals.discord.developer": "Developer",
   "toolvisuals.discord.version": "Version %s",
   "toolvisuals.discord.server": "Playing on %s",
   "toolvisuals.discord.mode.menu": "In the main menu",

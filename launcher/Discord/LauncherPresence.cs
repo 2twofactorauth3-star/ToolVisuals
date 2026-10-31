@@ -137,9 +137,9 @@ public sealed class LauncherPresence : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         suspended = true; Refresh();
-        await Task.Delay(120);
+        await Task.Delay(120).ConfigureAwait(false);
         shutdown.Cancel();
-        try { await worker; } catch (OperationCanceledException) { }
+        try { await worker.ConfigureAwait(false); } catch (OperationCanceledException) { }
         writes.Dispose(); shutdown.Dispose();
     }
 }

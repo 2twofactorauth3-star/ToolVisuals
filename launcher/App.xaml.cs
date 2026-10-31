@@ -29,7 +29,10 @@ public partial class App : Application
             TaskScheduler.UnobservedTaskException += (_, args) => { services.Log.Error("Background task", args.Exception); args.SetObserved(); };
             AppDomain.CurrentDomain.UnhandledException += (_, args) => services.Log.Error("Unhandled launcher exception", args.ExceptionObject as Exception ?? new Exception(args.ExceptionObject.ToString()));
             LauncherLanguage.Apply(services.Settings.Current.Language);
-            MainWindow = new MainWindow(services); MainWindow.Show();
+            MainWindow = new MainWindow(services);
+            services.Log.Info("ToolLauncher window prepared");
+            MainWindow.Show();
+            services.Log.Info("ToolLauncher window initialized");
         }
         catch (Exception error)
         {
@@ -46,7 +49,7 @@ public partial class App : Application
     {
         if (services != null)
         {
-            try { services.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+            try { services.DisposeAsync().AsTask().GetAwaiter().GetResult(); services.Log.Info("ToolLauncher stopped"); }
             catch (Exception error) { services.Log.Error("Close launcher services", error); }
         }
         singleInstance?.Dispose(); base.OnExit(e);

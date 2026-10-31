@@ -30,7 +30,7 @@ public sealed class LauncherServices : IAsyncDisposable
     }
     public async ValueTask DisposeAsync()
     {
-        if (Presence != null) await Presence.DisposeAsync();
+        if (Presence != null) await Presence.DisposeAsync().ConfigureAwait(false);
         Accounts.Dispose(); Remote.Dispose();
     }
 }

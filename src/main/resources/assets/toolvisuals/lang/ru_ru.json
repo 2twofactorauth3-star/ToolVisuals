@@ -1745,6 +1745,8 @@
   "toolvisuals.setting.left_hand_no_equip": "Левая: без смены предмета",
   "toolvisuals.setting.left_hand_no_swing": "Левая: без взмаха",
   "toolvisuals.discord.download": "Скачать",
+  "toolvisuals.discord.join": "Присоединиться",
+  "toolvisuals.discord.developer": "Разработчик",
   "toolvisuals.discord.version": "Версия %s",
   "toolvisuals.discord.server": "Играет на %s",
   "toolvisuals.discord.mode.menu": "В главном меню",
