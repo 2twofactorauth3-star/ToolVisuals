@@ -10,7 +10,14 @@ Any redistribution or derived work must keep this notice, credit the author
 (Zako, https://t.me/StarikZako) and state what was changed.
 
 ToolVisuals adaptations (2026): selected text and particle-light cache techniques,
-ported for Minecraft 26.3; per-Font bounded caches, reload invalidation,
-NameProtect integration and position-aware particle cache invalidation.
+per-Font bounded caches, reload invalidation, NameProtect integration and
+position-aware particle cache invalidation across the three native clients.
+Updated 2026-11-03 against ZakoOpt 2.0.4: bubble-column fluid lookups use a
+bounded thread-local cache, weak world identity and game-tick/block-update/chunk
+invalidation. Held-item rotations on 1.21.4 and 1.21.11 reuse thread-local
+quaternions at immediate pose-stack consumption sites; 26.3 already uses
+allocation-free pose rotation. These are selected source adaptations, not the
+complete ZakoOpt mod; its GPU rings, skin atlas and mesh replay are not included.
 Upstream: https://github.com/3ako/ZakoOpt
-Reference commit: 43f63a50699d1f3f0270cb757fdc7db3bfa95b63
+Original reference commit: 43f63a50699d1f3f0270cb757fdc7db3bfa95b63
+Updated reference commit: c22e80dfdc9ffa5acabd7155a9e1f1e27f577b77

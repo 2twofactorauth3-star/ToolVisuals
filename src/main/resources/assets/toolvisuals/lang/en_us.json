@@ -560,6 +560,7 @@
   "toolvisuals.setting.opt_prepared_text": "Cache prepared text",
   "toolvisuals.setting.opt_ui_metrics": "Cache GUI text widths",
   "toolvisuals.setting.opt_particle_light": "Cache particle lighting",
+  "toolvisuals.setting.opt_particle_fluid": "Cache bubble fluid checks",
   "toolvisuals.module.auto_sprint": "Automatically sprint while moving forward",
   "toolvisuals.module.no_hurt_cam": "Control damage shake, walking bob, sprint FOV and distortion",
   "toolvisuals.setting.cam_hurt": "Damage shake",

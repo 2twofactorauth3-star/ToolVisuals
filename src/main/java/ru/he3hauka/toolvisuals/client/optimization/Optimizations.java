@@ -10,7 +10,7 @@ import ru.he3hauka.toolvisuals.client.optimization.text.PreparedTextCache;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class Optimizations {
-    private static final VisualSetting[] FEATURES = {OPT_PREPARED_TEXT,OPT_UI_METRICS,OPT_PARTICLE_LIGHT,
+    private static final VisualSetting[] FEATURES = {OPT_PREPARED_TEXT,OPT_UI_METRICS,OPT_PARTICLE_LIGHT,OPT_PARTICLE_FLUID,
             OPT_FAST_VISUALS,OPT_FAST_HUD,OPT_ENTITY_CULLING,OPT_BLOCK_ENTITY_CULLING,OPT_EFFECT_BUDGET,
             OPT_HIDDEN_FACES,OPT_STATIC_BLOCK_ENTITIES,OPT_CHUNK_BUDGET};
     private static volatile EnumSet<VisualSetting> enabled = EnumSet.copyOf(java.util.List.of(FEATURES));
@@ -23,5 +23,6 @@ public final class Optimizations {
                 if (config.flag(feature)) next.add(feature);
         if (enabled.equals(next)) return;
         enabled = next; PreparedTextCache.invalidate();
+        ru.he3hauka.toolvisuals.client.optimization.particles.ParticleFluids.invalidate();
     }
 }

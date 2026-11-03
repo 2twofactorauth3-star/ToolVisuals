@@ -93,6 +93,7 @@ def translate(text,version):
     for before,after in relocations.items():text=text.replace(before.replace('/','.'),after.replace('/','.')).replace(before,after)
     text=text.replace('net.minecraft.client.model.player.AvatarModel','net.minecraft.client.model.player.PlayerModel' if version=='1.21.11' else 'net.minecraft.client.model.PlayerModel')
     if version=='1.21.4':
+        text=text.replace('"submitArmWithItem"', '"renderArmWithItem"')
         text=text.replace('net.minecraft.client.input.', 'ru.he3hauka.toolvisuals.client.compatibility.input.')
         text=text.replace('net.minecraft.world.entity.Player','net.minecraft.world.entity.player.Player')
         text=text.replace('net.minecraft.core.ResourceLocation', 'net.minecraft.resources.ResourceLocation')

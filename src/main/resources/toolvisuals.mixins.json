@@ -31,6 +31,8 @@
     "optimization.OptimizationFontMixin",
     "optimization.OptimizationFontManagerMixin",
     "optimization.OptimizationParticleMixin",
+    "optimization.OptimizationBubbleMixin",
+    "optimization.OptimizationFluidUpdatesMixin",
     "menu.FeaturedServerListMixin",
     "menu.FeaturedServerScreenMixin",
     "menu.FeaturedServerEntryMixin",

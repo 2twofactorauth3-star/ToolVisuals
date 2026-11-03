@@ -24,3 +24,18 @@ Adapted from ZakoOpt's stable text marking; see META-INF/licenses/zakoopt/NOTICE
 src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationParticleMixin.java
 SPDX-License-Identifier: LGPL-3.0-only
 Adapted from ZakoOpt's per-tick particle lighting; see META-INF/licenses/zakoopt/NOTICE.
+
+src/main/java/ru/he3hauka/toolvisuals/client/optimization/cache/TickPositionCache.java
+src/main/java/ru/he3hauka/toolvisuals/client/optimization/particles/ParticleFluids.java
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationBubbleMixin.java
+src/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationFluidUpdatesMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from common/src/main/java/zako/opt/mixin/particle/BubbleColumnUpParticleMixin.java
+in ZakoOpt 2.0.4, with bounded per-thread caches and block/chunk invalidation.
+
+src/main/java/ru/he3hauka/toolvisuals/client/optimization/equipment/ItemTurns.java
+versions/common/main/java/ru/he3hauka/toolvisuals/mixin/optimization/OptimizationItemTurnsMixin.java
+SPDX-License-Identifier: LGPL-3.0-only
+Adapted from common/src/main/java/zako/opt/entity/Turns.java and
+1.21.9+/src/main/java/zako/opt/mixin/entity/HeldItemTurnsMixin.java in ZakoOpt 2.0.4.
+Scratch rotations are isolated per thread and injected only at verified immediate consumers.

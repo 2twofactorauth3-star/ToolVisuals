@@ -560,6 +560,7 @@
   "toolvisuals.setting.opt_prepared_text": "Кэш отрисовки текста",
   "toolvisuals.setting.opt_ui_metrics": "Кэш размера текста GUI",
   "toolvisuals.setting.opt_particle_light": "Кэш освещения частиц",
+  "toolvisuals.setting.opt_particle_fluid": "Кэш проверки воды пузырьками",
   "toolvisuals.module.auto_sprint": "Автоматический спринт при движении вперёд",
   "toolvisuals.module.no_hurt_cam": "Тряска от урона, покачивание, FOV при беге и искажения",
   "toolvisuals.setting.cam_hurt": "Тряска от урона",
