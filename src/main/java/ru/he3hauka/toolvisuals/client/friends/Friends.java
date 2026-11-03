@@ -20,6 +20,7 @@ public final class Friends {
     }
     public static boolean online(String name) { return name!=null&&onlineNames.contains(name.toLowerCase(Locale.ROOT)); }
     public static Set<String> onlineNames() { return onlineNames; }
+    public static Map<UUID,String> onlinePlayers() { return online; }
     public static void tick(Minecraft client) {
         var current=client.getConnection();
         if(current!=connection) { connection=current;online=Map.of();onlineNames=Set.of();ticks=0; }

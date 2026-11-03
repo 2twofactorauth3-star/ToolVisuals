@@ -121,7 +121,7 @@ public final class ModuleSearch {
             case POTION_HUD->"эффекты зелья поты время potion effects";
             case COOLDOWN_HUD->"кулдауны задержки перезарядка cooldown timer";
             case CLIENT_LIST->"клиентлист список клиентов игроки визуалы toolvisuals online clients list";
-            case FRIENDS_LIST->"друзья френдс онлайн friends online";
+            case FRIENDS_LIST->"друзья френдс онлайн хп здоровье броня инвентарь friends online health armor inventory";
             case CHAT_TABS->"вкладки чат фильтры сообщения chat filter";
             case DURABILITY_ALERT->"поломка прочность предупреждения durability alert";
             case ITEM_INFO->"подсказки предметы прочность еда item tooltip food";

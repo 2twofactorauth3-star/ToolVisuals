@@ -154,6 +154,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ru.he3hauka.toolvisuals.client.social.SocialClient.initialize();
         ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient.initialize();
         ru.he3hauka.toolvisuals.client.cape.CapeClient.initialize();
+        ru.he3hauka.toolvisuals.client.friends.network.FriendDataClient.initialize();
         ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryClient.initialize();
         ru.he3hauka.toolvisuals.client.social.presence.ClientListClient.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.social.SocialClient::tick);

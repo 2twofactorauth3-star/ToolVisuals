@@ -1854,5 +1854,22 @@
   "toolvisuals.choice.experience": "Experience",
   "toolvisuals.capes.animation_import": "Prepare cape animation",
   "toolvisuals.capes.animation_conversion": "Source: %s frames → cape: %s frames at %s FPS",
-  "toolvisuals.capes.processing": "Processing image…"
+  "toolvisuals.capes.processing": "Processing image…",
+  "toolvisuals.setting.friends_list_health": "Show friends’ health",
+  "toolvisuals.setting.friends_list_armor": "Show friends’ armor",
+  "toolvisuals.setting.friends_list_inventory": "Show friends’ inventory",
+  "toolvisuals.setting.friends_list_inventory_mode": "Inventory display",
+  "toolvisuals.choice.grid": "Grid",
+  "toolvisuals.choice.on_hover": "On hover",
+  "toolvisuals.friends.list_health": "Health · %s",
+  "toolvisuals.friends.list_armor": "Armor · %s",
+  "toolvisuals.friends.list_inventory": "Inventory · %s",
+  "toolvisuals.friends.list_mode": "%s · %s",
+  "toolvisuals.friends.list_mode_default": "Use general display mode",
+  "toolvisuals.friends.list_mode_grid": "Inventory grid",
+  "toolvisuals.friends.list_mode_hover": "Inventory on hover",
+  "toolvisuals.friends.list_profiles": "Configure each friend",
+  "toolvisuals.friends.list_sync_hint": "Full inventories are shared by the server plugin between mutual friends with FriendsList enabled. Hover mode opens from chat.",
+  "toolvisuals.friends_list.hp": "%s HP",
+  "toolvisuals.friends_list.inventory_unavailable": "Inventory: no shared data"
 }

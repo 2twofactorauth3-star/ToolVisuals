@@ -1854,5 +1854,22 @@
   "toolvisuals.choice.experience": "Опыт",
   "toolvisuals.capes.animation_import": "Подготовка анимации плаща",
   "toolvisuals.capes.animation_conversion": "Исходник: %s кадров → плащ: %s кадров, %s кадр/с",
-  "toolvisuals.capes.processing": "Обработка изображения…"
+  "toolvisuals.capes.processing": "Обработка изображения…",
+  "toolvisuals.setting.friends_list_health": "Показывать ХП друзей",
+  "toolvisuals.setting.friends_list_armor": "Показывать броню друзей",
+  "toolvisuals.setting.friends_list_inventory": "Показывать инвентарь друзей",
+  "toolvisuals.setting.friends_list_inventory_mode": "Отображение инвентаря",
+  "toolvisuals.choice.grid": "Сетка",
+  "toolvisuals.choice.on_hover": "При наведении",
+  "toolvisuals.friends.list_health": "ХП · %s",
+  "toolvisuals.friends.list_armor": "Броня · %s",
+  "toolvisuals.friends.list_inventory": "Инвентарь · %s",
+  "toolvisuals.friends.list_mode": "%s · %s",
+  "toolvisuals.friends.list_mode_default": "Общий режим инвентаря",
+  "toolvisuals.friends.list_mode_grid": "Инвентарь сеткой",
+  "toolvisuals.friends.list_mode_hover": "Инвентарь при наведении",
+  "toolvisuals.friends.list_profiles": "Настроить каждого друга",
+  "toolvisuals.friends.list_sync_hint": "Полный инвентарь передаёт серверный плагин между взаимными друзьями с включённым FriendsList. Наведение работает в открытом чате.",
+  "toolvisuals.friends_list.hp": "%s ХП",
+  "toolvisuals.friends_list.inventory_unavailable": "Инвентарь: нет общих данных"
 }

@@ -37,6 +37,7 @@ public final class EmotePacketGuard {
     private boolean allowSingle(Packet<?> packet, long now) {
         if (packet instanceof ServerboundCustomPayloadPacket request) {
             var value=request.payload();
+            if(value instanceof ru.he3hauka.toolvisuals.client.friends.network.FriendPayload.Request)return assetRequests.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.network.friends.FriendWire.MAX_REQUEST);
             if(value instanceof CapePayload.FragmentRequest part)return assetRequests.allow(now)&&bytes.allow(now,16+part.value().fragment().size());
             if(value instanceof CapePayload.AnimatedRequest animated&&animated.value().design()!=null&&animated.value().design().frameCount>1)return false;
             if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload)return assetRequests.allow(now);
@@ -46,6 +47,7 @@ public final class EmotePacketGuard {
         }
         if (packet instanceof ClientboundCustomPayloadPacket state) {
             var value=state.payload();
+            if(value instanceof ru.he3hauka.toolvisuals.client.friends.network.FriendPayload.State friend){int cost=ru.he3hauka.toolvisuals.network.friends.FriendWire.size(friend.value());return (friend.value().kind()==ru.he3hauka.toolvisuals.network.friends.FriendWire.Kind.REPLY?controls:assets).allow(now)&&bytes.allow(now,cost);}
             if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload features)return controls.allow(now)&&bytes.allow(now,features.bytes().length);
             if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.State)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.MAX_STATE);
             if(value instanceof ru.he3hauka.toolvisuals.client.presents.network.WorldContextMessage)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.network.world.WorldContextWire.MAX_NAMED_BYTES);

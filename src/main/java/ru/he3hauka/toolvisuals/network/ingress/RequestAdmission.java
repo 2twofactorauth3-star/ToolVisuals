@@ -23,6 +23,7 @@ public final class RequestAdmission {
         CAPE(CapeWire.REQUEST_CHANNEL,CapeTransferWire.PACKET_LIMIT),
         ANIMATED_CAPE(CapeWire.ANIMATED_REQUEST_CHANNEL,CapeTransferWire.PACKET_LIMIT),
         CAPE_FRAGMENT(CapeTransferWire.REQUEST_CHANNEL,CapeTransferWire.MAX_REQUEST),
+        FRIENDS(ru.he3hauka.toolvisuals.network.friends.FriendWire.REQUEST_CHANNEL,ru.he3hauka.toolvisuals.network.friends.FriendWire.MAX_REQUEST),
         PRESENCE(PresenceWire.REQUEST_CHANNEL,1),
         ACCESSORY(AccessoryWire.REQUEST_CHANNEL,AccessoryWire.MAX_REQUEST),
         SOCIAL_COMMAND(SocialCommandWire.REQUEST_CHANNEL,SocialCommandWire.MAX_REQUEST),

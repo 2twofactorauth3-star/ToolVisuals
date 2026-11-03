@@ -317,6 +317,7 @@ public class VisualsScreen extends Screen implements MovementScreen {
                 var pairKey=addWidget(new VisualsButton(0,0,paneWidth-8,44,tr("emotes.pair_key",ToolVisualsClient.pairedEmoteKey.getTranslatedKeyMessage()),CHIP,UiPaint.Icon.KEYBOARD,Component.empty(),()->minecraft.gui.setScreen(new KeyBindsScreen(this,minecraft.options)),null));
                 pairKey.setTooltip(net.minecraft.client.gui.components.Tooltip.create(tr("emotes.pair_key_hint")));rows.add(pairKey);
             }
+            if(selectedModule==VisualModule.FRIENDS_LIST)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,tr("friends.list_profiles"),CHIP,UiPaint.Icon.PLAYER,tr("friends.list_sync_hint"),()->minecraft.gui.setScreen(new FriendsScreen(this)),null)));
             for (VisualSetting setting : VisualSetting.values()) {
                 if (setting.module != selectedModule || !config.available(setting)) continue;
                 if (selectedModule == VisualModule.DROP_PROTECT && !ru.he3hauka.toolvisuals.client.items.dropprotect.DropCategory.visible(config, setting)) continue;

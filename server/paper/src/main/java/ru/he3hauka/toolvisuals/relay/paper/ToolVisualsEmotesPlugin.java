@@ -105,10 +105,12 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
     private RewardService rewards;
     private AutoCloseable placeholders;
     private ru.he3hauka.toolvisuals.relay.paper.minigame.MiniGameRelay minigames;
+    private ru.he3hauka.toolvisuals.relay.paper.friends.FriendRelay friendRelay;
 
     @Override public void onEnable(){
         running=true;
         minigames=new ru.he3hauka.toolvisuals.relay.paper.minigame.MiniGameRelay(this);
+        friendRelay=new ru.he3hauka.toolvisuals.relay.paper.friends.FriendRelay(this,ledger.server);
         ServerConfiguration configuration = null;
         try { configuration = new ServerConfiguration(this); rewards = new RewardService(this, clients, configuration); }
         catch (Exception | LinkageError error) { getLogger().log(java.util.logging.Level.SEVERE, "Rewards could not start; the visual relay remains available", error); }
@@ -128,6 +130,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
     @Override public void onDisable(){
         running=false;
         if(minigames!=null)minigames.close();
+        if(friendRelay!=null)friendRelay.close();
         ingress.clear();
         if(cleanup!=null)cleanup.cancel();
         for(var peer:List.copyOf(peers.values()))retire(peer);
@@ -162,7 +165,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(peer.watch!=null)peer.watch.cancel();
     }
     private boolean current(Peer peer){return running&&!peer.closed.get()&&peers.get(peer.id)==peer;}
-    private static final Set<String> OUTPUT_CHANNELS=Set.of(ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeTransferWire.STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
+    private static final Set<String> OUTPUT_CHANNELS=Set.of(ru.he3hauka.toolvisuals.network.friends.FriendWire.STATE_CHANNEL,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeTransferWire.STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
     private void capabilities(Peer peer){
         peer.channels=capabilities(peer.player);
     }
@@ -254,6 +257,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(channel.equals(SocialCommandWire.REQUEST_CHANNEL)){receiveSocialCommand(player,bytes);return;}
         if(channel.equals(AccessoryWire.REQUEST_CHANNEL)){receiveAccessory(player,bytes);return;}
         if(channel.equals(PresenceWire.REQUEST_CHANNEL)){receivePresence(player,bytes);return;}
+        if(channel.equals(ru.he3hauka.toolvisuals.network.friends.FriendWire.REQUEST_CHANNEL)){friendRelay.receive(player,bytes);return;}
         if(channel.equals(CapeTransferWire.REQUEST_CHANNEL)){receiveCapeFragment(player,bytes);return;}
         if(channel.equals(CapeWire.REQUEST_CHANNEL)||channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL)){receiveCape(player,bytes,channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL));return;}
         boolean social=channel.equals(SocialProtocol.REQUEST_CHANNEL);

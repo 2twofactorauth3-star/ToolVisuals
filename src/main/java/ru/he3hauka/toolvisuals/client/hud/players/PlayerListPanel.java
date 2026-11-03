@@ -24,7 +24,15 @@ import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 import ru.he3hauka.toolvisuals.client.utility.privacy.PrivacyMode;
 
 public final class PlayerListPanel {
-    public record Row(String name,String status,int color,boolean active){}
+    public interface Details {
+        float rightWidth(GuiGraphicsExtractor graphics);
+        float extraHeight();
+        float minimumWidth();
+        void draw(GuiGraphicsExtractor graphics,UiPalette palette,float x,float y,float width);
+    }
+    public record Row(String name,String status,int color,boolean active,Details details){
+        public Row(String name,String status,int color,boolean active){this(name,status,color,active,null);}
+    }
     private static final int HEADER=26,ROW=23;
     private record Style(int limit,float xx,float xy,int guiScale,boolean protect,boolean streamer,String alias,String user,long privacy){}
     private record Measurement(List<Row> rows,Style style,float width){}
@@ -44,11 +52,9 @@ public final class PlayerListPanel {
         try{
             float screenWidth=g.guiWidth()/scale,screenHeight=g.guiHeight()/scale;
             float column=Math.min(columnWidth(g,element,rows,nameLimit),Math.max(1,screenWidth-32));
-            int rowLimit=Math.max(1,(int)((Math.min(screenHeight-32,screenHeight*.6f)-HEADER-8)/ROW));
             int maxColumns=Math.max(1,(int)((screenWidth-32)/column));
-            int columns=Math.min(maxColumns,Math.max(1,(rows.size()+rowLimit-1)/rowLimit));
-            int shown=Math.min(rows.size(),rowLimit*columns);
-            float w=16+column*columns,h=HEADER+Math.min(rowLimit,Math.max(1,shown))*ROW+3;
+            var layout=PlayerPanelLayout.arrange(rows.stream().map(row->ROW+(row.details==null?0:row.details.extraHeight())).toList(),Math.max(ROW,Math.min(screenHeight-32,screenHeight*.6f)-HEADER-8),maxColumns);
+            float w=16+column*layout.columns(),h=HEADER+layout.height()+3;
             float x=HudFormats.position(screenWidth,w,HudPlacement.value(element.xSetting));
             float y=HudFormats.position(screenHeight,h,HudPlacement.value(element.ySetting));
             HudPlacement.place(g,element,x,y,w,h);
@@ -59,13 +65,14 @@ public final class PlayerListPanel {
                 UiPaint.baseline(g,UiPaint.fit(g,title,w-44-countWidth,.86f),x+28,UiPaint.textBaseline(g,y,HEADER,.86f),.86f,palette.text,1);
                 UiPaint.baseline(g,count,x+w-8-countWidth,UiPaint.textBaseline(g,y,HEADER,.75f),.75f,palette.muted,1);
                 g.fill(Math.round(x+8),Math.round(y+HEADER-1),Math.round(x+w-8),Math.round(y+HEADER),palette.border);
-                for(int i=0;i<shown;i++){
-                    float rx=x+8+(i/rowLimit)*column,ry=y+HEADER+(i%rowLimit)*ROW;
-                    if(shown<rows.size()&&i==shown-1){
-                        UiPaint.baseline(g,UiI18n.tr(moreKey,rows.size()-shown+1).getString(),rx+5,UiPaint.textBaseline(g,ry,ROW,.8f),.8f,palette.muted,1);
+                for(var cell:layout.cells()){
+                    float rx=x+8+cell.column()*column,ry=y+HEADER+cell.y();
+                    if(cell.index()<0){
+                        UiPaint.baseline(g,UiI18n.tr(moreKey,layout.more()).getString(),rx+5,UiPaint.textBaseline(g,ry,ROW,.8f),.8f,palette.muted,1);
                     }else {
-                        row(g,palette,rows.get(i),rx,ry,column,nameLimit);
-                        if(clickable){var point=g.pose().transformPosition(rx,ry,new Vector2f());hits.add(new Hit(i,new HudPlacement.Bounds(point.x,point.y,column*g.pose().m00(),ROW*g.pose().m11())));}
+                        g.enableScissor(Math.round(rx),Math.round(ry),Math.round(rx+column),Math.round(ry+cell.height()));
+                        row(g,palette,rows.get(cell.index()),rx,ry,column,nameLimit);g.disableScissor();
+                        if(clickable){var point=g.pose().transformPosition(rx,ry,new Vector2f());hits.add(new Hit(cell.index(),new HudPlacement.Bounds(point.x,point.y,column*g.pose().m00(),cell.height()*g.pose().m11())));}
                     }
                 }
                 if(clickable)HITS.put(element,List.copyOf(hits));
@@ -83,7 +90,8 @@ public final class PlayerListPanel {
         float width=144;
         for(var row:rows){
             String name=PlayerNames.shorten(NameProtect.text(row.name),limit);
-            width=Math.max(width,UiPaint.textWidth(g,name,.86f)+UiPaint.textWidth(g,row.status,.68f)+29);
+            width=Math.max(width,UiPaint.textWidth(g,name,.86f)+UiPaint.textWidth(g,row.status,.68f)+29+(row.details==null?0:row.details.rightWidth(g)));
+            if(row.details!=null)width=Math.max(width,row.details.minimumWidth());
         }
         MEASUREMENTS.put(element,new Measurement(rows,style,width));return width;
     }
@@ -91,9 +99,11 @@ public final class PlayerListPanel {
     private static void row(GuiGraphicsExtractor g,UiPalette palette,Row row,float x,float y,float width,int limit){
         int color=row.active?(row.color==0?palette.accentText:row.color):palette.muted;
         float statusWidth=UiPaint.textWidth(g,row.status,.68f);
+        float detailsWidth=row.details==null?0:row.details.rightWidth(g);
         UiPaint.rounded(g,x+1,y+9,5,5,2.5f,color);
         var name=Component.literal(PlayerNames.shorten(NameProtect.text(row.name),limit));
-        UiPaint.baseline(g,UiPaint.fit(g,name,Math.max(0,width-statusWidth-23),.86f),x+13,UiPaint.textBaseline(g,y,ROW,.86f),.86f,color,1);
+        UiPaint.baseline(g,UiPaint.fit(g,name,Math.max(0,width-statusWidth-detailsWidth-23),.86f),x+13,UiPaint.textBaseline(g,y,ROW,.86f),.86f,color,1);
         UiPaint.baseline(g,row.status,x+width-5-statusWidth,UiPaint.textBaseline(g,y,ROW,.68f),.68f,palette.muted,1);
+        if(row.details!=null)row.details.draw(g,palette,x,y,width);
     }
 }

@@ -20,8 +20,10 @@ public final class FriendStore {
         public final String name;
         public final int color;
         public final ColorStyle style;
+        public final FriendDisplay display;
         public Friend(String name,int color) { this(name,ColorStyle.solid(color)); }
-        public Friend(String name,ColorStyle style) { this.name=name;this.style=ColorStyle.safe(style,0x77caff);this.color=this.style.colors.getFirst(); }
+        public Friend(String name,ColorStyle style) { this(name,style,FriendDisplay.DEFAULT); }
+        public Friend(String name,ColorStyle style,FriendDisplay display) { this.name=name;this.style=ColorStyle.safe(style,0x77caff);this.color=this.style.colors.getFirst();this.display=display==null?FriendDisplay.DEFAULT:display; }
     }
     public static final class Settings {
         public final boolean armor, global, join, leave, unarmored, nameColor, friendLabel;
@@ -93,10 +95,15 @@ public final class FriendStore {
     }
     public void color(String name,ColorStyle style) throws IOException {
         var old=get(name);if(old==null)throw new IllegalArgumentException("Unknown friend");
-        var next=new LinkedHashMap<>(friends);next.put(name.toLowerCase(Locale.ROOT),new Friend(old.name,style));
+        var next=new LinkedHashMap<>(friends);next.put(name.toLowerCase(Locale.ROOT),new Friend(old.name,style,old.display));
         write(next,settings);friends=Map.copyOf(next);revision++;
     }
     public void configure(Settings next) throws IOException { write(friends,next);settings=next;revision++; }
+    public void display(String name,FriendDisplay display) throws IOException {
+        var old=get(name);if(old==null)throw new IllegalArgumentException("Unknown friend");
+        var next=new LinkedHashMap<>(friends);next.put(name.toLowerCase(Locale.ROOT),new Friend(old.name,old.style,Objects.requireNonNull(display)));
+        write(next,settings);friends=Map.copyOf(next);revision++;
+    }
     public void load() throws IOException {
         try {
             file.read(json->{
@@ -104,9 +111,11 @@ public final class FriendStore {
             var data=GSON.fromJson(document,Saved.class);
             if(data==null||data.version!=1||data.friends==null||data.friends.size()>LIMIT)throw new IllegalArgumentException("Invalid friends");
             var next=new LinkedHashMap<String,Friend>();
+            int rowIndex=0;
             for(var friend:data.friends) {
                 if(friend==null||!ConnectionIdentity.valid(friend.name)||friend.color<0||friend.color>0xffffff)throw new IllegalArgumentException("Invalid friend");
-                if(next.putIfAbsent(friend.name.toLowerCase(Locale.ROOT),new Friend(friend.name,ColorStyle.safe(friend.style,friend.color)))!=null)throw new IllegalArgumentException("Duplicate friend");
+                var row=document.getAsJsonArray("friends").get(rowIndex++).getAsJsonObject();
+                if(next.putIfAbsent(friend.name.toLowerCase(Locale.ROOT),new Friend(friend.name,ColorStyle.safe(friend.style,friend.color),FriendDisplay.decode(row.get("display"))))!=null)throw new IllegalArgumentException("Duplicate friend");
             }
             if(data.settings!=null) {
                 var savedSettings=document.getAsJsonObject("settings");

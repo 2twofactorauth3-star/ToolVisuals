@@ -16,6 +16,7 @@ import ru.he3hauka.toolvisuals.client.friends.FriendStore;
 import ru.he3hauka.toolvisuals.client.friends.FriendStore.ArmorStyle;
 import ru.he3hauka.toolvisuals.client.friends.FriendStore.Option;
 import ru.he3hauka.toolvisuals.client.friends.Friends;
+import ru.he3hauka.toolvisuals.client.friends.FriendDisplay;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
@@ -37,7 +38,8 @@ public final class FriendsScreen extends Screen {
     private UiPalette palette = new UiPalette(0);
     private EditBox name;
     private HexColorField hex;
-    private VisualsButton add, apply, remove,armorMode;
+    private VisualsButton add, apply, remove,armorMode,inventoryMode;
+    private final List<VisualsButton> personal=new ArrayList<>();
     private String selected = "", draft = "";
     private Component status = Component.empty();
     private int px, py, pw, ph, left, listY, listBottom, listWidth, right, rightWidth, colorY,optionsTop,optionsBottom;
@@ -46,7 +48,7 @@ public final class FriendsScreen extends Screen {
     public FriendsScreen(Screen parent) { super(tr("title")); this.parent=parent; }
     private static Component tr(String key,Object... args) { return UiI18n.tr("toolvisuals.friends."+key,args); }
     @Override protected void init() {
-        controls.clear();rows.clear();options.clear();viewport=new UiViewport(width,height,minecraft.getWindow().getGuiScale());
+        controls.clear();rows.clear();options.clear();personal.clear();viewport=new UiViewport(width,height,minecraft.getWindow().getGuiScale());
         pw=Math.min(800,viewport.width-28);ph=Math.min(492,viewport.height-28);px=(viewport.width-pw)/2;py=(viewport.height-ph)/2;
         left=px+18;listWidth=Math.round((pw-60)*.43f);right=left+listWidth+24;rightWidth=px+pw-18-right;
         listY=py+64;listBottom=py+ph-78;
@@ -55,6 +57,11 @@ public final class FriendsScreen extends Screen {
         name.setResponder(value->{draft=value;updateActions();});
         add=control(controls,left+listWidth-30,py+ph-64,30,30,tr("add"),ICON,UiPaint.Icon.PLUS,this::addFriend,null);
         colorY=py+ph-132;optionsTop=py+60;optionsBottom=colorY-28;
+        for(var field:FriendDisplay.Field.values())personal.add(control(options,right,0,rightWidth-8,30,Component.empty(),OPTION,null,()->configureDisplay(field),()->{
+            var friend=store.get(selected);if(friend==null)return false;
+            return switch(field){case HEALTH->friend.display.health;case ARMOR->friend.display.armor;case INVENTORY->friend.display.inventory;};
+        }));
+        inventoryMode=control(options,right,0,rightWidth-8,30,Component.empty(),CHIP,UiPaint.Icon.HUD,this::nextInventoryMode,null);
         control(options,right,0,rightWidth-8,30,tr("armor"),OPTION,null,()->configure(Option.ARMOR),()->store.settings().armor);
         armorMode=control(options,right,0,rightWidth-8,30,Component.empty(),CHIP,UiPaint.Icon.RENDER,()->configure(Option.ARMOR_STYLE),null);
         control(options,right,0,rightWidth-8,30,tr("unarmored"),OPTION,null,()->configure(Option.UNARMORED),()->store.settings().unarmored);
@@ -112,6 +119,12 @@ public final class FriendsScreen extends Screen {
         add.active=ConnectionIdentity.valid(name.getValue())&&store.get(name.getValue())==null&&store.entries().size()<FriendStore.LIMIT;
         apply.active=typedColor()!=null&&(store.settings().global||store.get(selected)!=null);remove.active=store.get(selected)!=null;
         armorMode.setMessage(tr("armor_mode",tr(store.settings().armorStyle==ArmorStyle.FILL?"fill":"overlay")));
+        for(var field:FriendDisplay.Field.values()){
+            var button=personal.get(field.ordinal());button.active=store.get(selected)!=null&&ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST);
+            button.setMessage(tr("list_"+field.name().toLowerCase(Locale.ROOT),selected));
+        }
+        var profile=store.get(selected);inventoryMode.active=profile!=null&&ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST);
+        inventoryMode.setMessage(tr("list_mode",selected,tr("list_mode_"+(profile==null?FriendDisplay.InventoryMode.DEFAULT:profile.display.mode).name().toLowerCase(Locale.ROOT))));
     }
     private void addFriend() {
         try { if(store.add(name.getValue())) { selected=name.getValue();name.setValue("");refresh(); } }
@@ -124,6 +137,18 @@ public final class FriendsScreen extends Screen {
     private void configure(Option option) {
         try { store.configure(store.settings().toggle(option));refreshColor();updateActions(); }
         catch(java.io.IOException error) { status=tr("save_error"); }
+    }
+    private void configureDisplay(FriendDisplay.Field field){
+        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST))return;
+        var friend=store.get(selected);if(friend==null)return;
+        try{store.display(selected,friend.display.toggle(field));updateActions();}
+        catch(java.io.IOException error){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Save friend HUD preferences",error);status=tr("save_error");}
+    }
+    private void nextInventoryMode(){
+        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST))return;
+        var friend=store.get(selected);if(friend==null)return;
+        try{store.display(selected,friend.display.nextMode());updateActions();}
+        catch(java.io.IOException error){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Save friend inventory display mode",error);status=tr("save_error");}
     }
     private void applyColor() {
         var color=typedColor();if(color==null)return;
