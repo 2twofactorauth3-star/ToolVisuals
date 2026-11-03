@@ -467,7 +467,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         var task=peer.player.getScheduler().run(this,ignored->{if(current(peer))action.run();},()->retire(peer));
         if(task==null)retire(peer);
     }
-    private static boolean capeSupported(Peer peer){return peer.channels.contains(CapeTransferWire.STATE_CHANNEL)||peer.channels.contains(CapeWire.STATE_CHANNEL)||peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);}
+    private static boolean capeSupported(Peer peer){return peer.channels.contains(CapeTransferWire.STATE_CHANNEL);}
     private void route(Iterable<PlaybackLedger.Effect> effects){
         if(!running)return;
         for(var effect:effects){
@@ -519,13 +519,8 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
                     if(latest.epoch()!=cape.epoch()||latest.revision()!=cape.revision()){peer.cape.outgoing.offer(latest,System.nanoTime());continue;}
                 }
                 triedCape=true;
-                if(!capes.send(peer.id,System.nanoTime())){deferred.increment();break;}
-                if(peer.channels.contains(CapeTransferWire.STATE_CHANNEL)){
-                    for(var part:CapeTransferWire.split(cape)){peer.player.sendPluginMessage(this,CapeTransferWire.STATE_CHANNEL,CapeTransferWire.encode(part));sent.increment();}
-                }else{
-                    boolean animated=peer.channels.contains(CapeWire.ANIMATED_STATE_CHANNEL);
-                    peer.player.sendPluginMessage(this,animated?CapeWire.ANIMATED_STATE_CHANNEL:CapeWire.STATE_CHANNEL,animated?CapeWire.encodeAnimated(CapeTransferWire.legacy(cape)):CapeWire.encode(cape));sent.increment();
-                }
+                if(!capes.send(peer.id,CapeRelay.deliveryBytes(cape),System.nanoTime())){deferred.increment();break;}
+                for(var part:CapeTransferWire.split(cape)){peer.player.sendPluginMessage(this,CapeTransferWire.STATE_CHANNEL,CapeTransferWire.encode(part));sent.increment();}
                 peer.cape.outgoing.sent(cape,System.nanoTime());continue;
             }
             String channel;byte[] bytes;UUID badgeActor=null;boolean badgeVisible=false;

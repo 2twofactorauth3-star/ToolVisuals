@@ -62,7 +62,7 @@ def resources(version):
         path=archive_for(version,row);raw=path.read_bytes()
         if len(raw)!=row['bytes'] or hashlib.sha512(raw).hexdigest()!=row['sha512']:raise RuntimeError('Invalid pinned archive: '+path.name)
         with zipfile.ZipFile(path) as source:identity=json.loads(source.read('fabric.mod.json'))
-        if row['project'] not in {'fabric-api','viafabricplus','simple-voice-chat','appleskin','cloth-config'}:optimization.append(dict(row,id=identity['id'],preserve_archive=False))
+        if row['project'] not in {'fabric-api','viafabricplus','simple-voice-chat','appleskin','cloth-config','imagecodecs'}:optimization.append(dict(row,id=identity['id'],preserve_archive=False))
         if row['project'] in {'simple-voice-chat','appleskin'}:
             label='voicechat' if row['project']=='simple-voice-chat' else 'appleskin'
             (manifest/('bundled-'+label+'.json')).write_text(json.dumps(row,indent=2)+'\n')

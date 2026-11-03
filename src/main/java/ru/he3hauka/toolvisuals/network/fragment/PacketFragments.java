@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class PacketFragments {
-    public static final int DATA_BYTES=6000,HEADER_BYTES=5,MAX_BYTES=32768;
+    public static final int DATA_BYTES=4000,HEADER_BYTES=5,MAX_BYTES=32768;
     public static final long TIMEOUT=5_000_000_000L;
 
     public record Part(int total,int index,byte[] data) {

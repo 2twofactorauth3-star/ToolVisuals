@@ -132,8 +132,11 @@ def describe(version, root=ROOT):
 
 
 def resolve_rows(version, rows, root=ROOT):
-    return [describe(version, root) if row['project'] == 'viafabricplus' else row for row in rows]
+    from image_codecs import describe as image_codecs
+    return [describe(version, root) if row['project'] == 'viafabricplus' else row for row in rows if row['project'] != 'imagecodecs'] + [image_codecs(root)]
 
 
 def archive_for(version, row, root=ROOT):
+    if row['project'] == 'imagecodecs':
+        return root / 'build/components/imagecodecs' / row['file']
     return artifact(version, root) if row['project'] == 'viafabricplus' else root / 'versions' / version / 'libs' / row['file']

@@ -15,17 +15,17 @@ final class CapeResizeScreen extends VisualEditorScreen {
     private CapeImageImport.Layout selected;
 
     CapeResizeScreen(Screen parent,CapeImageImport source,Consumer<CapeDesign> apply) {
-        super(parent,CapeEditorScreen.text("resize_title"));this.source=source;this.apply=apply;selected=source.preferred;
+        super(parent,CapeEditorScreen.text(source.requiresResize()?"resize_title":"animation_import"));this.source=source;this.apply=apply;selected=source.preferred;
     }
 
     @Override protected void init() {
-        frame(620,324);
+        frame(620,354);
         int index=0;
         for(var layout:CapeImageImport.Layout.values()) {
             button(20+index++*146,136,134,32,Component.literal(layout.size()),null,()->selected=layout,()->selected==layout);
         }
-        button(20,272,282,32,tr("cancel"),UiPaint.Icon.CLOSE,this::onClose,null);
-        button(316,272,284,32,tr("apply"),UiPaint.Icon.CHECK,()->{
+        button(20,302,282,32,tr("cancel"),UiPaint.Icon.CLOSE,this::onClose,null);
+        button(316,302,284,32,tr("apply"),UiPaint.Icon.CHECK,()->{
             var design=source.fit(selected);apply.accept(design);onClose();
         },null);
     }
@@ -35,5 +35,6 @@ final class CapeResizeScreen extends VisualEditorScreen {
         UiPaint.text(graphics,CapeEditorScreen.text("resize_supported"),px+20,py+102,.8f,palette.muted,1);
         UiPaint.text(graphics,CapeEditorScreen.text("resize_target",selected.size()),px+20,py+190,.9f,palette.accentText,1);
         UiPaint.text(graphics,CapeEditorScreen.text("resize_hint"),px+20,py+228,.75f,palette.muted,1);
+        if(source.sourceFrames>1)UiPaint.text(graphics,CapeEditorScreen.text("animation_conversion",source.sourceFrames,source.frameCount,source.fps),px+20,py+263,.75f,palette.accentText,1);
     }
 }

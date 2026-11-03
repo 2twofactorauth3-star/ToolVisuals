@@ -7,7 +7,8 @@ import java.util.UUID;
 import ru.he3hauka.toolvisuals.network.fragment.PacketFragments;
 
 public final class CapeTransferWire {
-    public static final String REQUEST_CHANNEL="toolvisuals:cape_request_v3",STATE_CHANNEL="toolvisuals:cape_state_v3";
+    public static final String REQUEST_CHANNEL="toolvisuals:cape_request_v4",STATE_CHANNEL="toolvisuals:cape_state_v4";
+    public static final int PACKET_LIMIT=4096;
     public static final int MAX_REQUEST=16+PacketFragments.HEADER_BYTES+PacketFragments.DATA_BYTES;
     public static final int MAX_STATE=48+PacketFragments.HEADER_BYTES+PacketFragments.DATA_BYTES;
     public record RequestPart(long requestId,long epoch,PacketFragments.Part fragment){

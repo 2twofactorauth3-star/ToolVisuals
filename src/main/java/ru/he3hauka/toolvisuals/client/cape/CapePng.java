@@ -21,9 +21,7 @@ public final class CapePng {
         try(var stream=new BoundedInputStream(Files.newInputStream(path),MAX_BYTES)){return decode(stream.readAllBytes());}
     }
     public static CapeImageImport readImport(Path path) throws IOException {
-        try(var stream=new BoundedInputStream(Files.newInputStream(path),MAX_IMPORT_BYTES)) {
-            return new CapeImageImport(image(stream.readAllBytes(),false));
-        }
+        return ru.he3hauka.toolvisuals.client.cape.image.CapeImages.read(path);
     }
     public static CapeDesign decode(byte[] bytes) throws IOException {
         return fromImage(image(bytes,true));

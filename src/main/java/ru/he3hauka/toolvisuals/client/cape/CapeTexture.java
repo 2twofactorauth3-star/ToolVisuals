@@ -19,14 +19,16 @@ public final class CapeTexture implements AutoCloseable {
     private CapeDesign desired;
     private Object pending;
     private long retryAfter;
+    private long lastUpload=Long.MIN_VALUE;
     private net.minecraft.world.entity.player.PlayerSkin original,replacement;
     public CapeTexture(){this(false);}
     public CapeTexture(boolean foreground){this.foreground=foreground;}
     public boolean ready(){return texture!=null&&hash!=null;}
     public ClientAsset.Texture update(CapeDesign design){
-        if(design.frameCount>1){long now=System.nanoTime();design=design.at(Math.floorDiv(now,50_000_000L),(float)(Math.floorMod(now,50_000_000L)/50_000_000d));}
+        if(design.frameCount>1)design=ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.frame(design,System.nanoTime());
         desired=design;
-        if(!design.hash.equals(hash)&&pending==null&&System.nanoTime()>=retryAfter){
+        long now=System.nanoTime();
+        if(!design.hash.equals(hash)&&pending==null&&now>=retryAfter&&ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.uploadDue(lastUpload,now)){
             Object ticket=new Object();pending=ticket;
             boolean accepted=TextureUploads.offer(this,CapeAtlas.WIDTH*CapeAtlas.HEIGHT*4L,foreground,()->{
                 if(pending!=ticket)return;
@@ -37,6 +39,7 @@ public final class CapeTexture implements AutoCloseable {
                         texture=new DynamicTexture(()->id.toString(),pixels);Minecraft.getInstance().getTextureManager().register(id,texture);
                     }else{CapeAtlas.paint(next,texture.getPixels()::setPixel);texture.upload();}
                     hash=next.hash;
+                    lastUpload=System.nanoTime();
                 }finally{if(pending==ticket)pending=null;}
             },()->{if(pending==ticket)pending=null;retryAfter=System.nanoTime()+1_000_000_000L;});
             if(!accepted){pending=null;retryAfter=System.nanoTime()+100_000_000L;}
@@ -48,5 +51,5 @@ public final class CapeTexture implements AutoCloseable {
         if(state.skin!=original&&state.skin!=replacement){original=state.skin;CapeClient.skin(state,cape);replacement=state.skin;}
         else{state.skin=replacement;state.showCape=true;}
     }
-    @Override public void close(){TextureUploads.cancel(this);pending=null;desired=null;original=replacement=null;retryAfter=0;if(texture!=null){Minecraft.getInstance().getTextureManager().release(id);texture=null;}hash=null;}
+    @Override public void close(){TextureUploads.cancel(this);pending=null;desired=null;original=replacement=null;retryAfter=0;lastUpload=Long.MIN_VALUE;if(texture!=null){Minecraft.getInstance().getTextureManager().release(id);texture=null;}hash=null;}
 }

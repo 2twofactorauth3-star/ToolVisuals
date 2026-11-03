@@ -40,6 +40,7 @@
     "java": ">=25",
     "voicechat": "${voicechat_version}",
     "voicechat_api": ">=2.6.25",
-    "appleskin": "3.0.10+mc26.3"
+    "appleskin": "3.0.10+mc26.3",
+    "toolvisuals_imagecodecs": "3.15.3"
   }
 }

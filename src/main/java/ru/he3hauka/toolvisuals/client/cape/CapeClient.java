@@ -27,6 +27,7 @@ public final class CapeClient {
     private static long epoch,sequence,lastSent;
     private static Publication publication;
     private static CapeWire.Request pending;
+    private static CapeDesign selectedSource,selectedPublication;
     private static boolean confirmed;
     private CapeClient(){}
     public static void initialize(){
@@ -37,7 +38,6 @@ public final class CapeClient {
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.AnimatedState.TYPE,CapePayload.AnimatedState.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.State.TYPE,CapePayload.State.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(CapePayload.Ack.TYPE,CapePayload.Ack.CODEC);
-        ClientPlayNetworking.registerGlobalReceiver(CapePayload.State.TYPE,(payload,context)->receive(payload.value()));
         ClientPlayNetworking.registerGlobalReceiver(CapePayload.FragmentState.TYPE,(payload,context)->receive(payload.value()));
         ClientPlayNetworking.registerGlobalReceiver(CapePayload.Ack.TYPE,(payload,context)->{
             var ack=payload.value();if(pending!=null&&ack.requestId()==pending.requestId()&&ack.epoch()==epoch&&Objects.equals(server,ack.server())&&ack.accepted()){pending=null;confirmed=true;}
@@ -50,10 +50,10 @@ public final class CapeClient {
     }
     private static void reset(boolean reconnect){
         TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();TRANSFERS.clear();publication=null;pending=null;confirmed=false;server=null;epoch=0;
-        if(reconnect){connection=null;player=null;world=null;sequence=0;}
+        if(reconnect){connection=null;player=null;world=null;sequence=0;selectedSource=selectedPublication=null;}
     }
     public static boolean shared(){return available()&&confirmed&&pending==null;}
-    public static boolean available(){return PlaybackClient.available()&&(animatedSharing()||ClientPlayNetworking.canSend(CapePayload.AnimatedRequest.TYPE)||ClientPlayNetworking.canSend(CapePayload.Request.TYPE));}
+    public static boolean available(){return PlaybackClient.available()&&animatedSharing();}
     public static boolean animatedSharing(){return ClientPlayNetworking.canSend(CapePayload.FragmentRequest.TYPE);}
     public static void tick(Minecraft client){
         if(connection!=client.getConnection()){reset(true);connection=client.getConnection();}
@@ -63,16 +63,16 @@ public final class CapeClient {
         if(client.player==null||!available()||epoch<=0||server==null)return;
         boolean enabled=ToolVisualsClient.CONFIG.active(CAPES);
         var selected=ToolVisualsClient.CAPES.selected();
-        var next=new Publication(enabled&&ToolVisualsClient.CONFIG.flag(CAPE_OTHERS),enabled&&ToolVisualsClient.CONFIG.flag(CAPE_SHARE)&&selected!=null?selected.design():null);
+        var source=selected==null?null:selected.design();
+        if(source!=selectedSource){selectedSource=source;selectedPublication=CapeAnimationPolicy.limit(source);}
+        var next=new Publication(enabled&&ToolVisualsClient.CONFIG.flag(CAPE_OTHERS),enabled&&ToolVisualsClient.CONFIG.flag(CAPE_SHARE)?selectedPublication:null);
         long now=System.nanoTime();
         if(!next.equals(publication)){
             if(publication!=null&&publication.receive!=next.receive){TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();REMOTE.clear();TRANSFERS.clear();}
             if(!enabled){TEXTURES.values().forEach(CapeTexture::close);TEXTURES.clear();}
             publication=next;pending=new CapeWire.Request(++sequence,epoch,next.receive,next.design);confirmed=false;lastSent=Long.MIN_VALUE;}
         if(pending!=null&&(lastSent==Long.MIN_VALUE||now-lastSent>=2_000_000_000L)){
-            if(animatedSharing()){for(var part:CapeTransferWire.split(pending))ClientPlayNetworking.send(new CapePayload.FragmentRequest(part));}
-            else if(ClientPlayNetworking.canSend(CapePayload.Request.TYPE))ClientPlayNetworking.send(new CapePayload.Request(CapeTransferWire.legacy(pending)));
-            else ClientPlayNetworking.send(new CapePayload.AnimatedRequest(CapeTransferWire.legacy(pending)));
+            for(var part:CapeTransferWire.split(pending))ClientPlayNetworking.send(new CapePayload.FragmentRequest(part));
             lastSent=now;
         }
     }
@@ -105,7 +105,8 @@ public final class CapeClient {
         if(!ToolVisualsClient.CONFIG.flag(own?CAPE_SELF:CAPE_OTHERS)){state.showCape=false;return;}
         CapeDesign design=design(actor);
         if(design==null)return;
-        if(!ToolVisualsClient.CONFIG.flag(CAPE_ANIMATIONS))design=design.frame(0);
+        var target=own?client.player:client.level==null?null:client.level.getPlayerByUUID(actor);
+        if(!ToolVisualsClient.CONFIG.flag(CAPE_ANIMATIONS)||!CapeAnimationPolicy.animate(own,target==null?Double.POSITIVE_INFINITY:client.player.distanceToSqr(target)))design=design.frame(0);
         if(!TEXTURES.containsKey(actor)&&TEXTURES.size()>=257)return;
         var texture=TEXTURES.computeIfAbsent(actor,id->new CapeTexture());
         texture.apply(state,design);

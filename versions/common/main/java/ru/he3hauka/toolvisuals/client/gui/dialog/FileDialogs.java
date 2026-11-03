@@ -31,7 +31,7 @@ public final class FileDialogs {
             Path path=result;Throwable error=failure;
             client.execute(()->{
                 OPEN.set(false);
-                if(error!=null){ClientErrors.report("Open cape PNG dialog",error);failed.run();}
+                if(error!=null){ClientErrors.report("Open native file dialog",error);failed.run();}
                 else if(path!=null){lastDirectory=path.getParent();chosen.accept(path);}
             });
         };

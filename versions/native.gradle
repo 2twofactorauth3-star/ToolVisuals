@@ -28,11 +28,15 @@ repositories {
 def acquireNativeDependencies = tasks.register('acquireNativeDependencies', Exec) {
     workingDir rootProject.projectDir
     commandLine pythonExecutable.get(), rootProject.file('build-tools/multiversion/generate.py'), minecraftVersion
-    inputs.files(dependencyManifest, rootProject.file('versions/targets.json'), rootProject.file('build-tools/dependencies.py'), rootProject.fileTree('build-tools/multiversion') { include '*.py' })
+    inputs.files(dependencyManifest, rootProject.file('versions/targets.json'), rootProject.file('build-tools/dependencies.py'), rootProject.file('build-tools/image_codecs.py'), rootProject.file('libs/imagecodecs/codecs.json'), rootProject.file('libs/imagecodecs/LICENSE'), rootProject.fileTree('build-tools/multiversion') { include '*.py' })
     outputs.files(dependenciesForTarget.findAll { it.project != 'viafabricplus' }.collect { file('libs/' + it.file) })
+    outputs.file(rootProject.file('build/components/imagecodecs/ToolVisualsImageCodecs-3.15.3.jar'))
 }
 
 dependencies {
+    def imageCodecs = files(rootProject.file('build/components/imagecodecs/ToolVisualsImageCodecs-3.15.3.jar')).builtBy(acquireNativeDependencies)
+    modRuntimeOnly imageCodecs
+    include imageCodecs
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${target.fabric_loader}"

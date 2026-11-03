@@ -23,6 +23,7 @@
 !/build-tools/
 /build-tools/*
 !/build-tools/dependencies.py
+!/build-tools/image_codecs.py
 !/build-tools/distribution.py
 !/build-tools/protocol_fork.py
 !/build-tools/protocol_source.py
@@ -72,6 +73,10 @@
 /libs/music/*
 !/libs/music/music-helper.json
 !/libs/music/ToolVisualsMedia.exe
+!/libs/imagecodecs/
+/libs/imagecodecs/*
+!/libs/imagecodecs/codecs.json
+!/libs/imagecodecs/LICENSE
 !/native/
 !/components/
 /components/*

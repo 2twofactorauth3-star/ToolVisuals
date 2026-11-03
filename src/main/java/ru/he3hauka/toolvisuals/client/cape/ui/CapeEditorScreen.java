@@ -20,6 +20,9 @@ import net.minecraft.world.item.Items;
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.cape.*;
 import ru.he3hauka.toolvisuals.client.cape.animation.CapeAnimationDraft;
+import ru.he3hauka.toolvisuals.client.cape.image.CapeImages;
+import ru.he3hauka.toolvisuals.client.cape.image.CapeImageIo;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
 import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
@@ -41,6 +44,7 @@ public final class CapeEditorScreen extends VisualEditorScreen {
     private enum Movement { IDLE, WALK, RUN, JUMP }
     private CapeCanvas canvas;
     private CapeAnimationDraft animation;
+    private boolean imageBusy;
     private final CapeTexture preview=new CapeTexture(true),checker=new CapeTexture(true),model=new CapeTexture(true);
     private final ItemStack previewWings=new ItemStack(Items.ELYTRA);
     private boolean playing=true,previewCosmetics=true,previewElytra;
@@ -89,10 +93,10 @@ public final class CapeEditorScreen extends VisualEditorScreen {
         for(var next:Movement.values())button(400+next.ordinal()*102,448,94,28,text("move_"+next.name().toLowerCase(Locale.ROOT)),null,()->{movement=next;opened=System.nanoTime();},()->movement==next);
         button(20,448,28,28,Component.literal("‹"),null,()->selectFrame(-1),null);
         button(54,448,28,28,Component.literal("›"),null,()->selectFrame(1),null);
-        button(88,448,82,28,text("add_frame"),UiPaint.Icon.PLUS,()->{finishStroke();if(animation.duplicate()){canvas=animation.canvas();status="";}else status=text("frame_limit",MAX_FRAMES).getString();},null);
+        button(88,448,82,28,text("add_frame"),UiPaint.Icon.PLUS,()->{finishStroke();if(animation.duplicate()){canvas=animation.canvas();status="";}else status=text("frame_limit",CapeAnimationPolicy.MAX_FRAMES).getString();},null);
         button(176,448,82,28,text("remove_frame"),null,()->{finishStroke();animation.remove();canvas=animation.canvas();},null);
         button(264,448,114,28,text("play"),null,()->playing=!playing,()->playing);
-        slider(20,490,358,text("fps"),1,MAX_FPS,1,()->animation.fps(),value->animation.fps((int)value),value->Integer.toString((int)value));
+        slider(20,490,358,text("fps"),1,CapeAnimationPolicy.MAX_FPS,1,()->Math.min(animation.fps(),CapeAnimationPolicy.MAX_FPS),value->animation.fps((int)value),value->Integer.toString((int)value));
         button(400,490,194,28,text("preview_cosmetics"),null,()->previewCosmetics=!previewCosmetics,()->previewCosmetics);
         button(602,490,198,28,text("preview_elytra"),null,()->previewElytra=!previewElytra,()->previewElytra);
         button(20,536,186,28,text("enabled"),null,()->ToolVisualsClient.CONFIG.setActive(CAPES,!ToolVisualsClient.CONFIG.active(CAPES)),()->ToolVisualsClient.CONFIG.active(CAPES));
@@ -127,20 +131,26 @@ public final class CapeEditorScreen extends VisualEditorScreen {
         finishStroke();CapeFileDialog.choose(false,text("import").getString(),path->{if(minecraft.gui.screen()==this)importFile(path);},()->status=text("dialog_error").getString());
     }
     private void importFile(Path path){
-        finishStroke();
-        try{
-            var image=CapePng.readImport(path);
-            java.util.function.Consumer<CapeDesign> apply=design->{animation.begin();canvas.replace(design);animation.end();status=text("imported").getString();};
-            if(image.requiresResize())minecraft.gui.setScreen(new CapeResizeScreen(this,image,apply));
+        if(imageBusy)return;
+        finishStroke();imageBusy=true;status=text("processing").getString();
+        CapeImageIo.submit(()->CapeImages.read(path),image->{
+            imageBusy=false;if(minecraft.gui.screen()!=this)return;
+            java.util.function.Consumer<CapeDesign> apply=design->{
+                finishStroke();
+                if(image.sourceFrames>1){animation.replace(design);canvas=animation.canvas();}
+                else{animation.begin();canvas.replace(design);animation.end();}
+                status=text("imported").getString();
+            };
+            if(image.requiresResize()||image.adjusted)minecraft.gui.setScreen(new CapeResizeScreen(this,image,apply));
             else apply.accept(image.fit(image.preferred));
-        }
-        catch(IOException|RuntimeException error){ClientErrors.report("Import cape PNG",error);status=text("png_error").getString();}
+        },error->{imageBusy=false;status=text("png_error").getString();});
     }
     private void chooseExport(){
-        finishStroke();var design=canvas.snapshot();
-        CapeFileDialog.choose(true,text("export").getString(),path->{
+        if(imageBusy)return;
+        finishStroke();var design=animation.snapshot();
+        CapeFileDialog.choose(true,design.frameCount>1,text("export").getString(),path->{
             if(minecraft.gui.screen()!=this)return;
-            Runnable write=()->{try{CapePng.write(path,design);status=text("exported").getString();}catch(IOException error){ClientErrors.report("Export cape PNG",error);status=text("io_error").getString();}};
+            Runnable write=()->{imageBusy=true;status=text("processing").getString();CapeImageIo.submit(()->{CapeImages.write(path,design);return true;},result->{imageBusy=false;status=text("exported").getString();},error->{imageBusy=false;status=text("io_error").getString();});};
             if(Files.exists(path))minecraft.gui.setScreen(new ConfirmScreen(accepted->{minecraft.gui.setScreen(this);if(accepted)write.run();},text("overwrite"),Component.literal(path.getFileName().toString())));else write.run();
         },()->status=text("dialog_error").getString());
     }
@@ -185,7 +195,7 @@ public final class CapeEditorScreen extends VisualEditorScreen {
         preview(g);
         label(g,text("preview_hint").getString(),410,144,380,18,.68f,palette.muted);
         for(int i=0;i<SWATCHES.length;i++)UiPaint.rounded(g,px+224+i*20,py+430,16,16,4,SWATCHES[i]);
-        label(g,text("frame",animation.selected()+1,animation.size(),MAX_FRAMES).getString(),20,477,358,12,.64f,palette.muted);
+        label(g,text("frame",animation.selected()+1,animation.size(),Math.max(animation.size(),CapeAnimationPolicy.MAX_FRAMES)).getString(),20,477,358,12,.64f,palette.muted);
         UiPaint.rounded(g,px+224,py+92,74,3,1.5f,primary);UiPaint.rounded(g,px+306,py+92,72,3,1.5f,secondary);
         String saveState=ToolVisualsClient.CAPES.status()==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED?text("io_error").getString():id==null||changed()?text("unsaved").getString():text("saved").getString();
         String sync=text(CapeClient.shared()?"shared":CapeClient.available()?"syncing":"local").getString();

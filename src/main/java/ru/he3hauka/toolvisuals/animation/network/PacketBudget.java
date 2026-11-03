@@ -27,10 +27,13 @@ public final class PacketBudget {
         return allow(now,1);
     }
     public boolean allow(long now,int cost) {
-        if(cost<1||cost>capacity)return false;
-        available(now);
-        if(available<cost)return false;
+        if(!available(now,cost))return false;
         available-=cost;
         return true;
+    }
+    public boolean available(long now,int cost) {
+        if(cost<1||cost>capacity)return false;
+        available(now);
+        return available>=cost;
     }
 }

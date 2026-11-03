@@ -3,6 +3,9 @@ package ru.he3hauka.toolvisuals.client.cape;
 import java.awt.AlphaComposite;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.EnumMap;
+import java.util.List;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 public final class CapeImageImport {
@@ -15,10 +18,21 @@ public final class CapeImageImport {
     }
     public final int width,height;
     public final Layout preferred;
-    private final BufferedImage image;
+    public final int sourceFrames,frameCount,fps;
+    public final boolean adjusted;
+    public static final class Frame {
+        private final EnumMap<Layout,CapeDesign> layouts=new EnumMap<>(Layout.class);
+        public Frame(BufferedImage image){for(var layout:Layout.values())layouts.put(layout,fitFrame(image,layout));}
+    }
+    private final List<Frame> frames;
 
     CapeImageImport(BufferedImage image) {
-        this.image=image;width=image.getWidth();height=image.getHeight();
+        this(image.getWidth(),image.getHeight(),List.of(new Frame(image)),CapeDesign.DEFAULT_FPS,1,false);
+    }
+
+    public CapeImageImport(int width,int height,List<Frame> frames,int fps,int sourceFrames,boolean adjusted) {
+        if(width<1||height<1||frames==null||frames.isEmpty()||frames.size()>CapeAnimationPolicy.MAX_FRAMES||fps<1||fps>CapeDesign.MAX_FPS||frames.size()>1&&fps>CapeAnimationPolicy.MAX_FPS)throw new IllegalArgumentException("Invalid imported cape frames");
+        this.width=width;this.height=height;this.frames=List.copyOf(frames);this.fps=fps;this.sourceFrames=sourceFrames;this.frameCount=frames.size();this.adjusted=adjusted;
         var exact=Layout.match(width,height);
         preferred=exact==null?nearest(width,height):exact;
     }
@@ -38,6 +52,14 @@ public final class CapeImageImport {
 
     public CapeDesign fit(Layout layout) {
         if(layout==null)throw new IllegalArgumentException("Missing cape layout");
+        var designs=frames.stream().map(frame->frame.layouts.get(layout)).toList();
+        if(designs.size()==1||designs.stream().allMatch(designs.getFirst()::equals))return designs.getFirst();
+        return new CapeDesign(designs,fps);
+    }
+
+    private static CapeDesign fitFrame(BufferedImage image,Layout layout) {
+        if(layout==null)throw new IllegalArgumentException("Missing cape layout");
+        int width=image.getWidth(),height=image.getHeight();
         if(layout.width==width&&layout.height==height)return CapePng.fromImage(image);
         var resized=new BufferedImage(layout.width,layout.height,BufferedImage.TYPE_INT_ARGB_PRE);
         var graphics=resized.createGraphics();
