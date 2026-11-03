@@ -29,10 +29,9 @@ public final class SoundCustomizer {
         if(!preview&&!config.flag(flag))return;
         var kind=switch(channel){case HIT->SOUND_HIT_KIND;case MODULE->SOUND_MODULE_KIND;case NOTICE->SOUND_NOTICE_KIND;};
         var volume=switch(channel){case HIT->SOUND_HIT_VOLUME;case MODULE->SOUND_MODULE_VOLUME;case NOTICE->SOUND_NOTICE_VOLUME;};
-        SoundEvent sound=switch((int)config.value(kind)) {
-            case 1->SoundEvents.NOTE_BLOCK_BELL.value();case 2->SoundEvents.AMETHYST_BLOCK_CHIME;
-            case 3->SoundEvents.ITEM_PICKUP;case 4->SoundEvents.NOTE_BLOCK_HARP.value();default->SoundEvents.UI_BUTTON_CLICK.value();
-        };
+        int selected=(int)config.value(kind);
+        SoundEvent sound=selected==SoundPreset.CUSTOM?ru.he3hauka.toolvisuals.client.sound.library.CustomSounds.event(channel):SoundPreset.event(selected);
+        if(sound==null)sound=SoundPreset.event(0);
         if(config.number(volume)>0)Minecraft.getInstance().getSoundManager().play(
                 SimpleSoundInstance.forUI(sound,Math.clamp(config.number(SOUND_PITCH)*pitchFactor,.5f,2f),config.number(volume)));
     }

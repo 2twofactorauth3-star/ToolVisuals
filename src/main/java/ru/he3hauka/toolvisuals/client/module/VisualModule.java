@@ -10,6 +10,7 @@ public enum VisualModule {
     FULL_BRIGHT("FullBright", ModuleCategory.WORLD),
     WORLD_PARTICLES("WorldParticles", ModuleCategory.WORLD),
     WAYPOINTS("Waypoints", ModuleCategory.WORLD),
+    GPS("GPS", ModuleCategory.WORLD),
     TOOL_PRESENTS("ToolPresents", ModuleCategory.WORLD),
     REPLAY("Replay", ModuleCategory.WORLD),
     OPTIMIZATION("Optimization", ModuleCategory.RENDER),

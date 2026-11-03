@@ -63,33 +63,29 @@ public final class AuctionHelper {
         return !recording() && ToolVisualsClient.CONFIG.active(VisualModule.AUCTION_HELPER) && RUNNER.requestNow();
     }
      
-    public static boolean localChat(String text) {
-        String line=text.strip();
-        if(!line.toLowerCase(Locale.ROOT).matches("^\\.toolvisuals(?:\\s.*)?$"))return false;
-        String[] tokens=line.split("\\s+",3);
-        if(tokens.length<2 || !tokens[1].equalsIgnoreCase("auction")){notice("usage");return true;}
-        if(!ToolVisualsClient.CONFIG.available(VisualModule.AUCTION_HELPER))return true;
-        String id=tokens.length==3?tokens[2].strip():"";
-        if(id.equalsIgnoreCase("cancel")){cancelRecording("record_cancelled");return true;}
+    public static void command(String arguments) {
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.AUCTION_HELPER))return;
+        String id=arguments.strip();
+        if(id.equalsIgnoreCase("cancel")){cancelRecording("record_cancelled");return;}
         if(id.toLowerCase(Locale.ROOT).startsWith("use ")) {
             var plan=ToolVisualsClient.AUCTIONS.get(id.substring(4).strip());
             if(plan==null || !plan.server.equals(server()))notice("wrong_server");
             else try {ToolVisualsClient.AUCTIONS.put(plan,true);notice("selected",plan.id);} catch(IOException error){notice("io_error");}
-            return true;
+            return;
         }
-        if(recording==null){notice("not_recording");return true;}
-        if(recordConnection!=Minecraft.getInstance().getConnection() || !recording.base.server.equals(server())){cancelRecording("record_disconnected");return true;}
+        if(recording==null){notice("not_recording");return;}
+        if(recordConnection!=Minecraft.getInstance().getConnection() || !recording.base.server.equals(server())){cancelRecording("record_disconnected");return;}
         try {
             String target=id.isEmpty()?server():id;
             var existing=ToolVisualsClient.AUCTIONS.get(target);
-            if(existing!=null&&!existing.server.equals(server())) {notice("id_other_server");return true;}
+            if(existing!=null&&!existing.server.equals(server())) {notice("id_other_server");return;}
             var saved=recording.finish(target);
             if(existing!=null)saved=existing.withRecording(target,saved.manual);
             ToolVisualsClient.AUCTIONS.put(saved,true);
             recording=null;recordConnection=null;notice("record_saved",saved.id,saved.manual.size()-1);
         } catch(IOException error){notice("io_error");}
         catch(RuntimeException error){notice("record_incomplete");}
-        return true;
+        return;
     }
     public static void outgoingCommand(String command) {
         if(internal)return;

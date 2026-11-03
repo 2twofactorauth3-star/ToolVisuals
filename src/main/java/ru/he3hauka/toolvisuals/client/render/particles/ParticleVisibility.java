@@ -1,7 +1,9 @@
 package ru.he3hauka.toolvisuals.client.render.particles;
 
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import net.minecraft.client.particle.*;
 import net.minecraft.client.particle.ExplodeParticle;
 import net.minecraft.client.particle.HugeExplosionParticle;
 import net.minecraft.client.particle.HugeExplosionSeedParticle;
@@ -11,15 +13,39 @@ import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 
 public final class ParticleVisibility {
-    private static final Set<String> EXPLOSION_CLASSES = Set.of(ExplodeParticle.class.getName(),
-            HugeExplosionParticle.class.getName(), HugeExplosionSeedParticle.class.getName());
+    private static final Map<String, RenderOption> AUTOMATIC = automaticTypes();
+
+    private static Map<String, RenderOption> automaticTypes() {
+        var types = new HashMap<String, RenderOption>();
+        add(types, RenderOption.EXPLOSION_PARTICLES, new String[] {"explosion", "explosion_emitter"},
+                ExplodeParticle.class, HugeExplosionParticle.class, HugeExplosionSeedParticle.class);
+        add(types, RenderOption.SMOKE_PARTICLES, new String[] {"smoke", "large_smoke", "white_smoke", "campfire_cosy_smoke", "campfire_signal_smoke"},
+                SmokeParticle.class, LargeSmokeParticle.class, WhiteSmokeParticle.class, CampfireSmokeParticle.class);
+        add(types, RenderOption.PORTAL_PARTICLES, new String[] {"portal", "reverse_portal"}, PortalParticle.class, ReversePortalParticle.class);
+        return Map.copyOf(types);
+    }
+
+    private static void add(Map<String, RenderOption> target, RenderOption option, String[] ids, Class<?>... classes) {
+        for (String id : ids) { target.put(id, option); target.put("minecraft:" + id, option); }
+        for (Class<?> type : classes) target.put(type.getName(), option);
+    }
+
+    public static boolean hidesOptimized(ClientConfig config, RenderOption option) {
+        var setting = switch (option) {
+            case EXPLOSION_PARTICLES -> VisualSetting.OPT_HIDE_EXPLOSIONS;
+            case SMOKE_PARTICLES -> VisualSetting.OPT_HIDE_SMOKE;
+            case PORTAL_PARTICLES -> VisualSetting.OPT_HIDE_PORTAL_PARTICLES;
+            default -> null;
+        };
+        return setting != null && config.active(VisualModule.OPTIMIZATION) && config.flag(setting) && config.available(option);
+    }
 
     private ParticleVisibility() {
     }
 
     public static boolean hides(ClientConfig config, String name) {
-        if (isVanillaExplosion(name) && config.active(VisualModule.OPTIMIZATION)
-                && config.flag(VisualSetting.OPT_HIDE_EXPLOSIONS) && config.available(RenderOption.EXPLOSION_PARTICLES)) return true;
+        var automatic = AUTOMATIC.get(name);
+        if (automatic != null && hidesOptimized(config, automatic)) return true;
         if (!config.enabled()) return false;
         if (config.hides(RenderOption.ALL_PARTICLES)) return true;
         if (!config.hides(RenderOption.SMOKE_PARTICLES) && !config.hides(RenderOption.EXPLOSION_PARTICLES)
@@ -38,8 +64,4 @@ public final class ParticleVisibility {
                 || (id.contains("terrain") || id.contains("block") || id.contains("fallingdust") || id.contains("falling_dust")) && config.hides(RenderOption.BLOCK_PARTICLES);
     }
 
-    private static boolean isVanillaExplosion(String name) {
-        return EXPLOSION_CLASSES.contains(name) || name.equals("minecraft:explosion") || name.equals("minecraft:explosion_emitter")
-                || name.equals("explosion") || name.equals("explosion_emitter");
-    }
 }

@@ -57,6 +57,7 @@ public final class ModuleSearch {
     }
     private static String aliases(VisualModule module) {
         return switch(module) {
+            case GPS -> "gps гпс навигация метки координаты маршрут navigation coordinates markers target";
             case MUSIC_HUD -> "музыка музыкальный плеер треки песни спотифай яндекс ютуб пауза переключить music hud media player spotify yandex youtube music";
             case SHULKER_TOOLTIP -> "шалкер шалкеры шалкертултип подсказка содержимое превью контейнер shulker tooltip box contents preview inventory";
             case MINI_GAMES -> "миниигры мини игры энгрибердс энгри бёрдс крестики нолики четыре в ряд играть с друзьями minigames angry birds tic tac toe connect four games";

@@ -1,4 +1,4 @@
-package ru.he3hauka.toolvisuals.client.cape.ui;
+package ru.he3hauka.toolvisuals.client.gui.dialog;
 
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,24 +9,24 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
-final class CapeFileDialog {
+public final class FileDialogs {
     private static final AtomicBoolean OPEN=new AtomicBoolean();
     private static Path lastDirectory;
-    private CapeFileDialog() {}
+    private FileDialogs() {}
 
-    static void choose(boolean save,String title,Consumer<Path> chosen,Runnable failed) {
+    public static void choose(boolean save,String title,String description,String extensions,String defaultName,Consumer<Path> chosen,Runnable failed) {
         var client=Minecraft.getInstance();
-        if(!client.isSameThread()){client.execute(()->choose(save,title,chosen,failed));return;}
+        if(!client.isSameThread()){client.execute(()->choose(save,title,description,extensions,defaultName,chosen,failed));return;}
         if(!OPEN.compareAndSet(false,true))return;
         KeyMapping.releaseAll();
         Path directory=lastDirectory==null?client.gameDirectory.toPath():lastDirectory;
         Runnable dialog=()->{
             Path result=null;Throwable failure=null;
             try(var stack=MemoryStack.stackPush()) {
-                var filters=stack.mallocPointer(1);filters.put(stack.UTF8("*.png")).flip();
-                String selected=save?TinyFileDialogs.tinyfd_saveFileDialog(title,directory.resolve("ToolVisuals-Cape.png").toString(),filters,"PNG images")
-                        :TinyFileDialogs.tinyfd_openFileDialog(title,directory.toString(),filters,"PNG images",false);
-                if(selected!=null)result=CapeFilePaths.selected(selected,save);
+                String[] patterns=extensions.split(";");var filters=stack.mallocPointer(patterns.length);for(String pattern:patterns)filters.put(stack.UTF8("*."+pattern));filters.flip();
+                String selected=save?TinyFileDialogs.tinyfd_saveFileDialog(title,directory.resolve(defaultName).toString(),filters,description)
+                        :TinyFileDialogs.tinyfd_openFileDialog(title,directory.toString(),filters,description,false);
+                if(selected!=null)result=Path.of(selected).toAbsolutePath().normalize();
             }catch(RuntimeException|LinkageError error){failure=error;}
             Path path=result;Throwable error=failure;
             client.execute(()->{
@@ -36,6 +36,6 @@ final class CapeFileDialog {
             });
         };
         if(System.getProperty("os.name","").toLowerCase(java.util.Locale.ROOT).contains("mac"))dialog.run();
-        else Thread.ofPlatform().name("ToolVisuals PNG dialog").daemon(true).start(ClientErrors.task("Cape PNG dialog",dialog));
+        else Thread.ofPlatform().name("ToolVisuals file dialog").daemon(true).start(ClientErrors.task("Native file dialog",dialog));
     }
 }

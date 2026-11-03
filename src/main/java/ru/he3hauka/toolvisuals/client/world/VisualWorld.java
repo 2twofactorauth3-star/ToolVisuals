@@ -98,8 +98,8 @@ public final class VisualWorld {
         double time = ru.he3hauka.toolvisuals.client.animation.EffectTime.at(state.gameTime, partial);
         var strokes=STROKES;strokes.clear();
         ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.extract(strokes);
-        var gps=ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visible(client);
-        if(gps!=null) {
+        for(var marker:ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visibleMarkers(client)) {
+            var gps=marker.target();
             var position=new Vec3(gps.x(),gps.y(),gps.z());
             line(strokes,position,position.add(0,3,0),0xc0bda5ff,2);
             ring(strokes,position.add(0,.025,0),RIGHT,FORWARD,.4,0xbda5ff,.85f,1.5f);
@@ -143,7 +143,7 @@ public final class VisualWorld {
                 ring(strokes,pos.add(0,.025,0),RIGHT,FORWARD,.35,pointColor,.8f,1.5f);
             }
         }
-        if (config.active(CUSTOM_HITBOXES)) {
+        if (CustomHitboxes.visible(client, config)) {
             var parts=CustomHitboxes.parts(config);
             var colors=new java.util.EnumMap<CustomHitboxes.Part,Integer>(CustomHitboxes.Part.class);
             for(var part:parts)colors.put(part,Math.round(config.number(HITBOX_OPACITY)*255)<<24|config.color(part.color));

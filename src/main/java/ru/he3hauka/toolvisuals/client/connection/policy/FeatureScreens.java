@@ -46,6 +46,8 @@ public final class FeatureScreens {
         add(result, VisualModule.CUSTOM_HAND.id, ru.he3hauka.toolvisuals.client.hand.ui.HandSettingsScreen.class,
                 ru.he3hauka.toolvisuals.client.hand.ui.HandEditorScreen.class);
         add(result, VisualModule.CROSSHAIR.id, ru.he3hauka.toolvisuals.client.crosshair.ui.CrosshairEditorScreen.class);
+        add(result, VisualModule.SOUND_CUSTOMIZER.id, ru.he3hauka.toolvisuals.client.sound.ui.SoundLibraryScreen.class);
+        add(result, VisualModule.GPS.id, ru.he3hauka.toolvisuals.client.navigation.gps.ui.GpsScreen.class);
         add(result, VisualModule.WAYPOINTS.id, ru.he3hauka.toolvisuals.client.waypoint.ui.WaypointsScreen.class);
         add(result, VisualModule.DAMAGE_VIGNETTE.id, ru.he3hauka.toolvisuals.client.render.vignette.ui.DamageVignetteScreen.class);
         add(result, VisualModule.PVP_SAVE.id, ru.he3hauka.toolvisuals.client.pvp.ui.PvPCommandsScreen.class);

@@ -46,6 +46,10 @@ public final class ToolVisualsClient implements ClientModInitializer {
             FabricLoader.getInstance().getConfigDir().resolve("toolvisuals-capes.json"));
     public static final ru.he3hauka.toolvisuals.client.cosmetic.outfit.OutfitStore OUTFITS=new ru.he3hauka.toolvisuals.client.cosmetic.outfit.OutfitStore(
             FabricLoader.getInstance().getConfigDir().resolve("toolvisuals-outfits.json"));
+    public static final ru.he3hauka.toolvisuals.client.navigation.gps.GpsStore GPS_POINTS = new ru.he3hauka.toolvisuals.client.navigation.gps.GpsStore(
+            FabricLoader.getInstance().getConfigDir().resolve("toolvisuals-gps.json"));
+    public static final ru.he3hauka.toolvisuals.client.sound.library.SoundLibrary SOUNDS = new ru.he3hauka.toolvisuals.client.sound.library.SoundLibrary(
+            FabricLoader.getInstance().getConfigDir().resolve("toolvisuals/sounds"));
     public static KeyMapping openMenuKey;
     public static KeyMapping zoomKey;
     public static KeyMapping freeLookKey;
@@ -68,6 +72,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ArmorRenderTypes.initialize();
         ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryPipeline.initialize();
         CONFIG.load();
+        ru.he3hauka.toolvisuals.client.sound.library.CustomSounds.initialize();
         ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.initialize();
         ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService::tick);
@@ -111,6 +116,8 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> ru.he3hauka.toolvisuals.client.optimization.Optimizations.update(CONFIG));
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.optimization.terrain.TerrainSettings::tick);
         ru.he3hauka.toolvisuals.client.effects.WorldEffects.initialize();
+        ru.he3hauka.toolvisuals.client.navigation.gps.Gps.initialize();
+        ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.navigation.gps.Gps::tick);
         ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.hud.tab.ExtraTab::tick);
         if (FabricLoader.getInstance().isModLoaded("entityculling"))
             ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.optimization.occlusion.EntityCullingBridge::tick);

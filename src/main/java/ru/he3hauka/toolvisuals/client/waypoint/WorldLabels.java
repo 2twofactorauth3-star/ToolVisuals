@@ -35,10 +35,10 @@ public final class WorldLabels {
         if(client.player==null||client.level==null){labels=List.of();return;}
         var camera=state.cameraRenderState;
         if(camera.projectionMatrix==null||camera.viewRotationMatrix==null){labels=List.of();return;}
-        var gps=ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visible(client);
-        if(gps!=null) {
+        for(var marker:ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visibleMarkers(client)) {
+            var gps=marker.target();
             var position=new Vec3(gps.x(),gps.y()+1,gps.z());
-            String name="GPS · "+Math.round(client.player.position().distanceTo(position))+" m";
+            String name=marker.name()+" · "+Math.round(client.player.position().distanceTo(position))+" m";
             add(next,camera,position,name,0xbda5ff,1,true);
         }
         if(config.active(WAYPOINTS)) {

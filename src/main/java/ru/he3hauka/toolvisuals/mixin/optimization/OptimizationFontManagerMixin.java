@@ -15,6 +15,7 @@ public abstract class OptimizationFontManagerMixin {
     @Inject(method={"apply","updateOptions"},at=@At("TAIL"))
     private void toolvisuals$invalidateText(CallbackInfo ci) {
         PreparedTextCache.invalidate();
+        ru.he3hauka.toolvisuals.client.gui.render.UiFont.invalidateMetrics();
         ru.he3hauka.toolvisuals.client.hud.tab.font.TabFonts.invalidate();
     }
 }

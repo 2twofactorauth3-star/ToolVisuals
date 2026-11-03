@@ -91,7 +91,7 @@ public class VisualsScreen extends Screen implements MovementScreen {
     private boolean closing, compact, draggingScroll, draggingModules;
     private int px, py, pw, ph, moduleWidth, columns, paneX, paneWidth, paneTop, paneBottom;
     private int listX, listY, listWidth, listBottom, contentHeight;
-    private int popupX, popupY, popupWidth, popupHeight;
+    private int popupX, popupY, popupWidth, popupHeight, popupFirst, popupRows;
     private float elapsed, opacity, scrollTarget, moduleScrollTarget, scrollbarGrab;
     private long lastFrame, crosshairPreviewStart;
 
@@ -293,6 +293,8 @@ public class VisualsScreen extends Screen implements MovementScreen {
                     option.label(), OPTION, null, option.description(), () -> config.toggle(option), () -> config.selected(option))));
             contentHeight = rows.size() * OPTION_PITCH;
         } else {
+            if(selectedModule==VisualModule.SOUND_CUSTOMIZER)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.sound_library.open"),CHIP,UiPaint.Icon.SETTINGS,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.sound.ui.SoundLibraryScreen(this)),null)));
+            if(selectedModule==VisualModule.GPS)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.gps.manage"),CHIP,UiPaint.Icon.SETTINGS,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.navigation.gps.ui.GpsScreen(this)),null)));
             if(selectedModule==VisualModule.MINI_GAMES)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.minigames.open"),CHIP,UiPaint.Icon.WORLD,Component.empty(),()->ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient.open(this),null)));
             if((selectedModule==VisualModule.CAPES||selectedModule==VisualModule.COSMETICS)&&config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.outfits.title"),CHIP,UiPaint.Icon.STAR,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this)),null)));
             if(selectedModule==VisualModule.CLIENT_LIST)rows.add(addWidget(new VisualsButton(0,0,paneWidth-8,44,UiI18n.tr("toolvisuals.client_list.open"),CHIP,UiPaint.Icon.PLAYER,Component.empty(),()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.social.presence.ui.ClientBrowserScreen(this)),null)));
@@ -571,7 +573,9 @@ public class VisualsScreen extends Screen implements MovementScreen {
     }
     private void showChoice(VisualSetting setting, AbstractWidget anchor) {
         if (expandedChoice == setting) { closeChoice(); return; }
-        closeChoice(); expandedChoice = setting; popupWidth = paneWidth - 4; popupHeight = setting.choices.length * 30 + 10;
+        closeChoice(); expandedChoice = setting; popupWidth = paneWidth - 4;
+        popupRows=Math.min(setting.choices.length,Math.max(1,Math.min(8,(ph-90)/30)));popupHeight=popupRows*30+10;
+        popupFirst=Math.clamp((int)config.value(setting)-popupRows/2,0,Math.max(0,setting.choices.length-popupRows));
         popupX = paneX; popupY = Math.clamp(anchor.getY() + anchor.getHeight() - 1, py + 56, Math.max(py + 56, py + ph - popupHeight - 12));
         for (int i = 0; i < setting.choices.length; i++) {
             int index = i;
@@ -580,7 +584,19 @@ public class VisualsScreen extends Screen implements MovementScreen {
                         config.setValue(setting, index); closeChoice(); if (crosshair() || setting == VisualSetting.FREE_LOOK_MODE||setting==VisualSetting.ZOOM_RANGE_MODE||setting==VisualSetting.DROP_MODE) refreshCrosshairRows();
                     }, () -> (int)config.value(setting) == index)));
         }
+        positionChoice();
         setFocused(popup.get(Math.clamp((int)config.value(setting), 0, popup.size() - 1)));
+    }
+    private void positionChoice(){
+        for(int index=0;index<popup.size();index++){
+            var button=popup.get(index);button.setY(popupY+5+(index-popupFirst)*30);
+            button.visible=index>=popupFirst&&index<popupFirst+popupRows;
+        }
+    }
+    private void revealChoice(int index){
+        if(index<popupFirst)popupFirst=index;
+        else if(index>=popupFirst+popupRows)popupFirst=index-popupRows+1;
+        positionChoice();
     }
     private void closeChoice() {
         if (popup.contains(getFocused())) setFocused(null);
@@ -591,7 +607,10 @@ public class VisualsScreen extends Screen implements MovementScreen {
         g.nextStratum(); UiPaint.shadow(g, popupX, popupY, popupWidth, popupHeight, 8, opacity);
         UiPaint.rounded(g, popupX - 1, popupY - 1, popupWidth + 2, popupHeight + 2, 9, palette.border);
         UiPaint.rounded(g, popupX, popupY, popupWidth, popupHeight, 8, palette.raised);
+        g.enableScissor(popupX,popupY+4,popupX+popupWidth,popupY+popupHeight-4);
         for (var button : popup) { button.frame(palette, opacity, elapsed); button.extractRenderState(g, mx, my, 0); }
+        g.disableScissor();
+        if(popup.size()>popupRows){float track=popupHeight-10,thumb=Math.max(12,track*popupRows/popup.size());float top=popupY+5+(track-thumb)*popupFirst/(popup.size()-popupRows);UiPaint.rounded(g,popupX+popupWidth-4,top,2,thumb,1,UiPaint.alpha(palette.muted,opacity));}
     }
     private MouseButtonEvent adjusted(MouseButtonEvent event) {
         return new MouseButtonEvent(event.x() / viewport.scale, event.y() / viewport.scale - (1 - opening.value()) * 6, event.buttonInfo());
@@ -629,7 +648,10 @@ public class VisualsScreen extends Screen implements MovementScreen {
     }
     @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
         var event = adjusted(new MouseButtonEvent(x, y, new MouseButtonInfo(0, 0)));
-        if (expandedChoice != null) closeChoice();
+        if (expandedChoice != null) {
+            if(inPopup(event.x(),event.y())){popupFirst=Math.clamp(popupFirst-(int)Math.signum(vertical)*2,0,Math.max(0,popup.size()-popupRows));positionChoice();}
+            return true;
+        }
         if (selectedModule != null && event.x() >= paneX && event.x() < paneX + paneWidth && event.y() >= listY && event.y() < listBottom) {
             scrollTarget = Math.clamp(scrollTarget - (float)vertical * 44, 0, maxScroll()); return true;
         }
@@ -674,7 +696,7 @@ public class VisualsScreen extends Screen implements MovementScreen {
                 if (key == InputConstants.KEY_HOME) index = 0;
                 else if (key == InputConstants.KEY_END) index = popup.size() - 1;
                 else index = Math.floorMod(index + (key == InputConstants.KEY_UP || key == InputConstants.KEY_TAB && event.hasShiftDown() ? -1 : 1), popup.size());
-                setFocused(popup.get(index)); return true;
+                revealChoice(index);setFocused(popup.get(index)); return true;
             }
             if (event.isConfirmation()) popup.get(index).keyPressed(event);
             return true;

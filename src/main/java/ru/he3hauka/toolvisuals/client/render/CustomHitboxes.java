@@ -29,6 +29,12 @@ public final class CustomHitboxes {
     }
     private CustomHitboxes() {}
 
+    public static boolean visible(Minecraft client, ClientConfig config) {
+        return visible(config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.CUSTOM_HITBOXES), ru.he3hauka.toolvisuals.client.render.hitboxes.DebugHitboxes.enabled(client));
+    }
+
+    public static boolean visible(boolean moduleEnabled, boolean vanillaEnabled) { return moduleEnabled && vanillaEnabled; }
+
     public static boolean selected(Entity entity) {
         var client = Minecraft.getInstance();
         if (!(entity instanceof LivingEntity living) || !living.isAlive()

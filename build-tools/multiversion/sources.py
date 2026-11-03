@@ -192,7 +192,8 @@ def translate(text,version):
             text=text.replace('import net.minecraft.world.entity.player.Player;','import net.minecraft.client.player.AbstractClientPlayer;')
             text=re.sub(r'\bPlayer player\b','AbstractClientPlayer player',text).replace('Lnet/minecraft/world/entity/player/Player;', 'Lnet/minecraft/client/player/AbstractClientPlayer;').replace('Lnet/minecraft/world/entity/Avatar;', 'Lnet/minecraft/client/player/AbstractClientPlayer;')
 
-        text=text.replace('ru.he3hauka.toolvisuals.client.effects.render.EffectPipeline.initialize();', 'ru.he3hauka.toolvisuals.client.effects.render.EffectPipeline.initialize();ru.he3hauka.toolvisuals.client.compatibility.render.LegacyWorld.initialize();')
+        if 'public final class WorldEffects {' in text:
+            text=text.replace('EffectPipeline.initialize();', 'EffectPipeline.initialize();ru.he3hauka.toolvisuals.client.compatibility.render.LegacyWorld.initialize();')
         text=text.replace('Gui.getMobEffectSprite(', 'Minecraft.getInstance().getMobEffectTextures().get(').replace('Hud.getMobEffectSprite(', 'Minecraft.getInstance().getMobEffectTextures().get(')
         text=text.replace('Identifier icon','net.minecraft.client.renderer.texture.TextureAtlasSprite icon')
         text=text.replace('g.blitSprite(RenderPipelines.GUI_TEXTURED, effect.icon,', 'ru.he3hauka.toolvisuals.client.compatibility.gui.VersionGui.potionIcon(g,effect.icon,')

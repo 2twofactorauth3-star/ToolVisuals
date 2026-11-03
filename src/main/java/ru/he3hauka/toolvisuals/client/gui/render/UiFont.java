@@ -41,6 +41,8 @@ public final class UiFont {
         return font;
     }
 
+    public static void invalidateMetrics(){capCenter=Float.NaN;}
+
     public static boolean owns(Font candidate){return candidate!=null&&candidate==font;}
     public static void tickDisplay(Minecraft client){
         var window=client.getWindow();
