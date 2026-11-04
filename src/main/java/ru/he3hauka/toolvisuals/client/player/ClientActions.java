@@ -22,6 +22,7 @@ public final class ClientActions {
         ru.he3hauka.toolvisuals.client.navigation.gps.Gps.tick(client);
         SoundCustomizer.tick(client);
         TotemCounter.tick(client);
+        ru.he3hauka.toolvisuals.client.potion.tracker.BuffTracker.tick(client);
         ru.he3hauka.toolvisuals.client.hud.animation.BetterHud.tick(client);
         boolean usable = client.player != null && client.level != null && client.gui.screen() == null
                 && client.gui.overlay() == null && client.isWindowActive() && !client.isPaused();

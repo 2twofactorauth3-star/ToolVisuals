@@ -53,6 +53,7 @@ public final class VisualHud {
         ExtraHud.draw(graphics, palette);
         if(HudPlacement.show(HEALTH_INDICATOR))ru.he3hauka.toolvisuals.client.hud.health.HealthIndicator.draw(graphics,palette);
         if (HudPlacement.show(COOLDOWN_HUD)) CooldownHud.draw(graphics,palette);
+        if (HudPlacement.show(BUFF_TRACKER)) ru.he3hauka.toolvisuals.client.potion.ui.BuffTrackerHud.draw(graphics,palette);
         if (HudPlacement.show(FRIENDS_LIST)) FriendsListHud.draw(graphics,palette);
         if (HudPlacement.show(CLIENT_LIST)) ru.he3hauka.toolvisuals.client.social.presence.ui.ClientListHud.draw(graphics,palette);
         if (HudPlacement.show(SESSION_STATS)) ru.he3hauka.toolvisuals.client.session.ui.SessionStatsHud.draw(graphics,palette);

@@ -17,6 +17,9 @@ public static class InitialGameOptions
             ["guiScale"] = "2",
             ["particles"] = "2",
             ["biomeBlendRadius"] = "0",
+            ["mipmapLevels"] = "2",
+            ["renderClouds"] = "\"fast\"",
+            ["entityDistanceScaling"] = "1.0",
             ["fov"] = "0.5",
             ["bobView"] = "false",
             ["fovEffectScale"] = "0.0",
@@ -26,7 +29,17 @@ public static class InitialGameOptions
             ["autoJump"] = "false",
             ["soundCategory_music"] = "0.0"
         };
-        if (target.Minecraft != "1.21.4") defaults["cutoutLeaves"] = "false";
+        if (target.Minecraft != "1.21.4")
+        {
+            defaults["cutoutLeaves"] = "false";
+            defaults["graphicsPreset"] = "\"fast\"";
+        }
+        else defaults["graphicsMode"] = "0";
+        if (target.Minecraft != "26.3")
+        {
+            string culling = Path.Combine(profile, "config", "moreculling.json");
+            if (!File.Exists(culling)) AtomicJson.Write(culling, new { leavesCullingMode = "FAST" });
+        }
         AtomicJson.Write(Path.Combine(profile, ".toollauncher", "default-options.json"),
             new { schema = 1, minecraft = target.Minecraft });
         string temporary = options + "." + Guid.NewGuid().ToString("N") + ".tmp";

@@ -21,7 +21,8 @@ public final class HolyWorldRules {
             Map.entry(VisualModule.NO_FLUID, Basis.PRECAUTION),
             Map.entry(VisualModule.RESOURCE_PACK_SPOOFER, Basis.PRECAUTION),
             Map.entry(VisualModule.KEYBINDS, Basis.PRECAUTION),
-            Map.entry(VisualModule.TOOL_PRESENTS, Basis.PRECAUTION));
+            Map.entry(VisualModule.TOOL_PRESENTS, Basis.PRECAUTION),
+            Map.entry(VisualModule.BUFF_TRACKER, Basis.PRECAUTION));
     public static final Set<String> BLOCKED = MODULES.keySet().stream().map(module -> module.id)
             .collect(java.util.stream.Collectors.toUnmodifiableSet());
 

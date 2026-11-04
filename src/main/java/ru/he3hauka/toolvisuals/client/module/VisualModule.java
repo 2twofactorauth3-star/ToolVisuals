@@ -39,6 +39,7 @@ public enum VisualModule {
     PROJECTILE_PREDICTION("ProjectilePrediction", ModuleCategory.RENDER),
     ITEM_PHYSIC("ItemPhysic", ModuleCategory.RENDER),
     TOTEM_POP_COUNTER("TotemPopCounter", ModuleCategory.RENDER),
+    BUFF_TRACKER("BuffTracker", ModuleCategory.RENDER),
     SOUND_CUSTOMIZER("SoundCustomizer", ModuleCategory.PLAYER),
     NO_SWING_ANIMATION("NoSwing", ModuleCategory.RENDER),
     CHUNK_ANIMATOR("ChunkAnimator", ModuleCategory.RENDER),

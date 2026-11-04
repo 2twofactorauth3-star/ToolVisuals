@@ -16,7 +16,7 @@ public final class HudScale {
             entry(HEALTH_INDICATOR,HEALTH_WHEEL_RESIZE),entry(KEYSTROKES,KEYS_WHEEL_RESIZE),entry(POTION_HUD,POTION_WHEEL_RESIZE),
             entry(INVENTORY_HUD,INVENTORY_WHEEL_RESIZE),entry(COOLDOWN_HUD,COOLDOWN_WHEEL_RESIZE),entry(FRIENDS_LIST,FRIENDS_WHEEL_RESIZE),
             entry(CLIENT_LIST,CLIENT_LIST_WHEEL_RESIZE),entry(SESSION_STATS,SESSION_WHEEL_RESIZE),entry(TOOL_PRESENTS,PRESENTS_WHEEL_RESIZE),
-            entry(BOSS_BAR_CUSTOMIZER,BOSS_WHEEL_RESIZE),entry(MUSIC_HUD,MUSIC_WHEEL_RESIZE));
+            entry(BOSS_BAR_CUSTOMIZER,BOSS_WHEEL_RESIZE),entry(MUSIC_HUD,MUSIC_WHEEL_RESIZE),entry(BUFF_TRACKER,BUFF_WHEEL_RESIZE));
     private HudScale(){}
     public static double sanitize(double scale){return Double.isFinite(scale)?Math.round(Math.clamp(scale,MIN,MAX)*10000)/10000d:1;}
     public static boolean enabled(HudElement element,ClientConfig config){return config.flag(CONTROLS.get(element.module));}

@@ -19,6 +19,8 @@ public final class StartupPreset {
     private final boolean existingClient;
     private final String version;
     private final Path historyPath;
+    private static boolean applying;
+    public static boolean applying(){return applying;}
 
     public StartupPreset(Path configDirectory) {
         existingClient=Files.exists(configDirectory.resolve("toolvisuals.json"));
@@ -34,15 +36,16 @@ public final class StartupPreset {
             var sodium=SodiumClientMod.options();
             if(sodium.isReadOnly()) { LOGGER.warn("Performance preset skipped: Sodium configuration is read-only");return; }
             var options=client.options;
-            if(!Files.isRegularFile(client.gameDirectory.toPath().resolve(".toollauncher/default-options.json"))) {
-                options.renderDistance().set(6);
-                options.simulationDistance().set(4);
-            }
-            options.cloudStatus().set(CloudStatus.OFF);
+            boolean seeded=Files.isRegularFile(client.gameDirectory.toPath().resolve(".toollauncher/default-options.json"));
+            int renderDistance=seeded?options.renderDistance().get():6,simulationDistance=seeded?options.simulationDistance().get():4;
+            applying=true;
+            StartupQuality.apply(options);
+            options.renderDistance().set(renderDistance);
+            options.simulationDistance().set(simulationDistance);
+            options.cloudStatus().set(CloudStatus.FAST);
             options.entityShadows().set(false);
             options.particles().set(ParticleStatus.MINIMAL);
             options.biomeBlendRadius().set(0);
-            StartupQuality.apply(options);
             options.enableVsync().set(false);
             options.framerateLimit().set(Options.UNLIMITED_FRAMERATE_CUTOFF);
             sodium.performance.animateOnlyVisibleTextures=true;
@@ -58,6 +61,6 @@ public final class StartupPreset {
             LOGGER.info("Applied the first-launch Minecraft/Sodium performance preset for {}",version);
         } catch(IOException|RuntimeException error) {
             ClientErrors.report("Apply first-launch performance preset; configuration history preserved",error);
-        }
+        } finally {applying=false;}
     }
 }

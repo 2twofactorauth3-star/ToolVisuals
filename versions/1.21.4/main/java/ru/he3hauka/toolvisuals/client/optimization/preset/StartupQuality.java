@@ -9,6 +9,9 @@ public final class StartupQuality {
     }
 
     public static void apply(Options options) {
+        options.graphicsMode().set(net.minecraft.client.GraphicsStatus.FAST);
+        options.mipmapLevels().set(2);
         SodiumClientMod.options().quality.leavesQuality = GraphicsQuality.FAST;
+        StartupLeafCulling.apply();
     }
 }

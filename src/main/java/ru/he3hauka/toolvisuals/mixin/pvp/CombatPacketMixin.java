@@ -11,6 +11,8 @@ import ru.he3hauka.toolvisuals.client.pvp.PvPSave;
 
 @Mixin(ClientPacketListener.class)
 public abstract class CombatPacketMixin {
+    @Inject(method="handleEntityEvent",at=@At(value="INVOKE",target="Lnet/minecraft/world/entity/Entity;handleEntityEvent(B)V"))
+    private void toolvisuals$potionEvent(ClientboundEntityEventPacket packet,CallbackInfo ci){ru.he3hauka.toolvisuals.client.potion.tracker.BuffTracker.event(packet);}
     @Inject(method="handleEntityEvent",at=@At("TAIL"))
     private void toolvisuals$totemEvent(ClientboundEntityEventPacket packet,CallbackInfo ci){if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;ru.he3hauka.toolvisuals.client.pvp.TotemCounter.event(packet);ru.he3hauka.toolvisuals.client.animation.death.DeathAscension.event(packet);}
     @Inject(method="handleDamageEvent",at=@At("TAIL"))

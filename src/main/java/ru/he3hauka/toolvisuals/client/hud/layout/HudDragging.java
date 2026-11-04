@@ -10,7 +10,7 @@ import ru.he3hauka.toolvisuals.client.hud.info.InfoHudPart;
 public final class HudDragging {
     private static final HudElement[] PICK_ORDER={HudElement.ARMOR,HudElement.ARMOR_2,HudElement.ARMOR_3,HudElement.ARMOR_4,HudElement.MODULES,
             HudElement.INFO_BRAND,HudElement.INFO_PING,HudElement.INFO_FPS,HudElement.INFO_BPS,HudElement.INFO_CLOCK,HudElement.INFO_COORDINATES,
-            HudElement.MUSIC,HudElement.INFO,HudElement.INVENTORY,HudElement.POTIONS,HudElement.COOLDOWNS,HudElement.FRIENDS,HudElement.CLIENTS,HudElement.SESSION,HudElement.KEYS,HudElement.HIT_HEALTH,HudElement.TARGET,HudElement.BOSSES,HudElement.PRESENTS};
+            HudElement.MUSIC,HudElement.INFO,HudElement.INVENTORY,HudElement.POTIONS,HudElement.BUFFS,HudElement.COOLDOWNS,HudElement.FRIENDS,HudElement.CLIENTS,HudElement.SESSION,HudElement.KEYS,HudElement.HIT_HEALTH,HudElement.TARGET,HudElement.BOSSES,HudElement.PRESENTS};
     private final Map<HudElement,HudPosition> pending=new EnumMap<>(HudElement.class);
     private HudElement selected;
     private HudPlacement.Bounds box;

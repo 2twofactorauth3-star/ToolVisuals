@@ -97,6 +97,7 @@ public final class ModuleSearch {
             case PROJECTILE_PREDICTION->"траектория полет стрелы жемчуг prediction trajectory pearl";
             case ITEM_PHYSIC->"физика предметы лежат item physics";
             case TOTEM_POP_COUNTER->"тотем счетчик срабатывания totem counter";
+            case BUFF_TRACKER->"бафы зелья пить выпил жидкость бутылка эффекты таймер potion drink buff tracker liquid bottle";
             case SOUND_CUSTOMIZER->"звуки удар клики sound hit audio";
             case NO_SWING_ANIMATION->"взмах удар рука анимация swing attack animation";
             case CHUNK_ANIMATOR->"чанки загрузка плавность chunks animation";

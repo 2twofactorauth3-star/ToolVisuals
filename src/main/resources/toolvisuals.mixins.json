@@ -148,7 +148,11 @@
     "motionblur.MotionBlurChainAccessor",
     "motionblur.MotionBlurGameAccessor",
     "motionblur.MotionBlurMixin",
-    "motionblur.MotionBlurPassAccessor"
+    "motionblur.MotionBlurPassAccessor",
+    "potion.PotionStateMixin",
+    "potion.PotionModelMixin",
+    "potion.PotionLayerMixin",
+    "optimization.StartupGraphicsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
