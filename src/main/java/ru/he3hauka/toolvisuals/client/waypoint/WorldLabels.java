@@ -95,13 +95,30 @@ public final class WorldLabels {
     public static void draw(GuiGraphicsExtractor g,UiPalette palette) {
         var client=Minecraft.getInstance();float density=Math.clamp(client.getWindow().getHeight()/720f,1,2)/client.getWindow().getGuiScale();
         g.pose().pushMatrix();g.pose().scale(density,density);
-        for(var label:labels) {
+        var current=labels;
+        float width=g.guiWidth()/density,height=g.guiHeight()/density;
+        var layout=new ru.he3hauka.toolvisuals.client.waypoint.label.WorldLabelLayout(width,height);
+        var boxes=new ru.he3hauka.toolvisuals.client.waypoint.label.WorldLabelLayout.Box[current.size()];
+        for(int index=0;index<current.size();index++){
+            var label=current.get(index);
             float scale=.8f*label.scale,w=UiPaint.textWidth(g,label.text,scale)+14,h=22*label.scale;
-            float x=label.x*g.guiWidth()/density-w/2,y=label.y*g.guiHeight()/density-h;
-            x=Math.clamp(x,2,Math.max(2,g.guiWidth()/density-w-2));y=Math.clamp(y,2,Math.max(2,g.guiHeight()/density-h-2));
-            UiPaint.rounded(g,x,y,w,h,5,palette.hudPanel);
-            UiPaint.rounded(g,x,y+5,2,h-10,1,label.color);
-            UiPaint.centered(g,label.text,x+3,y,w-3,h,scale,label.color,1);
+            float anchorX=label.x*width,anchorY=label.y*height;
+            var box=layout.place(anchorX,anchorY,w,h);boxes[index]=box;
+            if(box==null||Math.abs(box.x-(anchorX-w/2))+Math.abs(box.y-(anchorY-h))<1
+                    ||anchorX<0||anchorY<0||anchorX>width||anchorY>height)continue;
+            float dx=Math.clamp(anchorX,box.x,box.x+box.width)-anchorX;
+            float dy=Math.clamp(anchorY,box.y,box.y+box.height)-anchorY;
+            float length=(float)Math.hypot(dx,dy);if(length<1)continue;
+            float angle=(float)Math.atan2(dy,dx);
+            g.pose().pushMatrix();g.pose().translate(anchorX,anchorY);g.pose().rotate(angle);
+            UiPaint.rounded(g,0,-.5f,length,1,0,0x70000000|(label.color&0xffffff));
+            g.pose().popMatrix();
+        }
+        for(int index=0;index<current.size();index++){
+            var box=boxes[index];if(box==null)continue;var label=current.get(index);
+            UiPaint.rounded(g,box.x,box.y,box.width,box.height,5,palette.hudPanel);
+            UiPaint.rounded(g,box.x,box.y+5,2,box.height-10,1,label.color);
+            UiPaint.centered(g,label.text,box.x+3,box.y,box.width-3,box.height,.8f*label.scale,label.color,1);
         }
         g.pose().popMatrix();
     }

@@ -15,9 +15,9 @@ public final class LegacyWorld {
         WorldRenderEvents.AFTER_ENTITIES.register(context->{
             var client=Minecraft.getInstance();var camera=VersionCamera.SCENE.cameraRenderState.pos;var buffers=context.consumers();
             if(buffers==null)buffers=client.renderBuffers().bufferSource();
-            for(var state:VersionCamera.SCENE.entityRenderStates){var pose=new PoseStack();pose.mulPose(context.positionMatrix());pose.translate(state.x-camera.x,state.y-camera.y,state.z-camera.z);renderSoul(client,state,pose,buffers);}
+            for(var state:VersionCamera.SCENE.entityRenderStates){var pose=new PoseStack();pose.translate(state.x-camera.x,state.y-camera.y,state.z-camera.z);renderSoul(client,state,pose,buffers);}
         });
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(context->{var buffers=context.consumers();if(buffers==null)buffers=Minecraft.getInstance().renderBuffers().bufferSource();VisualWorld.submit(VersionCamera.SCENE,new GeometryCollector(buffers,context.positionMatrix()));});
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(context->{var buffers=context.consumers();if(buffers==null)buffers=Minecraft.getInstance().renderBuffers().bufferSource();try(var collector=new GeometryCollector(buffers)){VisualWorld.submit(VersionCamera.SCENE,collector);}});
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context,hit)->!ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.active()&&!ru.he3hauka.toolvisuals.client.render.filter.NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.BLOCK_OUTLINE));
     }
     @SuppressWarnings({"rawtypes","unchecked"}) private static void renderSoul(Minecraft client,EntityRenderState state,PoseStack pose,net.minecraft.client.renderer.MultiBufferSource buffers){var player=(net.minecraft.client.renderer.entity.state.PlayerRenderState)state;EntityRenderer renderer=((ru.he3hauka.toolvisuals.mixin.render.PlayerRenderersAccessor)client.getEntityRenderDispatcher()).toolvisuals$playerRenderers().get(player.skin.model());if(renderer!=null)renderer.render(state,pose,buffers,15728880);}
