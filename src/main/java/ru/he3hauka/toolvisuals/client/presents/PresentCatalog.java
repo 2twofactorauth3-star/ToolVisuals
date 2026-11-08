@@ -6,37 +6,38 @@ import java.util.stream.Stream;
 import ru.he3hauka.toolvisuals.network.world.WorldContextWire.Area;
 
 public final class PresentCatalog {
+    public static final String ID = "halloween-2026-11";
     public static final List<Present> SPAWN = List.of(
-            new Present(1, -41, 114, -32),
-            new Present(2, -29, 113, -12),
-            new Present(3, -21, 113, -2),
-            new Present(4, -4, 115, 7),
-            new Present(5, -30, 99, 28),
-            new Present(6, -31, 120, 44),
-            new Present(7, -59, 105, 54),
-            new Present(8, -110, 98, 91),
-            new Present(9, -114, 117, 65),
-            new Present(10, -101, 142, 76),
-            new Present(11, -7, 100, 80),
-            new Present(12, -102, 151, -18),
-            new Present(13, -64, 114, -66),
-            new Present(14, -152, 128, -49),
-            new Present(15, 3, 104, 48),
-            new Present(16, -99, 102, 83),
-            new Present(17, -151, 82, -2),
-            new Present(18, -22, 113, -4),
-            new Present(19, -134, 154, -30),
-            new Present(20, -96, 113, -12),
-            new Present(21, 22, 108, 10),
-            new Present(22, -45, 113, -5),
-            new Present(23, -74, 115, -22),
-            new Present(24, -85, 135, -45),
-            new Present(25, -40, 112, -41),
-            new Present(26, -163, 96, 45),
-            new Present(27, -136, 98, 67),
-            new Present(29, -54, 113, 1),
-            new Present(30, -47, 98, 73));
-    public static final List<Present> ARENA = List.of(new Present(28, -127, 40, -128));
+            new Present(1, -9, 73, 17),
+            new Present(2, -35, 69, -2),
+            new Present(4, -17, 70, 32),
+            new Present(5, 15, 64, 38),
+            new Present(6, 44, 58, 104),
+            new Present(7, 5, 45, 125),
+            new Present(8, -7, 52, 178),
+            new Present(9, -56, 52, 162),
+            new Present(10, -77, 53, 136),
+            new Present(11, -96, 70, 124),
+            new Present(12, -134, 60, 97),
+            new Present(13, -162, 67, 89),
+            new Present(14, -192, 66, 95),
+            new Present(15, -197, 67, 117),
+            new Present(16, -215, 68, 97),
+            new Present(17, -226, 80, 90),
+            new Present(18, -245, 95, 86),
+            new Present(19, -230, 105, 58),
+            new Present(20, -244, 121, 50),
+            new Present(21, -247, 120, 21),
+            new Present(22, -222, 124, -8),
+            new Present(23, -206, 97, -33),
+            new Present(24, -193, 94, -36),
+            new Present(25, -181, 91, -33),
+            new Present(26, -189, 93, -38),
+            new Present(27, -186, 103, -36),
+            new Present(28, -186, 108, -45),
+            new Present(29, -170, 93, -22),
+            new Present(30, -163, 92, -3));
+    public static final List<Present> ARENA = List.of(new Present(3, -156, 13, -303));
     public static final List<Present> ALL = Stream.concat(SPAWN.stream(), ARENA.stream()).toList();
 
     private PresentCatalog() {}
