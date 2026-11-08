@@ -18,7 +18,7 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
             ["auth_xuid"] = account.Xuid, ["clientid"] = settings.MicrosoftClientId, ["user_type"] = account.UserType, ["user_properties"] = "{}",
             ["version_name"] = game.Fabric.GetProperty("id").GetString()!, ["version_type"] = "release", ["game_directory"] = game.Profile,
             ["assets_root"] = game.Assets, ["assets_index_name"] = game.Version.GetProperty("assetIndex").GetProperty("id").GetString()!, ["game_assets"] = game.Assets,
-            ["natives_directory"] = game.Natives, ["launcher_name"] = "ToolLauncher", ["launcher_version"] = "1.0.0", ["classpath"] = game.Classpath,
+            ["natives_directory"] = game.Natives, ["launcher_name"] = "ToolLauncher", ["launcher_version"] = LauncherBuild.Version, ["classpath"] = game.Classpath,
             ["classpath_separator"] = Path.PathSeparator.ToString(), ["library_directory"] = Path.Combine(paths.Cache, "libraries"), ["resolution_width"] = "1280", ["resolution_height"] = "720"
         };
         var info = new ProcessStartInfo(game.Java) { WorkingDirectory = game.Profile, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };

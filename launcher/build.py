@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import zipfile
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT / 'launcher'
@@ -55,7 +56,10 @@ def build(development=False, source=None):
     if source: command += ['--source', str(Path(source).resolve())]
     subprocess.run(command, cwd=ROOT, env=environment, check=True)
     if not development:
-        destination = ROOT / 'build/libs/ToolLauncher-1.0.0-win-x64.exe'
+        launcher_version = ET.parse(LAUNCHER / 'ToolLauncher.csproj').findtext('./PropertyGroup/Version')
+        if not launcher_version or not re.fullmatch(r'\d+\.\d+\.\d+', launcher_version):
+            raise ValueError('Provide a valid ToolLauncher project version')
+        destination = ROOT / 'build/libs' / ('ToolLauncher-' + launcher_version + '-win-x64.exe')
         shutil.copyfile(output / 'ToolLauncher.exe', destination)
         print('TOOLLAUNCHER_READY', destination, destination.stat().st_size, 'clients=' + ','.join(entry['minecraft'] for entry in entries))
 

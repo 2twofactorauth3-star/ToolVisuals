@@ -18,7 +18,7 @@ public sealed class RemoteClient : IDisposable
     {
         this.log = log;
         client = new(handler ?? new HttpClientHandler { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.All }) { Timeout = Timeout.InfiniteTimeSpan };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("ToolLauncher/1.0.0 (+https://github.com/2twofactorauth3-star/ToolVisuals)");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd($"ToolLauncher/{LauncherBuild.Version} (+https://github.com/2twofactorauth3-star/ToolVisuals)");
     }
     public static Uri Trusted(string url)
     {

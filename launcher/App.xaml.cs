@@ -27,7 +27,7 @@ public partial class App : Application
             singleInstance = new Mutex(true, "Local\\ToolLauncher-" + identity, out bool created);
             if (!created) { MessageBox.Show("ToolLauncher is already running.", "ToolLauncher"); Shutdown(); return; }
             services = new(paths.Root, memory: memory);
-            services.Log.Info("ToolLauncher 1.0.0 started");
+            services.Log.Info($"ToolLauncher {LauncherBuild.Version} started");
             DispatcherUnhandledException += UiError;
             TaskScheduler.UnobservedTaskException += (_, args) => { services.Log.Error("Background task", args.Exception); args.SetObserved(); };
             AppDomain.CurrentDomain.UnhandledException += (_, args) => services.Log.Error("Unhandled launcher exception", args.ExceptionObject as Exception ?? new Exception(args.ExceptionObject.ToString()));
