@@ -19,7 +19,6 @@ public sealed record LauncherSettings
     public string AccountName { get; init; } = "";
     public string AccountId { get; init; } = "";
     public string RefreshToken { get; init; } = "";
-    public string CurseForgeKey { get; init; } = "";
     public bool AccountImportCompleted { get; init; }
     public AccountProfile[] SavedAccounts { get; init; } = [];
     public string JavaPath(int major) => major == 25 ? Java25 : Java21;

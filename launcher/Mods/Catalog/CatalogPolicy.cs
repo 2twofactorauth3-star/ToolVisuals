@@ -7,7 +7,7 @@ public static class CatalogPolicy
 
     public static bool Allows(ModProject project) => project.Source switch
     {
-        "Modrinth" or "CurseForge" => project.Downloads >= MinimumDownloads,
+        "Modrinth" => project.Downloads >= MinimumDownloads,
         "GitHub" => OfficialRepositories.Contains(project.Id),
         _ => false
     };

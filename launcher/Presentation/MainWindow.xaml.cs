@@ -75,16 +75,13 @@ public partial class MainWindow : Window
         NicknameInput.Text = settings.Nickname; MemorySlider.Value = settings.MemoryMiB;
         Java21Input.Text = settings.Java21; Java25Input.Text = settings.Java25; AutoJavaCheck.IsChecked = settings.AutomaticJava;
         MicrosoftIdInput.Text = settings.MicrosoftClientId;
-        try { CurseKeyInput.Password = SecretProtection.Open(settings.CurseForgeKey); services.Log.Protect(CurseKeyInput.Password); }
-        catch (Exception error) { services.Log.Error("Decrypt CurseForge API key", error); Notice(error.Message); }
     }
     private void SavePreferences()
     {
         GameAccount.Offline(NicknameInput.Text.Trim());
         string microsoft = MicrosoftIdInput.Text.Trim();
         if (microsoft.Length > 0 && !Guid.TryParse(microsoft, out _)) throw new InvalidOperationException("Invalid Microsoft application ID");
-        services.Log.Protect(CurseKeyInput.Password);
-        services.AccountLibrary.SavePreferences(services.Settings.Current with { Nickname = NicknameInput.Text.Trim(), MemoryMiB = (int)MemorySlider.Value, Java21 = Java21Input.Text.Trim(), Java25 = Java25Input.Text.Trim(), AutomaticJava = AutoJavaCheck.IsChecked == true, MicrosoftClientId = microsoft, CurseForgeKey = SecretProtection.Seal(CurseKeyInput.Password) });
+        services.AccountLibrary.SavePreferences(services.Settings.Current with { Nickname = NicknameInput.Text.Trim(), MemoryMiB = (int)MemorySlider.Value, Java21 = Java21Input.Text.Trim(), Java25 = Java25Input.Text.Trim(), AutomaticJava = AutoJavaCheck.IsChecked == true, MicrosoftClientId = microsoft });
         services.Presence?.Refresh(); UpdateChrome();
     }
     private async Task RunAsync(string name, Func<CancellationToken, Task> action)
@@ -282,7 +279,6 @@ public partial class MainWindow : Window
     private void ModWebsiteClick(object sender, RoutedEventArgs e) => OpenWebsite(((ModProject)((Button)sender).DataContext).Website);
     private void CommunityClick(object sender, RoutedEventArgs e) => OpenWebsite("https://t.me/toolvisuals");
     private void SourceClick(object sender, RoutedEventArgs e) => OpenWebsite("https://github.com/2twofactorauth3-star/ToolVisuals");
-    private void CurseConsoleClick(object sender, RoutedEventArgs e) => OpenWebsite("https://console.curseforge.com/");
     private void ProfileFolderClick(object sender, RoutedEventArgs e) => TryAction("Open Minecraft profile", () => OpenFolder(services.Paths.Profile(Selected().Minecraft)));
     private void LogsFolderClick(object sender, RoutedEventArgs e) => OpenFolder(services.Paths.Logs);
     private async void AccountSettingsClick(object sender, RoutedEventArgs e) => await NavigateAsync("settings");

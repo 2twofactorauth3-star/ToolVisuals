@@ -32,7 +32,7 @@ public sealed class LauncherServices : IAsyncDisposable
         Paths = new(root); Log = new(Paths); Settings = new(Paths, Log, memory); Remote = new(Log);
         AccountLibrary = new(Settings); AccountDiscovery = new(Log);
         Accounts = new(Settings, Log, AccountLibrary); Mods = new(Paths, Remote, Log); Installer = new(Paths, Remote, Log); Runner = new(Paths, Log);
-        Sources = [new ModrinthSource(Remote), new CurseForgeSource(Remote, () => { string key = SecretProtection.Open(Settings.Current.CurseForgeKey); Log.Protect(key); return key; }), new GitHubSource(Remote)];
+        Sources = [new ModrinthSource(Remote), new GitHubSource(Remote)];
         Catalog = new(Sources, Log);
         if (connectDiscord) Presence = new(Log, () => Settings.Current);
     }

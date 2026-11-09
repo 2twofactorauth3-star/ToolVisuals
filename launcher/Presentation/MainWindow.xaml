@@ -363,10 +363,6 @@
                     <TextBlock Text="{DynamicResource Text.msClientId}" Style="{StaticResource Caption}" />
                     <TextBox x:Name="MicrosoftIdInput" MaxLength="36" FontSize="14" />
                     <TextBlock Text="{DynamicResource Text.msHint}" Style="{StaticResource Hint}" />
-                    <TextBlock Text="{DynamicResource Text.cfKey}" Style="{StaticResource Caption}" Margin="0,15,0,7" />
-                    <PasswordBox x:Name="CurseKeyInput" />
-                    <TextBlock Text="{DynamicResource Text.cfHint}" Style="{StaticResource Hint}" />
-                    <Button Content="CurseForge API ↗" Click="CurseConsoleClick" Style="{StaticResource Quiet}" HorizontalAlignment="Left" Padding="0,4" />
                   </StackPanel>
                   <StackPanel Grid.Column="2">
                     <Grid Margin="0,0,0,13">

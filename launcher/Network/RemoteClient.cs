@@ -23,16 +23,16 @@ public sealed class RemoteClient : IDisposable
     public static Uri Trusted(string url)
     {
         var uri = new Uri(url, UriKind.Absolute);
-        string[] roots = ["minecraft.net", "mojang.com", "fabricmc.net", "modrinth.com", "curseforge.com", "forgecdn.net", "github.com", "githubusercontent.com", "adoptium.net", "maven.apache.org", "minecraftservices.com", "microsoftonline.com", "live.com", "xboxlive.com"];
+        string[] roots = ["minecraft.net", "mojang.com", "fabricmc.net", "modrinth.com", "github.com", "githubusercontent.com", "adoptium.net", "maven.apache.org", "minecraftservices.com", "microsoftonline.com", "live.com", "xboxlive.com"];
         if (uri.Scheme != "https" || !uri.IsDefaultPort || uri.UserInfo.Length > 0 || !roots.Any(host => uri.Host == host || uri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidDataException("Download source is not trusted: " + uri.Host);
         return uri;
     }
-    public async Task<JsonDocument> JsonAsync(string url, CancellationToken token, string? apiKey = null)
+    public async Task<JsonDocument> JsonAsync(string url, CancellationToken token)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeout.CancelAfter(TimeSpan.FromSeconds(45));
-        using var response = await SendAsync(Trusted(url), timeout.Token, apiKey);
+        using var response = await SendAsync(Trusted(url), timeout.Token);
         await using var stream = await response.Content.ReadAsStreamAsync(timeout.Token);
         using var memory = new MemoryStream();
         await CopyBoundedAsync(stream, memory, 32 * 1024 * 1024, timeout.Token);
@@ -82,12 +82,11 @@ public sealed class RemoteClient : IDisposable
         while ((count = await stream.ReadAsync(buffer, token)) != 0) hash.AppendData(buffer.AsSpan(0, count));
         return Convert.ToHexString(hash.GetHashAndReset()).Equals(file.Hash, StringComparison.OrdinalIgnoreCase);
     }
-    private async Task<HttpResponseMessage> SendAsync(Uri uri, CancellationToken token, string? apiKey = null)
+    private async Task<HttpResponseMessage> SendAsync(Uri uri, CancellationToken token)
     {
         for (int redirect = 0; redirect <= 8; redirect++)
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, Trusted(uri.AbsoluteUri));
-            if (apiKey != null && uri.Host == "api.curseforge.com") request.Headers.Add("x-api-key", apiKey);
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
             if ((int)response.StatusCode is >= 300 and < 400 && response.Headers.Location is { } location)
             {
