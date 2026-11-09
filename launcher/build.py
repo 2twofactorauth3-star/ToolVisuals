@@ -42,6 +42,7 @@ def bundle_clients():
 
 
 def build(development=False, source=None):
+    subprocess.run([os.sys.executable, str(ROOT / "native/launcher-core/build.py")], cwd=ROOT, check=True)
     entries = bundle_clients()
     environment = dict(os.environ)
     environment['DOTNET_CLI_TELEMETRY_OPTOUT'] = '1'

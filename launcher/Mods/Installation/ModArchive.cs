@@ -28,8 +28,7 @@ public static class ModArchive
     }
     public static IReadOnlyList<ModIdentity> ReadIdentities(string archive)
     {
-        using var file = File.OpenRead(archive);
-        return ReadIdentities(file);
+        return ToolLauncher.Native.NativeJarScanner.ReadIdentities(archive);
     }
     public static IReadOnlyList<ModIdentity> ReadIdentities(Stream archive)
     {

@@ -174,3 +174,11 @@ Thumbs.db
 **/crash-reports/
 **/bin/
 **/obj/
+
+!/native/launcher-core/
+/native/launcher-core/*
+!/native/launcher-core/Cargo.toml
+!/native/launcher-core/Cargo.lock
+!/native/launcher-core/build.py
+!/native/launcher-core/src/
+/native/launcher-core/target/

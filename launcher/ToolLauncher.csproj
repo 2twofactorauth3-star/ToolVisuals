@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>ToolLauncher</AssemblyName>
     <RootNamespace>ToolLauncher</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\ToolVisuals.Executable.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -17,6 +17,7 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\build\launcher-native\tool_launcher_core.dll" Link="tool_launcher_core.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Resource Include="Assets\ToolVisuals.Executable.ico" />
     <Resource Include="Assets\ToolVisuals.jpg" />
     <Resource Include="Assets\Valley-dusk.png" />

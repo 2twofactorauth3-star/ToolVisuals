@@ -16,10 +16,10 @@ Windows-лаунчер для Minecraft 26.3, 1.21.11 и 1.21.4. Все три �
 
 Профили находятся в `%LOCALAPPDATA%/ToolLauncher/profiles`. Для переносной установки доступен аргумент `--data-root <папка>`.
 
-Сначала соберите три клиентских JAR по инструкции в основном README. Для сборки лаунчера установите .NET SDK 10 и выполните из корня проекта:
+Сначала соберите три клиентских JAR по инструкции в основном README. Для сборки лаунчера установите .NET SDK 10 + Rust 1.90+ (Windows x64 GNU/MSVC) и выполните из корня проекта:
 
 ```powershell
 python launcher/build.py
 ```
 
-Результат: `build/libs/ToolLauncher-1.0.1-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
+Результат: `build/libs/ToolLauncher-1.0.2-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
