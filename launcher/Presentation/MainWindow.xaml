@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:accounts="clr-namespace:ToolLauncher.Presentation.Accounts" xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.MainWindow" Title="ToolLauncher" Icon="/ToolLauncher;component/Assets/ToolVisuals.Executable.ico" Width="1280" Height="820" MinWidth="1100" MinHeight="740" Background="#100F14" Foreground="#F5F3FA" FontFamily="Segoe UI" FontSize="16" WindowStyle="None" ResizeMode="CanResize" UseLayoutRounding="True" SnapsToDevicePixels="True" WindowStartupLocation="CenterScreen" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Fixed" SizeChanged="WindowSizeChanged">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:accounts="clr-namespace:ToolLauncher.Presentation.Accounts" xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.MainWindow" Title="ToolLauncher" Icon="/ToolLauncher;component/Assets/ToolVisuals.Executable.ico" Width="1280" Height="820" MinWidth="1100" MinHeight="740" Background="#100F14" Foreground="#F5F3FA" FontFamily="Segoe UI" FontSize="16" WindowStyle="None" ResizeMode="CanResize" UseLayoutRounding="True" SnapsToDevicePixels="True" WindowStartupLocation="CenterScreen" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Grayscale" TextOptions.TextHintingMode="Fixed" SizeChanged="WindowSizeChanged">
   <shell:WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6" CornerRadius="16" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
   </shell:WindowChrome.WindowChrome>
@@ -76,16 +76,17 @@
               <Border.Background><ImageBrush ImageSource="{StaticResource Landscape}" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" /></Border.Background>
               <Grid>
                 <Border CornerRadius="18">
-                  <Border.Background><LinearGradientBrush StartPoint="0,0.4" EndPoint="0.9,0.8"><GradientStop Color="#D00C1015" Offset="0" /><GradientStop Color="#000C1015" Offset="1" /></LinearGradientBrush></Border.Background>
+                  <Border.Background><LinearGradientBrush StartPoint="0,0.6" EndPoint="0.9,0.6"><GradientStop Color="#8C0C1015" Offset="0" /><GradientStop Color="#000C1015" Offset="0.85" /></LinearGradientBrush></Border.Background>
                 </Border>
                 <Border CornerRadius="18">
-                  <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#000C1015" Offset="0.45" /><GradientStop Color="#A80C1015" Offset="1" /></LinearGradientBrush></Border.Background>
+                  <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#000C1015" Offset="0.25" /><GradientStop Color="#CE0C1015" Offset="1" /></LinearGradientBrush></Border.Background>
                 </Border>
                 <StackPanel x:Name="HeroIdentity" VerticalAlignment="Bottom" Margin="30,24,30,28">
                   <TextBlock Text="MINECRAFT JAVA EDITION" FontSize="15" Foreground="#D2D4DB" Margin="0,0,0,8" />
                   <TextBlock x:Name="HeroTitleText" Text="ToolVisuals" FontSize="54" FontWeight="SemiBold" Foreground="#FFFFFF" />
                   <StackPanel Orientation="Horizontal" Margin="2,12,0,0"><Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource Accent}" VerticalAlignment="Center" Margin="0,0,12,0" /><TextBlock x:Name="HeroBuildLabel" FontSize="16" Foreground="#ECECF1" /></StackPanel>
                 </StackPanel>
+                <Button x:Name="SceneCredit" Content="Xbox México · CC BY 3.0 ↗" Click="SceneCreditClick" Style="{StaticResource Quiet}" FontSize="12" FontWeight="Normal" Foreground="#E1E5ED" Background="#C0141B26" Padding="8,6" Margin="12" VerticalAlignment="Top" HorizontalAlignment="Right" ToolTip="Minecraft — Frozen ocean · Xbox México · CC BY 3.0" />
               </Grid>
             </Border>
             <Grid Grid.Row="1" Margin="0,18,0,0">
@@ -93,14 +94,20 @@
               <Button x:Name="QuickModsButton" Click="NavigationClick" Tag="installed" Style="{StaticResource QuickAction}">
                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="24" /><ColumnDefinition Width="18" /><ColumnDefinition /><ColumnDefinition Width="18" /></Grid.ColumnDefinitions>
                   <Path Data="M 1,1 L 8,1 L 8,8 L 1,8 Z M 12,1 L 19,1 L 19,8 L 12,8 Z M 1,12 L 8,12 L 8,19 L 1,19 Z M 12,12 L 19,12 L 19,19 L 12,19 Z" Style="{StaticResource LineIcon}" Width="24" Height="24" />
-                  <TextBlock Grid.Column="2" Text="{DynamicResource Text.installed}" FontSize="18" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource Text.installed}" FontSize="18" />
+                    <TextBlock x:Name="HomeModsHint" FontSize="14" FontWeight="Normal" Foreground="{StaticResource Muted}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
                   <Path Grid.Column="3" Data="M 1,9 L 19,9 M 12,2 L 19,9 L 12,16" Style="{StaticResource LineIcon}" Width="18" Height="18" Opacity="0.65" />
                 </Grid>
               </Button>
               <Button x:Name="QuickFolderButton" Grid.Column="2" Click="ProfileFolderClick" Style="{StaticResource QuickAction}" IsEnabled="{DynamicResource CanOpenProfile}">
                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="24" /><ColumnDefinition Width="18" /><ColumnDefinition /><ColumnDefinition Width="18" /></Grid.ColumnDefinitions>
                   <Path Data="M 1,4 L 8,4 L 11,7 L 23,7 L 23,21 L 1,21 Z" Style="{StaticResource LineIcon}" Width="24" Height="24" />
-                  <TextBlock Grid.Column="2" Text="{DynamicResource Text.openProfile}" FontSize="18" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource Text.openProfile}" FontSize="18" />
+                    <TextBlock x:Name="HomeFolderHint" FontSize="14" FontWeight="Normal" Foreground="{StaticResource Muted}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
                   <Path Grid.Column="3" Data="M 1,9 L 19,9 M 12,2 L 19,9 L 12,16" Style="{StaticResource LineIcon}" Width="18" Height="18" Opacity="0.65" />
                 </Grid>
               </Button>

@@ -22,4 +22,6 @@ Windows-лаунчер для Minecraft 26.3, 1.21.11 и 1.21.4. Все три �
 python launcher/build.py
 ```
 
-Результат: `build/libs/ToolLauncher-1.3.0-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
+Результат: `build/libs/ToolLauncher-1.3.1-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
+
+Фон главной — игровой кадр Minecraft от Xbox México (CC BY 3.0). Источник и лицензия: [launcher/licenses/minecraft-scene.txt](licenses/minecraft-scene.txt).

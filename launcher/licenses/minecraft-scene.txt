@@ -1,0 +1,12 @@
+Minecraft - Frozen ocean.jpg
+Author: Xbox México
+Source video: Xbox Masterclass: TIPS y consejos para ser un experto en Minecraft
+https://www.youtube.com/watch?v=T1Ua2SVUhYw
+Screenshot source: https://commons.wikimedia.org/wiki/File:Minecraft_-_Frozen_ocean.jpg
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+The original screenshot bytes are preserved. ToolLauncher scales and crops the
+image to fit the window and overlays gradients for text readability.
+Minecraft and its imagery remain the property of their respective owners.
+This use does not imply endorsement by Microsoft, Mojang or Xbox México.

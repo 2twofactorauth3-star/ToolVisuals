@@ -33,6 +33,9 @@ public partial class MainWindow : Window
     private Task? gameCompletion;
     private readonly BackgroundWork profileWork = new();
     private CancellationTokenSource? installedRead;
+    private IReadOnlyList<ModInfo>? summaryMods;
+    private string? summaryVersion;
+    private bool summaryReadFailed;
     private LatestProgress<InstallProgress>? operationProgress;
     private bool windowClosed;
     private bool populatingSettings;
@@ -51,6 +54,7 @@ public partial class MainWindow : Window
         {
             if (services.Settings.LoadError != null) Notice(services.Settings.LoadError.Message + "\n" + services.Paths.Settings);
             if (services.Settings.LoadError == null && !services.Settings.Current.AccountImportCompleted) await AccountImportOverlay.OpenAsync(services);
+            if (!windowClosed && page == "home" && !busy) await RefreshInstalledAsync();
         };
         Closing += OnClosing;
         Closed += (_, _) => { windowClosed = true; search?.Cancel(); installedRead?.Cancel(); AccountImportOverlay.Cancel(); };
@@ -100,7 +104,7 @@ public partial class MainWindow : Window
         {
             progress.Dispose(); operationProgress = null; operation = null; busy = false; InstallBar.IsIndeterminate = false; UpdateChrome();
             if (closeRequested) { closeRequested = false; Close(); }
-            else if (page == "installed") await RefreshInstalledAsync();
+            else if (page is "installed" or "home") await RefreshInstalledAsync();
             else if (page == "mods") await SearchAsync();
         }
     }
@@ -148,21 +152,21 @@ public partial class MainWindow : Window
     {
         if (initializing || busy || gameRunning) return;
         TryAction("Select Minecraft version", () => { services.Settings.Save(services.Settings.Current with { SelectedVersion = (VersionList.SelectedItem as GameTarget)?.Minecraft }); services.Presence?.Refresh(); UpdateChrome(); search?.Cancel(); installedRead?.Cancel(); InstalledList.ItemsSource = CatalogList.ItemsSource = null; });
-        if (page == "installed") await RefreshInstalledAsync();
+        if (page is "installed" or "home") await RefreshInstalledAsync();
         if (page == "mods") { offset = 0; await SearchAsync(); }
     }
     private void ClearVersionClick(object sender, RoutedEventArgs e) => VersionList.SelectedItem = null;
     private async void NavigationClick(object sender, RoutedEventArgs e) => await NavigateAsync((string)((Button)sender).Tag);
     private async Task NavigateAsync(string destination)
     {
-        page = destination; search?.Cancel();
+        page = destination; search?.Cancel(); installedRead?.Cancel();
         RefreshAppearance();
         HomePage.Visibility = destination == "home" ? Visibility.Visible : Visibility.Collapsed;
         ModsPage.Visibility = destination == "mods" ? Visibility.Visible : Visibility.Collapsed;
         InstalledPage.Visibility = destination == "installed" ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = destination == "settings" ? Visibility.Visible : Visibility.Collapsed;
         AccountsPage.Visibility = destination == "accounts" ? Visibility.Visible : Visibility.Collapsed;
-        if (destination == "installed" && !busy) await RefreshInstalledAsync();
+        if (destination is "installed" or "home" && !busy) await RefreshInstalledAsync();
         if (destination == "mods") { offset = 0; await SearchAsync(); }
     }
     private async Task SearchAsync()
@@ -211,6 +215,7 @@ public partial class MainWindow : Window
         installedRead?.Cancel();
         using var cancellation = new CancellationTokenSource(); installedRead = cancellation;
         var target = VersionList.SelectedItem as GameTarget;
+        summaryVersion = target?.Minecraft; summaryMods = null; summaryReadFailed = false; RefreshProfileSummary();
         InstalledEmpty.Text = LauncherLanguage.Get(target == null ? "selectFirst" : "readingMods");
         InstalledEmpty.Visibility = InstalledList.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         try
@@ -218,6 +223,7 @@ public partial class MainWindow : Window
             var installed = target == null ? [] : await profileWork.RunAsync(token => Task.FromResult(services.Mods.Installed(target, token)), cancellation.Token);
             if (windowClosed || installedRead != cancellation || cancellation.IsCancellationRequested || !Equals(VersionList.SelectedItem, target)) return;
             InstalledList.ItemsSource = installed;
+            summaryMods = installed; RefreshProfileSummary();
             InstalledEmpty.Text = LauncherLanguage.Get(target == null ? "selectFirst" : "emptyInstalled");
             InstalledEmpty.Visibility = installed.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -225,7 +231,7 @@ public partial class MainWindow : Window
         catch (Exception error)
         {
             services.Log.Error("Read profile mods", error);
-            if (!windowClosed && installedRead == cancellation && !cancellation.IsCancellationRequested) { InstalledEmpty.Text = LauncherLanguage.Get("error"); Notice(error.Message); }
+            if (!windowClosed && installedRead == cancellation && !cancellation.IsCancellationRequested && Equals(VersionList.SelectedItem, target)) { summaryReadFailed = true; RefreshProfileSummary(); InstalledEmpty.Text = LauncherLanguage.Get("error"); Notice(error.Message); }
         }
         finally { if (installedRead == cancellation) installedRead = null; }
     }
@@ -322,6 +328,7 @@ public partial class MainWindow : Window
     private void ModWebsiteClick(object sender, RoutedEventArgs e) => OpenWebsite(((ModProject)((Button)sender).DataContext).Website);
     private void CommunityClick(object sender, RoutedEventArgs e) => OpenWebsite("https://t.me/toolvisuals");
     private void SourceClick(object sender, RoutedEventArgs e) => OpenWebsite("https://github.com/2twofactorauth3-star/ToolVisuals");
+    private void SceneCreditClick(object sender, RoutedEventArgs e) => OpenWebsite("https://commons.wikimedia.org/wiki/File:Minecraft_-_Frozen_ocean.jpg");
     private void ProfileFolderClick(object sender, RoutedEventArgs e) => TryAction("Open Minecraft profile", () => OpenFolder(services.Paths.Profile(Selected().Minecraft)));
     private void LogsFolderClick(object sender, RoutedEventArgs e) => OpenFolder(services.Paths.Logs);
     private async void AccountSettingsClick(object sender, RoutedEventArgs e) => await NavigateAsync("accounts");

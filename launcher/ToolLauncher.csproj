@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>ToolLauncher</AssemblyName>
     <RootNamespace>ToolLauncher</RootNamespace>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\ToolVisuals.Executable.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -20,7 +20,7 @@
     <Content Include="..\build\launcher-native\tool_launcher_core.dll" Link="tool_launcher_core.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Resource Include="Assets\ToolVisuals.Executable.ico" />
     <Resource Include="Assets\ToolVisuals.jpg" />
-    <Resource Include="Assets\Valley-dusk.png" />
+    <Resource Include="Assets\Minecraft-frozen-ocean.jpg" />
     <EmbeddedResource Include="bundle\*.jar" LogicalName="ToolLauncher.Clients.%(Filename)%(Extension)" />
     <EmbeddedResource Include="bundle\clients.json" LogicalName="ToolLauncher.Clients.clients.json" Condition="Exists('bundle\clients.json')" />
     <EmbeddedResource Include="..\LICENSE" LogicalName="ToolLauncher.Licenses.LICENSE" />

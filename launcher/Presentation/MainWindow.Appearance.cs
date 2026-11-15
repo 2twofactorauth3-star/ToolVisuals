@@ -16,6 +16,7 @@ public partial class MainWindow
         CurrentPageTitle.Text = LauncherLanguage.Get(page);
         var target = settings.SelectedVersion == null ? null : GameTarget.Find(settings.SelectedVersion);
         HomeRuntimeText.Text = (target == null ? "Java" : "Java " + target.Java) + " · " + (settings.MemoryMiB / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
+        RefreshProfileSummary();
         MemoryLabel.Text = (MemorySlider.Value / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
         double spacing = settings.CompactInterface ? 18 : 24;
         ContentArea.Margin = page == "home" ? new Thickness(spacing, 0, spacing, 20) : new Thickness(spacing + 6, 12, spacing + 6, 18);
@@ -30,6 +31,20 @@ public partial class MainWindow
         Resources["PopupMotion"] = animate ? PopupAnimation.Fade : PopupAnimation.None;
         RefreshNavigation();
         ResizeHero(ActualHeight > 0 ? ActualHeight : Height);
+    }
+
+    private void RefreshProfileSummary()
+    {
+        string? version = services.Settings.Current.SelectedVersion;
+        HomeFolderHint.Text = version == null ? LauncherLanguage.Get("homeProfileHint") : "profiles / " + version;
+        QuickFolderButton.ToolTip = version == null ? null : services.Paths.Profile(version);
+        if (version == null) HomeModsHint.Text = LauncherLanguage.Get("selectFirst");
+        else if (summaryVersion != version || summaryMods == null) HomeModsHint.Text = LauncherLanguage.Get(summaryVersion == version && summaryReadFailed ? "homeModsError" : "readingMods");
+        else
+        {
+            int enabled = summaryMods.Count(mod => mod.Enabled);
+            HomeModsHint.Text = summaryMods.Count == 0 ? LauncherLanguage.Get("homeModsEmpty") : string.Format(LauncherLanguage.Get("homeModsCount"), enabled, summaryMods.Count - enabled);
+        }
     }
 
     private void RefreshNavigation()

@@ -1,4 +1,4 @@
-<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.Accounts.AccountImportPanel" Background="#B5101118" Focusable="True" KeyboardNavigation.TabNavigation="Cycle" TextOptions.TextRenderingMode="Auto" TextOptions.TextFormattingMode="Display" TextOptions.TextHintingMode="Fixed" UseLayoutRounding="True">
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.Accounts.AccountImportPanel" Background="#B5101118" Focusable="True" KeyboardNavigation.TabNavigation="Cycle" TextOptions.TextRenderingMode="Grayscale" TextOptions.TextFormattingMode="Ideal" TextOptions.TextHintingMode="Fixed" UseLayoutRounding="True">
   <Border MaxWidth="850" MaxHeight="690" Margin="30" Padding="28" Background="#191923" BorderBrush="#494056" BorderThickness="1" CornerRadius="18">
     <Grid>
       <Grid.RowDefinitions>
