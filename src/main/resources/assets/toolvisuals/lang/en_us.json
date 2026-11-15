@@ -1918,5 +1918,12 @@
   "toolvisuals.setting.item_highlight_hands": "Held items",
   "toolvisuals.setting.item_highlight_strength": "Intensity",
   "toolvisuals.setting.item_highlight_radius": "Glow size",
-  "toolvisuals.module.item_highlights": "Soft colored glow for selected items in inventories, the hotbar and your hands."
+  "toolvisuals.module.item_highlights": "Soft colored glow for selected items in inventories, the hotbar and your hands.",
+  "toolvisuals.item_highlights.appearance": "Glow and slot fill",
+  "toolvisuals.item_highlights.slots": "Inventory and hotbar",
+  "toolvisuals.item_highlights.hands_section": "Held-item glow",
+  "toolvisuals.setting.item_highlight_slot_fill": "Fill the whole slot",
+  "toolvisuals.setting.item_highlight_slot_opacity": "Slot opacity",
+  "toolvisuals.setting.item_highlight_hand_strength": "Hand brightness",
+  "toolvisuals.setting.item_highlight_hand_radius": "Hand glow size"
 }

@@ -92,8 +92,7 @@ public final class ItemHighlightsScreen extends VisualEditorScreen {
         button(492, 458, 118, 28, text("reset"), UiPaint.Icon.RESET, () -> minecraft.gui.setScreen(new ConfirmScreen(yes -> { if (yes) { config().setItemHighlights(ItemHighlightRules.defaults()); } minecraft.gui.setScreen(this); }, text("reset"), text("reset_confirm"))), null);
         button(620, 458, 118, 28, UiI18n.tr("toolvisuals.ui.back"), UiPaint.Icon.BACK, this::onClose, null);
         button(492, 396, 246, 30, text("enabled"), null, () -> config().setActive(VisualModule.ITEM_HIGHLIGHTS, !config().active(VisualModule.ITEM_HIGHLIGHTS)), () -> config().active(VisualModule.ITEM_HIGHLIGHTS));
-        slider(20, 412, 210, VisualSetting.ITEM_HIGHLIGHT_STRENGTH.label(), .1, 1, .05, () -> config().value(VisualSetting.ITEM_HIGHLIGHT_STRENGTH), value -> config().setValue(VisualSetting.ITEM_HIGHLIGHT_STRENGTH, value), value -> Math.round(value * 100) + "%");
-        slider(250, 412, 214, VisualSetting.ITEM_HIGHLIGHT_RADIUS.label(), 1, 6, .5, () -> config().value(VisualSetting.ITEM_HIGHLIGHT_RADIUS), value -> config().setValue(VisualSetting.ITEM_HIGHLIGHT_RADIUS, value), value -> String.format(Locale.ROOT, "%.1f", value));
+        button(20, 412, 444, 32, text("appearance"), UiPaint.Icon.RENDER, () -> minecraft.gui.setScreen(new ItemHighlightAppearanceScreen(this)), null);
         int index = 0;
         for (var setting : new VisualSetting[]{VisualSetting.ITEM_HIGHLIGHT_INVENTORY, VisualSetting.ITEM_HIGHLIGHT_HOTBAR, VisualSetting.ITEM_HIGHLIGHT_HANDS}) {
             button(20 + index * 246, 508, 236, 28, setting.label(), null, () -> config().setValue(setting, config().flag(setting) ? 0 : 1), () -> config().flag(setting)); index++;

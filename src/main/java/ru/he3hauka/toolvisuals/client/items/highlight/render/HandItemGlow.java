@@ -103,12 +103,12 @@ public final class HandItemGlow {
     }
     private static void uniforms(PostChain chain) {
         var config = ToolVisualsClient.CONFIG;
-        float radius = config.number(ITEM_HIGHLIGHT_RADIUS) * 6 * mask.height / 1080f;
+        float radius = config.number(ITEM_HIGHLIGHT_HAND_RADIUS) * 6 * mask.height / 1080f;
         for (var pass : ((MotionBlurChainAccessor)chain).toolvisuals$motionPasses()) {
             var uniforms = ((MotionBlurPassAccessor)pass).toolvisuals$motionUniforms();
             var buffer = uniforms.get("ItemGlowConfig"); if (buffer == null) continue;
             try (var stack = MemoryStack.stackPush()) {
-                var bytes = stack.malloc(16); bytes.putFloat(radius).putFloat(config.number(ITEM_HIGHLIGHT_STRENGTH)).putFloat(0).putFloat(0).flip();
+                var bytes = stack.malloc(16); bytes.putFloat(radius).putFloat(config.number(ITEM_HIGHLIGHT_HAND_STRENGTH)).putFloat(0).putFloat(0).flip();
                 if ((buffer.usage() & GpuBuffer.USAGE_COPY_DST) == 0) {
                     var writable = RenderSystem.getDevice().createBuffer(() -> "ToolVisuals item glow controls", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, bytes);
                     uniforms.put("ItemGlowConfig", writable); buffer.close();

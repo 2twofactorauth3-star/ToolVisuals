@@ -88,7 +88,7 @@ public final class HandItemGlow {
             var config = ToolVisualsClient.CONFIG;
             for (var pass : ((MotionBlurChainAccessor)chain).toolvisuals$motionPasses()) {
                 var uniform = pass.getShader().getUniform("GlowControl");
-                if (uniform != null) uniform.set(config.number(ITEM_HIGHLIGHT_RADIUS) * 6 * mask.height / 1080f, config.number(ITEM_HIGHLIGHT_STRENGTH), 0, 0);
+                if (uniform != null) uniform.set(config.number(ITEM_HIGHLIGHT_HAND_RADIUS) * 6 * mask.height / 1080f, config.number(ITEM_HIGHLIGHT_HAND_STRENGTH), 0, 0);
             }
             var graph = new FrameGraphBuilder(); var main = client.getMainRenderTarget();
             var targets = new HashMap<ResourceLocation, ResourceHandle<RenderTarget>>();

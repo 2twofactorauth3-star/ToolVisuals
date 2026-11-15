@@ -44,6 +44,12 @@ public final class ItemHighlights {
         return before;
     }
     public static GuiStyle extracting() { return GUI.get(); }
+    public static int slotColor() {
+        var config = ToolVisualsClient.CONFIG;
+        int color = GUI.get().color();
+        if (color >>> 24 == 0 || !config.flag(ITEM_HIGHLIGHT_SLOT_FILL)) return 0;
+        return (color & 0xffffff) | Math.round(config.number(ITEM_HIGHLIGHT_SLOT_OPACITY) * 255) << 24;
+    }
     public static void restore(GuiStyle style) { GUI.set(style); }
     public static boolean hotbar() { boolean previous = HOTBAR.get(); HOTBAR.set(true); return previous; }
     public static void restoreHotbar(boolean previous) { HOTBAR.set(previous); }

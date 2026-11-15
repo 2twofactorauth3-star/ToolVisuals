@@ -1918,5 +1918,12 @@
   "toolvisuals.setting.item_highlight_hands": "В руках",
   "toolvisuals.setting.item_highlight_strength": "Яркость",
   "toolvisuals.setting.item_highlight_radius": "Размер свечения",
-  "toolvisuals.module.item_highlights": "Мягкое цветное свечение выбранных предметов в инвентаре, хотбаре и руках."
+  "toolvisuals.module.item_highlights": "Мягкое цветное свечение выбранных предметов в инвентаре, хотбаре и руках.",
+  "toolvisuals.item_highlights.appearance": "Свечение и заливка",
+  "toolvisuals.item_highlights.slots": "Инвентарь и хотбар",
+  "toolvisuals.item_highlights.hands_section": "Свечение в руках",
+  "toolvisuals.setting.item_highlight_slot_fill": "Заливать весь слот",
+  "toolvisuals.setting.item_highlight_slot_opacity": "Плотность заливки",
+  "toolvisuals.setting.item_highlight_hand_strength": "Яркость в руках",
+  "toolvisuals.setting.item_highlight_hand_radius": "Размер в руках"
 }

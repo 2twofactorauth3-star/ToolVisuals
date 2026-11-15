@@ -16,7 +16,11 @@ public abstract class ItemGlowExtractionMixin {
     private void toolvisuals$itemGlow(LivingEntity owner, Level level, ItemStack stack, int x, int y, int seed, int depth, Operation<Void> original) {
         if (!LegacyGuiGlow.capturing()) {
             var previous = ItemHighlights.capture(stack);
-            try { LegacyGuiGlow.draw((GuiGraphics)(Object)this, owner, level, stack, x, y, seed, ItemHighlights.extracting()); }
+            try {
+                int color = ItemHighlights.slotColor();
+                if (color >>> 24 != 0) ((GuiGraphics)(Object)this).fill(x - 1, y - 1, x + 17, y + 17, color);
+                LegacyGuiGlow.draw((GuiGraphics)(Object)this, owner, level, stack, x, y, seed, ItemHighlights.extracting());
+            }
             finally { ItemHighlights.restore(previous); }
         }
         original.call(owner, level, stack, x, y, seed, depth);
