@@ -214,6 +214,7 @@ public class VisualsScreen extends Screen implements MovementScreen {
     }
     private void openSettings(VisualModule module) {
         if (!config.available(module)) return;
+        if (module == VisualModule.ITEM_HIGHLIGHTS) { minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.items.highlight.ui.ItemHighlightsScreen(this)); return; }
         if(module==VisualModule.CUSTOM_HAND){minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.hand.ui.HandSettingsScreen(this));return;}
         if (module == VisualModule.DAMAGE_VIGNETTE) {
             minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.render.vignette.ui.DamageVignetteScreen(this));return;

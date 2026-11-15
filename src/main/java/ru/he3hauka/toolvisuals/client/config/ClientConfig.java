@@ -76,6 +76,13 @@ public final class ClientConfig {
     private volatile Map<VisualSetting, Double> values = Map.of();
     private volatile Map<VisualSetting, ColorStyle> colors = Map.of();
     private volatile CrosshairDesign crosshairDesign = CrosshairDesign.cross();
+    private volatile ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules itemHighlights = ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults();
+    public ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules itemHighlights() { return itemHighlights; }
+    public void setItemHighlights(ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules rules) {
+        java.util.Objects.requireNonNull(rules);
+        if (itemHighlights.colors.equals(rules.colors)) return;
+        itemHighlights = rules; save("item_highlights");
+    }
     private volatile ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook accessories=ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook.EMPTY;
     public ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook accessories(){return accessories;}
     public void setAccessories(ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook look){accessories=java.util.Objects.requireNonNull(look);save();}
@@ -214,6 +221,7 @@ public final class ClientConfig {
     }
 
     public void reset(VisualModule module) {
+        if (module == VisualModule.ITEM_HIGHLIGHTS) itemHighlights = ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults();
         if(module==VisualModule.COSMETICS)accessories=ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook.EMPTY;
         if (module == VisualModule.NO_RENDER) { reset(); return; }
         if (module == VisualModule.NAME_PROTECT) protectedName = "ToolVisuals";
@@ -345,6 +353,7 @@ public final class ClientConfig {
     }
 
     private void readSaved(ConfigSnapshot saved) {
+            itemHighlights = saved.itemHighlights == null ? ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults() : new ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules(saved.itemHighlights);
             EnumSet<RenderOption> loaded = defaults();
             if (saved.hidden != null) {
                 loaded.clear();
@@ -418,6 +427,7 @@ public final class ClientConfig {
     }
 
     private void applyVisuals(ClientConfig source) {
+        itemHighlights = source.itemHighlights;
         enabled = source.enabled; hidden = source.hidden; modules = source.modules; values = source.values;
         chatSize=source.chatSize;
         hudPositions = source.hudPositions;hudScales=source.hudScales; protectedName = source.protectedName; lightTheme = source.lightTheme;
@@ -458,6 +468,7 @@ public final class ClientConfig {
         saved.colors = new LinkedHashMap<>(); colors.forEach((setting,color)->saved.colors.put(setting.id,color));
         saved.crosshairDesign = crosshairDesign.rows;
         saved.cosmeticAppearance=ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryConfigCodec.encode(accessories);
+        saved.itemHighlights = itemHighlights.colors;
         for (var module : VisualModule.values()) if (favorite(module)) saved.favorites.add(module.id);
         for (RenderOption option : hidden) saved.hidden.add(option.id);
         return saved;

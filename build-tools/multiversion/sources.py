@@ -233,7 +233,11 @@ def translate(text,version):
             text=text.replace('extends EditBox {','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyEditBox {')
             text=text.replace('extends Button {','extends ru.he3hauka.toolvisuals.client.compatibility.gui.LegacyButton {')
         text=legacy_pose(text)
+        matrix_stacks=re.findall(r'\b(?:org\.joml\.)?Matrix4fStack\s+(\w+)\s*=',text)
         text=text.replace('.pushMatrix()', '.pushPose()').replace('.popMatrix()', '.popPose()')
+        for name in matrix_stacks:
+            text=re.sub(r'\b'+re.escape(name)+r'\.pushPose\(\)',name+'.pushMatrix()',text)
+            text=re.sub(r'\b'+re.escape(name)+r'\.popPose\(\)',name+'.popMatrix()',text)
         text=text.replace('client.getWindow().handle()', 'client.getWindow().getWindow()').replace('window.handle()', 'window.getWindow()')
     if version=='1.21.4':
         text=text.replace('Identifier','ResourceLocation').replace('net.minecraft.world.entity.player.PlayerSkin','net.minecraft.client.resources.PlayerSkin').replace('AvatarRenderState','PlayerRenderState')

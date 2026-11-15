@@ -69,6 +69,8 @@ public final class ToolVisualsClient implements ClientModInitializer {
         var startupPreset=new ru.he3hauka.toolvisuals.client.optimization.preset.StartupPreset(FabricLoader.getInstance().getConfigDir());
         RenderPipelinesAccessor.toolvisuals$register(UiPipelines.TEXT);
         RenderPipelinesAccessor.toolvisuals$register(UiPipelines.RASTER_TEXT);
+        ru.he3hauka.toolvisuals.client.items.highlight.render.ItemGlowPipeline.register();
+        ClientTickEvents.END_CLIENT_TICK.register(ru.he3hauka.toolvisuals.client.items.highlight.render.HandItemGlow::tick);
         ArmorRenderTypes.initialize();
         ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryPipeline.initialize();
         CONFIG.load();

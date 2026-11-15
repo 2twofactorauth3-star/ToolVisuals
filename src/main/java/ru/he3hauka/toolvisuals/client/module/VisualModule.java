@@ -85,7 +85,8 @@ public enum VisualModule {
     CLIENT_BADGE("ClientBadge", ModuleCategory.PLAYER),
     KEYBINDS("Keybinds",ModuleCategory.PLAYER),
     VOICE_CHAT("VoiceChat",ModuleCategory.PLAYER),
-    CRYSTAL_OPTIMIZER("CrystalOptimizer",ModuleCategory.PLAYER);
+    CRYSTAL_OPTIMIZER("CrystalOptimizer",ModuleCategory.PLAYER),
+    ITEM_HIGHLIGHTS("ItemHighlights",ModuleCategory.RENDER);
 
     public final String title;
     public final String id;

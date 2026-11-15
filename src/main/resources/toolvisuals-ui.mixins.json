@@ -4,7 +4,18 @@
   "package": "ru.he3hauka.toolvisuals.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "gui.EditBoxGeometryMixin"
+    "gui.EditBoxGeometryMixin",
+    "itemhighlights.ItemGlowExtractionMixin",
+    "itemhighlights.ItemGlowStateMixin",
+    "itemhighlights.ItemGlowBlitMixin",
+    "itemhighlights.ItemGlowGuiRendererMixin",
+    "itemhighlights.ItemGlowGameAccessor",
+    "itemhighlights.ItemGlowHandContextMixin",
+    "itemhighlights.ItemGlowHandStateMixin",
+    "itemhighlights.ItemGlowHandFrameMixin",
+    "itemhighlights.ItemGlowMaskMixin",
+    "itemhighlights.ItemGlowModelMaskMixin",
+    "itemhighlights.ItemGlowHotbarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

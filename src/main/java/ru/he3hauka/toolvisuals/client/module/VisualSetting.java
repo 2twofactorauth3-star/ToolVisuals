@@ -11,6 +11,11 @@ import ru.he3hauka.toolvisuals.client.social.badge.BadgeLabels;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
 public enum VisualSetting {
+    ITEM_HIGHLIGHT_INVENTORY(ITEM_HIGHLIGHTS, true),
+    ITEM_HIGHLIGHT_HOTBAR(ITEM_HIGHLIGHTS, true),
+    ITEM_HIGHLIGHT_HANDS(ITEM_HIGHLIGHTS, true),
+    ITEM_HIGHLIGHT_STRENGTH(ITEM_HIGHLIGHTS, .1, 1, .05, .65),
+    ITEM_HIGHLIGHT_RADIUS(ITEM_HIGHLIGHTS, 1, 6, .5, 3),
     TIME(WORLD_CUSTOMIZER, 0, "Server", "Day", "Sunset", "Night"),
     CLEAR_WEATHER(WORLD_CUSTOMIZER, true),
     SKY_TINT(WORLD_CUSTOMIZER, 0, "Natural", "Lavender", "Rose", "Azure", "Amber"),

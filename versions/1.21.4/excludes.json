@@ -1,5 +1,6 @@
 [
   "ru/he3hauka/toolvisuals/client/gui/render/UiShapeBatch.java",
+  "ru/he3hauka/toolvisuals/client/items/highlight/render/ItemGlowQuad.java",
   "ru/he3hauka/toolvisuals/client/optimization/items/GroundItemBatch.java",
   "ru/he3hauka/toolvisuals/mixin/betterhud/SmoothHudItemMixin.java",
   "ru/he3hauka/toolvisuals/mixin/gui/GuiDrawAccessor.java",
@@ -9,6 +10,11 @@
   "ru/he3hauka/toolvisuals/mixin/hud/ExperienceBarMixin.java",
   "ru/he3hauka/toolvisuals/mixin/hud/LocatorBarMixin.java",
   "ru/he3hauka/toolvisuals/mixin/hud/PortraitBlitMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/itemhighlights/ItemGlowBlitMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/itemhighlights/ItemGlowGuiRendererMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/itemhighlights/ItemGlowMaskMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/itemhighlights/ItemGlowModelMaskMixin.java",
+  "ru/he3hauka/toolvisuals/mixin/itemhighlights/ItemGlowStateMixin.java",
   "ru/he3hauka/toolvisuals/mixin/motionblur/MotionBlurPassAccessor.java",
   "ru/he3hauka/toolvisuals/mixin/optimization/GroundItemBatchMixin.java",
   "ru/he3hauka/toolvisuals/mixin/render/RenderPipelinesAccessor.java",

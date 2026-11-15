@@ -29,4 +29,5 @@ final class ConfigSnapshot {
     public Map<String,ColorStyle> colors;
     public java.util.List<String> crosshairDesign;
     public String cosmeticAppearance;
+    public Map<String, Integer> itemHighlights;
 }
