@@ -60,22 +60,21 @@ public partial class MainWindow : Window
         var settings = services.Settings.Current;
         RefreshAppearance();
         LanguageButton.Content = settings.Language.ToUpperInvariant();
-        AccountName.Text = settings.UseMicrosoft ? settings.AccountName : settings.Nickname;
-        AccountKind.Text = settings.UseMicrosoft ? "Microsoft" : LauncherLanguage.Get("accountLocal");
         RefreshAccountChoices();
         MemoryBudgetHint.Text = string.Format(LauncherLanguage.Get("memoryBudget"), (services.Settings.Memory.TotalMiB / 1024d).ToString("0.#"), (services.Settings.Memory.MaximumMiB / 1024d).ToString("0.#"));
-        SessionTitle.Text = gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "Minecraft " + settings.SelectedVersion + "  ·  ToolVisuals " + (BundledClient.Builds().FirstOrDefault(build => build.Minecraft == settings.SelectedVersion)?.Version ?? "—");
         bool signInRequired = settings.UseMicrosoft && string.IsNullOrEmpty(settings.RefreshToken);
         PlayButton.IsEnabled = !busy && !gameRunning && !signInRequired && settings.SelectedVersion != null;
-        StatusText.Visibility = busy || signInRequired || gameRunning ? Visibility.Visible : Visibility.Collapsed;
+        LaunchStatus.Visibility = busy || signInRequired || gameRunning || settings.SelectedVersion == null ? Visibility.Visible : Visibility.Collapsed;
+        PlayActionText.Text = LauncherLanguage.Get(gameRunning ? "runningAction" : busy ? "busyAction" : "play");
         if (!busy) StatusText.Text = signInRequired ? LauncherLanguage.Get("accountSignInRequired")
-            : gameRunning ? LauncherLanguage.Get("running") : "";
+            : gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "";
         VersionList.IsEnabled = !busy && !gameRunning;
         HomeAccountPicker.IsEnabled = AccountPicker.IsEnabled = !busy;
         SettingsFields.IsEnabled = AccountFields.IsEnabled = !busy;
         bool canModify = !busy && !gameRunning && settings.SelectedVersion != null;
         ModActions.IsEnabled = CatalogActions.IsEnabled = canModify;
         Resources["CanModifyMods"] = canModify;
+        Resources["CanOpenProfile"] = settings.SelectedVersion != null;
         UpdatePreferencesState();
         LanguageButton.IsEnabled = !busy;
         CancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
@@ -160,12 +159,6 @@ public partial class MainWindow : Window
         InstalledPage.Visibility = destination == "installed" ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = destination == "settings" ? Visibility.Visible : Visibility.Collapsed;
         AccountsPage.Visibility = destination == "accounts" ? Visibility.Visible : Visibility.Collapsed;
-        foreach (var button in new[] { HomeNav, ModsNav, InstalledNav, AccountsNav, SettingsNav })
-        {
-            bool selected = (string)button.Tag == destination;
-            button.SetResourceReference(BackgroundProperty, selected ? "NavSelected" : "Sidebar");
-            button.SetResourceReference(ForegroundProperty, selected ? "Accent" : "Muted");
-        }
         if (destination == "installed" && !busy) await RefreshInstalledAsync();
         if (destination == "mods") { offset = 0; await SearchAsync(); }
     }

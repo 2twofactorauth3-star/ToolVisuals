@@ -95,6 +95,10 @@ public partial class MainWindow
         AppearanceSettingsPanel.Visibility = category == "appearance" ? Visibility.Visible : Visibility.Collapsed;
         JavaSettingsPanel.Visibility = category == "java" ? Visibility.Visible : Visibility.Collapsed;
         foreach (var button in new[] { GameSettingsTab, AppearanceSettingsTab, JavaSettingsTab })
-            button.SetResourceReference(BackgroundProperty, (string)button.Tag == category ? "NavSelected" : "Surface");
+        {
+            bool selected = (string)button.Tag == category;
+            button.SetResourceReference(BackgroundProperty, selected ? "NavSelected" : "Surface");
+            button.SetResourceReference(ForegroundProperty, selected ? "SelectedForeground" : "Muted");
+        }
     }
 }
