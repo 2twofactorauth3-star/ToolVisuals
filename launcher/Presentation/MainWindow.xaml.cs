@@ -1,4 +1,6 @@
 using ToolLauncher.Mods.Catalog;
+using ToolLauncher.Core.Operations;
+using ToolLauncher.Presentation.Operations;
 using ToolLauncher.Mods.Installation;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -28,7 +30,11 @@ public partial class MainWindow : Window
     private CancellationTokenSource? operation;
     private CancellationTokenSource? search;
     private Task? gameCompletion;
-    private long lastProgress;
+    private readonly BackgroundWork profileWork = new();
+    private CancellationTokenSource? installedRead;
+    private LatestProgress<InstallProgress>? operationProgress;
+    private bool windowClosed;
+    private bool populatingSettings;
     public MainWindow(LauncherServices services)
     {
         this.services = services;
@@ -38,15 +44,15 @@ public partial class MainWindow : Window
         VersionList.ItemsSource = GameTarget.All;
         VersionList.SelectedItem = GameTarget.All.SingleOrDefault(target => target.Minecraft == services.Settings.Current.SelectedVersion);
         SearchInput.TextChanged += (_, _) => SearchPlaceholder.Visibility = SearchInput.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
-        PopulateSettings(); initializing = false; UpdateChrome();
-        AccountImportOverlay.SettingsChanged += (_, _) => { PopulateSettings(); UpdateChrome(); };
+        PopulateSettings(); ConnectPreferenceEvents(); initializing = false; UpdateChrome();
+        AccountImportOverlay.SettingsChanged += (_, _) => { PopulateAccountSettings(); UpdateChrome(); };
         Loaded += async (_, _) =>
         {
             if (services.Settings.LoadError != null) Notice(services.Settings.LoadError.Message + "\n" + services.Paths.Settings);
             if (services.Settings.LoadError == null && !services.Settings.Current.AccountImportCompleted) await AccountImportOverlay.OpenAsync(services);
         };
         Closing += OnClosing;
-        Closed += (_, _) => { search?.Cancel(); AccountImportOverlay.Cancel(); };
+        Closed += (_, _) => { windowClosed = true; search?.Cancel(); installedRead?.Cancel(); AccountImportOverlay.Cancel(); };
     }
     private GameTarget Selected() => VersionList.SelectedItem as GameTarget ?? throw new InvalidOperationException(LauncherLanguage.Get("selectFirst"));
     private void UpdateChrome()
@@ -64,32 +70,25 @@ public partial class MainWindow : Window
         StatusText.Visibility = busy || signInRequired || gameRunning ? Visibility.Visible : Visibility.Collapsed;
         if (!busy) StatusText.Text = signInRequired ? LauncherLanguage.Get("accountSignInRequired")
             : gameRunning ? LauncherLanguage.Get("running") : "";
-        PageHost.IsEnabled = !busy;
+        VersionList.IsEnabled = !busy && !gameRunning;
+        HomeAccountPicker.IsEnabled = AccountPicker.IsEnabled = !busy;
+        SettingsFields.IsEnabled = AccountFields.IsEnabled = !busy;
+        bool canModify = !busy && !gameRunning && settings.SelectedVersion != null;
+        ModActions.IsEnabled = CatalogActions.IsEnabled = canModify;
+        Resources["CanModifyMods"] = canModify;
+        UpdatePreferencesState();
         LanguageButton.IsEnabled = !busy;
         CancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
         InstallBar.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
     }
-    private void PopulateSettings()
-    {
-        var settings = services.Settings.Current;
-        NicknameInput.Text = settings.Nickname; MemorySlider.Value = settings.MemoryMiB;
-        Java21Input.Text = settings.Java21; Java25Input.Text = settings.Java25; AutoJavaCheck.IsChecked = settings.AutomaticJava;
-        MicrosoftIdInput.Text = settings.MicrosoftClientId;
-    }
-    private void SavePreferences()
-    {
-        GameAccount.Offline(NicknameInput.Text.Trim());
-        string microsoft = MicrosoftIdInput.Text.Trim();
-        if (microsoft.Length > 0 && !Guid.TryParse(microsoft, out _)) throw new InvalidOperationException("Invalid Microsoft application ID");
-        services.AccountLibrary.SavePreferences(services.Settings.Current with { Nickname = NicknameInput.Text.Trim(), MemoryMiB = (int)MemorySlider.Value, Java21 = Java21Input.Text.Trim(), Java25 = Java25Input.Text.Trim(), AutomaticJava = AutoJavaCheck.IsChecked == true, MicrosoftClientId = microsoft });
-        services.Presence?.Refresh(); UpdateChrome();
-    }
     private async Task RunAsync(string name, Func<CancellationToken, Task> action)
     {
         if (busy) return;
-        search?.Cancel();
+        search?.Cancel(); installedRead?.Cancel();
         using var cancellation = new CancellationTokenSource(); operation = cancellation; busy = true;
         NoticeBorder.Visibility = Visibility.Collapsed;
+        using var progress = new LatestProgress<InstallProgress>(Dispatcher, ApplyProgress);
+        operationProgress = progress;
         InstallBar.IsIndeterminate = true; StatusText.Text = LauncherLanguage.Get("busy"); UpdateChrome();
         try { await action(cancellation.Token); }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { StatusText.Text = LauncherLanguage.Get("cancel"); }
@@ -97,39 +96,42 @@ public partial class MainWindow : Window
         catch (Exception error) { services.Log.Error(name, error); Notice(LauncherLanguage.Get("error") + ": " + error.Message); }
         finally
         {
-            operation = null; busy = false; InstallBar.IsIndeterminate = false; UpdateChrome();
-            if (closeRequested) Close();
+            progress.Dispose(); operationProgress = null; operation = null; busy = false; InstallBar.IsIndeterminate = false; UpdateChrome();
+            if (closeRequested) { closeRequested = false; Close(); }
+            else if (page == "installed") await RefreshInstalledAsync();
+            else if (page == "mods") await SearchAsync();
         }
     }
-    private IProgress<InstallProgress> Progress() => new Progress<InstallProgress>(value =>
+    private IProgress<InstallProgress> Progress() => operationProgress ?? throw new InvalidOperationException("No launcher operation is active");
+    private void ApplyProgress(InstallProgress value)
     {
-        long now = Environment.TickCount64;
-        if (value.Done > 0 && value.Done != value.Total && now - lastProgress < 120) return;
-        lastProgress = now;
         string stage = value.Stage switch { "java" => "javaDownload", "mods" => "modDownload", _ => value.Stage };
         StatusText.Text = LauncherLanguage.Get(stage) + (value.Total > 0 ? "  ·  " + value.Done + " / " + value.Total : "…");
         InstallBar.IsIndeterminate = value.Total == 0; InstallBar.Value = value.Fraction * 100;
-    });
+    }
     private async void PlayClick(object sender, RoutedEventArgs e)
     {
-        if (gameRunning) return;
+        if (gameRunning || busy) return;
         await RunAsync("Prepare and launch Minecraft", async token =>
         {
+            if (PreferencesChanged()) SavePreferences();
             GameTarget target = Selected();
             ProfileLease? lease = ProfileLease.Acquire(services.Paths.Profile(target.Minecraft));
             try
             {
                 StatusText.Text = LauncherLanguage.Get("auth");
                 GameAccount account = await services.Accounts.CurrentAsync(token);
-                InstalledGame installed = await services.Installer.PrepareAsync(target, services.Settings.Current, Progress(), token);
+                var settings = services.Settings.Current;
+                var progress = Progress();
+                InstalledGame installed = await profileWork.RunAsync(cancellation => services.Installer.PrepareAsync(target, settings, progress, cancellation), token);
                 token.ThrowIfCancellationRequested();
                 services.Presence?.Suspend(true);
                 GameSession session;
-                try { session = services.Runner.Start(installed, account, services.Settings.Current, lease); }
+                try { session = await profileWork.RunAsync(cancellation => { cancellation.ThrowIfCancellationRequested(); return Task.FromResult(services.Runner.Start(installed, account, settings, lease)); }, token); }
                 catch { services.Presence?.Suspend(false); throw; }
                 lease = null; gameRunning = true;
                 gameCompletion = ObserveGameAsync(session);
-                RefreshInstalled();
+                if (settings.MinimizeOnLaunch) WindowState = WindowState.Minimized;
             }
             finally { lease?.Dispose(); }
         });
@@ -140,52 +142,56 @@ public partial class MainWindow : Window
         catch (Exception error) { services.Log.Error("Monitor Minecraft process", error); Notice(error.Message); }
         finally { gameRunning = false; services.Presence?.Suspend(false); UpdateChrome(); }
     }
-    private void VersionChanged(object sender, SelectionChangedEventArgs e)
+    private async void VersionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (initializing) return;
-        TryAction("Select Minecraft version", () => { services.Settings.Save(services.Settings.Current with { SelectedVersion = (VersionList.SelectedItem as GameTarget)?.Minecraft }); services.Presence?.Refresh(); UpdateChrome(); search?.Cancel(); RefreshInstalled(); });
+        if (initializing || busy || gameRunning) return;
+        TryAction("Select Minecraft version", () => { services.Settings.Save(services.Settings.Current with { SelectedVersion = (VersionList.SelectedItem as GameTarget)?.Minecraft }); services.Presence?.Refresh(); UpdateChrome(); search?.Cancel(); installedRead?.Cancel(); InstalledList.ItemsSource = CatalogList.ItemsSource = null; });
+        if (page == "installed") await RefreshInstalledAsync();
+        if (page == "mods") { offset = 0; await SearchAsync(); }
     }
     private void ClearVersionClick(object sender, RoutedEventArgs e) => VersionList.SelectedItem = null;
     private async void NavigationClick(object sender, RoutedEventArgs e) => await NavigateAsync((string)((Button)sender).Tag);
     private async Task NavigateAsync(string destination)
     {
-        if (busy) return;
         page = destination; search?.Cancel();
         RefreshAppearance();
         HomePage.Visibility = destination == "home" ? Visibility.Visible : Visibility.Collapsed;
         ModsPage.Visibility = destination == "mods" ? Visibility.Visible : Visibility.Collapsed;
         InstalledPage.Visibility = destination == "installed" ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = destination == "settings" ? Visibility.Visible : Visibility.Collapsed;
-        foreach (var button in new[] { HomeNav, ModsNav, InstalledNav, SettingsNav })
+        AccountsPage.Visibility = destination == "accounts" ? Visibility.Visible : Visibility.Collapsed;
+        foreach (var button in new[] { HomeNav, ModsNav, InstalledNav, AccountsNav, SettingsNav })
         {
             bool selected = (string)button.Tag == destination;
             button.SetResourceReference(BackgroundProperty, selected ? "NavSelected" : "Sidebar");
             button.SetResourceReference(ForegroundProperty, selected ? "Accent" : "Muted");
         }
-        if (destination == "installed") TryAction("Read profile mods", RefreshInstalled);
-        if (destination == "settings") PopulateSettings();
+        if (destination == "installed" && !busy) await RefreshInstalledAsync();
         if (destination == "mods") { offset = 0; await SearchAsync(); }
     }
     private async Task SearchAsync()
     {
         if (initializing || busy) return;
-        search?.Cancel();
+        search?.Cancel(); installedRead?.Cancel();
         using var cancellation = new CancellationTokenSource(); search = cancellation;
-        CatalogList.ItemsSource = null; CatalogEmpty.Visibility = Visibility.Visible;
-        if (VersionList.SelectedItem is not GameTarget target) { search = null; CatalogEmpty.Text = LauncherLanguage.Get("selectFirst"); return; }
+        CatalogEmpty.Visibility = CatalogList.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        NextCatalogPage.IsEnabled = PreviousCatalogPage.IsEnabled = false;
+        if (VersionList.SelectedItem is not GameTarget target) { search = null; CatalogList.ItemsSource = null; CatalogEmpty.Visibility = Visibility.Visible; CatalogEmpty.Text = LauncherLanguage.Get("selectFirst"); return; }
         CatalogEmpty.Text = LauncherLanguage.Get("search");
         try
         {
-            var result = await services.Catalog.SearchAsync(SearchInput.Text.Trim(), target, offset, cancellation.Token);
-            var available = await Task.Run(() => services.Mods.AvailableProjects(result.Projects, target), cancellation.Token);
-            if (cancellation.IsCancellationRequested || search != cancellation) return;
+            string query = SearchInput.Text.Trim();
+            int requestedOffset = offset;
+            var result = await services.Catalog.SearchAsync(query, target, requestedOffset, cancellation.Token);
+            var available = await profileWork.RunAsync(token => Task.FromResult(services.Mods.AvailableProjects(result.Projects, target, token)), cancellation.Token);
+            if (windowClosed || cancellation.IsCancellationRequested || search != cancellation || !Equals(VersionList.SelectedItem, target)) return;
             CatalogList.ItemsSource = available; CatalogEmpty.Text = LauncherLanguage.Get("emptyMods");
             CatalogEmpty.Visibility = available.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            NextCatalogPage.IsEnabled = result.HasNext;
-            PageNumber.Text = (offset / 20 + 1).ToString();
+            NextCatalogPage.IsEnabled = result.HasNext; PreviousCatalogPage.IsEnabled = requestedOffset > 0;
+            PageNumber.Text = (requestedOffset / 20 + 1).ToString();
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
-        catch (Exception error) { services.Log.Error("Search unified mod catalog for " + target.Minecraft, error); CatalogEmpty.Text = LauncherLanguage.Get("catalogUnavailable"); Notice(CatalogEmpty.Text); }
+        catch (Exception error) { services.Log.Error("Search unified mod catalog for " + target.Minecraft, error); if (windowClosed || search != cancellation || cancellation.IsCancellationRequested) return; CatalogList.ItemsSource = null; CatalogEmpty.Visibility = Visibility.Visible; CatalogEmpty.Text = LauncherLanguage.Get("catalogUnavailable"); Notice(CatalogEmpty.Text); }
         finally { if (search == cancellation) search = null; }
     }
     private async void SearchClick(object sender, RoutedEventArgs e) { offset = 0; await SearchAsync(); }
@@ -194,26 +200,65 @@ public partial class MainWindow : Window
     private async void NextClick(object sender, RoutedEventArgs e) { offset = Math.Min(10000, offset + 20); await SearchAsync(); }
     private async void InstallClick(object sender, RoutedEventArgs e)
     {
+        if (busy || gameRunning) return;
         var project = (ModProject)((Button)sender).DataContext;
-        bool installed = false;
-        await RunAsync("Install " + project.Title, async token => { await services.Mods.InstallAsync(services.Sources.Single(source => source.Name == project.Source), project, Selected(), Progress(), token); installed = true; RefreshInstalled(); Notice(project.Title + " · " + LauncherLanguage.Get("done")); });
-        if (installed && page == "mods") await SearchAsync();
+        var target = Selected();
+        await RunAsync("Install " + project.Title, async token =>
+        {
+            var progress = Progress();
+            await profileWork.RunAsync(cancellation => services.Mods.InstallAsync(services.Sources.Single(source => source.Name == project.Source), project, target, progress, cancellation), token);
+            Notice(project.Title + " · " + LauncherLanguage.Get("done"));
+        });
     }
-    private void RefreshInstalled()
+    private async Task RefreshInstalledAsync()
     {
-        var installed = VersionList.SelectedItem is GameTarget target ? services.Mods.Installed(target) : [];
-        InstalledList.ItemsSource = installed;
-        InstalledEmpty.Visibility = installed.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        installedRead?.Cancel();
+        using var cancellation = new CancellationTokenSource(); installedRead = cancellation;
+        var target = VersionList.SelectedItem as GameTarget;
+        InstalledEmpty.Text = LauncherLanguage.Get(target == null ? "selectFirst" : "readingMods");
+        InstalledEmpty.Visibility = InstalledList.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        try
+        {
+            var installed = target == null ? [] : await profileWork.RunAsync(token => Task.FromResult(services.Mods.Installed(target, token)), cancellation.Token);
+            if (windowClosed || installedRead != cancellation || cancellation.IsCancellationRequested || !Equals(VersionList.SelectedItem, target)) return;
+            InstalledList.ItemsSource = installed;
+            InstalledEmpty.Text = LauncherLanguage.Get(target == null ? "selectFirst" : "emptyInstalled");
+            InstalledEmpty.Visibility = installed.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        catch (Exception error)
+        {
+            services.Log.Error("Read profile mods", error);
+            if (!windowClosed && installedRead == cancellation && !cancellation.IsCancellationRequested) { InstalledEmpty.Text = LauncherLanguage.Get("error"); Notice(error.Message); }
+        }
+        finally { if (installedRead == cancellation) installedRead = null; }
     }
     private async void ImportClick(object sender, RoutedEventArgs e)
     {
+        if (busy || gameRunning) return;
         var dialog = new OpenFileDialog { Filter = "Fabric mod (*.jar)|*.jar", Multiselect = false };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Import Fabric mod", token => { services.Mods.Import(dialog.FileName, Selected()); RefreshInstalled(); Notice(LauncherLanguage.Get("done")); return Task.CompletedTask; });
+        var target = Selected();
+        await RunAsync("Import Fabric mod", async token =>
+        {
+            await profileWork.RunAsync(cancellation => { cancellation.ThrowIfCancellationRequested(); services.Mods.Import(dialog.FileName, target); return Task.CompletedTask; }, token);
+            Notice(LauncherLanguage.Get("done"));
+        });
     }
-    private void ToggleModClick(object sender, RoutedEventArgs e) => TryAction("Toggle profile mod", () => { services.Mods.Toggle((ModInfo)((Button)sender).DataContext, Selected()); RefreshInstalled(); });
-    private void RemoveModClick(object sender, RoutedEventArgs e) => TryAction("Remove profile mod", () => { services.Mods.Remove((ModInfo)((Button)sender).DataContext, Selected()); RefreshInstalled(); });
-    private void RefreshModsClick(object sender, RoutedEventArgs e) => TryAction("Refresh profile mods", RefreshInstalled);
+    private async void ToggleModClick(object sender, RoutedEventArgs e) => await ChangeModAsync((ModInfo)((Button)sender).DataContext, false);
+    private async void RemoveModClick(object sender, RoutedEventArgs e) => await ChangeModAsync((ModInfo)((Button)sender).DataContext, true);
+    private async Task ChangeModAsync(ModInfo mod, bool remove)
+    {
+        if (busy || gameRunning) return;
+        var target = Selected();
+        await RunAsync(remove ? "Remove profile mod" : "Toggle profile mod", token => profileWork.RunAsync(cancellation =>
+        {
+            cancellation.ThrowIfCancellationRequested();
+            if (remove) services.Mods.Remove(mod, target); else services.Mods.Toggle(mod, target);
+            return Task.CompletedTask;
+        }, token));
+    }
+    private async void RefreshModsClick(object sender, RoutedEventArgs e) { if (!busy) await RefreshInstalledAsync(); }
     private async void SignInClick(object sender, RoutedEventArgs e)
     {
         await RunAsync("Microsoft account sign-in", async token =>
@@ -223,36 +268,37 @@ public partial class MainWindow : Window
             UpdateChrome(); Notice(services.Settings.Current.AccountName + " · Microsoft");
         });
     }
-    private void SignOutClick(object sender, RoutedEventArgs e) => TryAction("Switch to local account", () => { services.AccountLibrary.UseLocal(NicknameInput.Text.Trim()); PopulateSettings(); UpdateChrome(); });
+    private void SignOutClick(object sender, RoutedEventArgs e) => TryAction("Switch to local account", () => { services.AccountLibrary.UseLocal(NicknameInput.Text.Trim()); PopulateAccountSettings(); UpdateChrome(); });
     private void RefreshAccountChoices()
     {
         updatingAccounts = true;
         try
         {
-            var choices = services.AccountLibrary.Profiles.Select(profile => new SavedAccountChoice(profile, profile.Name + " · " + (profile.Kind == ToolLauncher.Accounts.Profiles.AccountKind.Microsoft ? "Microsoft" : LauncherLanguage.Get("accountLocal")))).ToArray();
-            AccountPicker.ItemsSource = choices;
+            IReadOnlyList<SavedAccountChoice> choices = services.AccountLibrary.Profiles.Select(profile => new SavedAccountChoice(profile, profile.Name + " · " + (profile.Kind == ToolLauncher.Accounts.Profiles.AccountKind.Microsoft ? "Microsoft" : LauncherLanguage.Get("accountLocal")))).ToArray();
+            if (AccountPicker.ItemsSource is IReadOnlyList<SavedAccountChoice> previous && previous.SequenceEqual(choices)) choices = previous;
+            else AccountPicker.ItemsSource = HomeAccountPicker.ItemsSource = choices;
             var active = choices.FirstOrDefault(choice => choice.Profile.Identity == services.AccountLibrary.ActiveIdentity);
-            AccountPicker.SelectedItem = active;
+            AccountPicker.SelectedItem = HomeAccountPicker.SelectedItem = active;
             AccountSelectionHint.Text = active == null ? "" : active.Profile.RequiresSignIn ? LauncherLanguage.Get("accountSignInRequired") : active.Profile.Source;
         }
         finally { updatingAccounts = false; }
     }
     private void AccountSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (initializing || updatingAccounts || AccountPicker.SelectedItem is not SavedAccountChoice selected) return;
-        TryAction("Select saved launcher account", () => { services.AccountLibrary.Select(selected.Profile.Identity); PopulateSettings(); UpdateChrome(); });
+        if (initializing || busy || updatingAccounts || ((ComboBox)sender).SelectedItem is not SavedAccountChoice selected) return;
+        TryAction("Select saved launcher account", () => { services.AccountLibrary.Select(selected.Profile.Identity); PopulateAccountSettings(); UpdateChrome(); });
     }
     private void RemoveAccountClick(object sender, RoutedEventArgs e)
     {
         if (AccountPicker.SelectedItem is not SavedAccountChoice selected) return;
-        TryAction("Remove saved launcher account", () => { services.AccountLibrary.Remove(selected.Profile.Identity); PopulateSettings(); UpdateChrome(); });
+        TryAction("Remove saved launcher account", () => { services.AccountLibrary.Remove(selected.Profile.Identity); PopulateAccountSettings(); UpdateChrome(); });
     }
     private async void AccountImportClick(object sender, RoutedEventArgs e)
     {
         if (!busy) await AccountImportOverlay.OpenAsync(services);
     }
-    private void SaveSettingsClick(object sender, RoutedEventArgs e) => TryAction("Save launcher settings", () => { SavePreferences(); Notice(LauncherLanguage.Get("saved")); });
-    private void MemoryChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { if (MemoryLabel != null) MemoryLabel.Text = (e.NewValue / 1024).ToString("0.#") + " GB"; }
+    private void SaveSettingsClick(object sender, RoutedEventArgs e) { if (!busy) TryAction("Save launcher settings", () => { SavePreferences(); Notice(LauncherLanguage.Get("saved")); }); }
+    private void MemoryChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { if (MemoryLabel != null) MemoryLabel.Text = (e.NewValue / 1024).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes"); }
     private void JavaBrowseClick(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Filter = "Java (java.exe; javaw.exe)|java.exe;javaw.exe" };
@@ -269,7 +315,8 @@ public partial class MainWindow : Window
     private void CancelClick(object sender, RoutedEventArgs e) => operation?.Cancel();
     private void OnClosing(object? sender, CancelEventArgs e)
     {
-        if (busy) { e.Cancel = true; closeRequested = true; operation?.Cancel(); }
+        if (busy) { e.Cancel = true; closeRequested = true; operation?.Cancel(); return; }
+        if (PreferencesChanged() && MessageBox.Show(this, LauncherLanguage.Get("discardOnClose"), "ToolLauncher", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes) e.Cancel = true;
     }
     private void OpenWebsite(string url)
     {
@@ -281,7 +328,8 @@ public partial class MainWindow : Window
     private void SourceClick(object sender, RoutedEventArgs e) => OpenWebsite("https://github.com/2twofactorauth3-star/ToolVisuals");
     private void ProfileFolderClick(object sender, RoutedEventArgs e) => TryAction("Open Minecraft profile", () => OpenFolder(services.Paths.Profile(Selected().Minecraft)));
     private void LogsFolderClick(object sender, RoutedEventArgs e) => OpenFolder(services.Paths.Logs);
-    private async void AccountSettingsClick(object sender, RoutedEventArgs e) => await NavigateAsync("settings");
+    private async void AccountSettingsClick(object sender, RoutedEventArgs e) => await NavigateAsync("accounts");
+    private async void GameSettingsClick(object sender, RoutedEventArgs e) => await NavigateAsync("settings");
     private void HeaderDrag(object sender, MouseButtonEventArgs e) { if (e.ClickCount == 2) MaximizeClick(sender, e); else if (e.LeftButton == MouseButtonState.Pressed) DragMove(); }
     private void MinimizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void MaximizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;

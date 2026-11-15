@@ -13,6 +13,7 @@ public sealed record ClientBuild(string Minecraft, string File, string Version, 
 
 public static class BundledClient
 {
+    private static readonly Lazy<IReadOnlyList<ClientBuild>> Manifest = new(ReadBuilds);
     private static readonly ConcurrentDictionary<string, IReadOnlyList<ModIdentity>> Provided = new(StringComparer.Ordinal);
 
     public static IReadOnlyList<ModIdentity> ProvidedMods(GameTarget target) => Provided.GetOrAdd(target.Minecraft, minecraft =>
@@ -23,10 +24,11 @@ public static class BundledClient
         return ModArchive.ReadIdentities(stream);
     });
 
-    public static IReadOnlyList<ClientBuild> Builds()
+    public static IReadOnlyList<ClientBuild> Builds() => Manifest.Value;
+    private static IReadOnlyList<ClientBuild> ReadBuilds()
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ToolLauncher.Clients.clients.json");
-        return stream == null ? [] : JsonSerializer.Deserialize<ClientBuild[]>(stream, Storage.AtomicJson.Options) ?? [];
+        return stream == null ? [] : Array.AsReadOnly(JsonSerializer.Deserialize<ClientBuild[]>(stream, Storage.AtomicJson.Options) ?? []);
     }
     public static async Task InstallAsync(string profile, GameTarget target, CancellationToken token)
     {

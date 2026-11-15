@@ -13,6 +13,9 @@ public sealed record LauncherSettings
     public int MemoryMiB { get; init; } = 4096;
     public string Java21 { get; init; } = "";
     public string Java25 { get; init; } = "";
+    public bool InterfaceAnimations { get; init; } = true;
+    public bool CompactInterface { get; init; }
+    public bool MinimizeOnLaunch { get; init; }
     public bool AutomaticJava { get; init; } = true;
     public string MicrosoftClientId { get; init; } = "";
     public bool UseMicrosoft { get; init; }

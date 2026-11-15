@@ -1,7 +1,6 @@
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media.Animation;
 using ToolLauncher.Minecraft;
+using ToolLauncher.Presentation.Operations;
 
 namespace ToolLauncher.Presentation;
 
@@ -9,11 +8,20 @@ public partial class MainWindow
 {
     private void RefreshAppearance()
     {
-        var build = BundledClient.Builds().FirstOrDefault(item => item.Minecraft == services.Settings.Current.SelectedVersion)
+        var settings = services.Settings.Current;
+        var build = BundledClient.Builds().FirstOrDefault(item => item.Minecraft == settings.SelectedVersion)
             ?? BundledClient.Builds().FirstOrDefault();
         HeroBuildLabel.Text = build == null ? "TOOLVISUALS" : "TOOLVISUALS " + build.Version;
-        HeroTitleText.Text = services.Settings.Current.SelectedVersion is { } version ? "Minecraft\n" + version : "Minecraft";
+        HeroTitleText.Text = settings.SelectedVersion is { } version ? "Minecraft " + version : "Minecraft";
         CurrentPageTitle.Text = LauncherLanguage.Get(page);
+        var target = settings.SelectedVersion == null ? null : GameTarget.Find(settings.SelectedVersion);
+        HomeRuntimeText.Text = (target == null ? "Java" : "Java " + target.Java) + "  ·  " + (settings.MemoryMiB / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
+        MemoryLabel.Text = (MemorySlider.Value / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
+        ContentArea.Margin = settings.CompactInterface ? new Thickness(22, 18, 22, 16) : new Thickness(28, 26, 28, 22);
+        Resources["NavigationPadding"] = new Thickness(14, settings.CompactInterface ? 9 : 12, 14, settings.CompactInterface ? 9 : 12);
+        Resources["VersionPadding"] = settings.CompactInterface ? new Thickness(14, 10, 14, 10) : new Thickness(17, 14, 17, 14);
+        HoverFeedback.SetEnabled(RootVisual, settings.InterfaceAnimations && SystemParameters.ClientAreaAnimation);
+        ResizeHero(ActualHeight > 0 ? ActualHeight : Height);
     }
 
     private void WindowSizeChanged(object sender, SizeChangedEventArgs e)
@@ -24,27 +32,7 @@ public partial class MainWindow
     private void ResizeHero(double height)
     {
         if (HeroSurface == null || HeroTitleText == null) return;
-        HeroSurface.Height = Math.Clamp(height - 540, 180, 280);
-        HeroTitleText.FontSize = height < 800 ? 36 : 44;
-        HeroTitleText.LineHeight = HeroTitleText.FontSize + 6;
-    }
-
-    private void HeroMouseMove(object sender, MouseEventArgs e)
-    {
-        var point = e.GetPosition(HeroSurface);
-        var center = new Point(point.X / Math.Max(1, HeroSurface.ActualWidth), point.Y / Math.Max(1, HeroSurface.ActualHeight));
-        HeroLightBrush.Center = center;
-        HeroLightBrush.GradientOrigin = center;
-    }
-
-    private void HeroMouseEnter(object sender, MouseEventArgs e) => SetHeroLight(1);
-    private void HeroMouseLeave(object sender, MouseEventArgs e) => SetHeroLight(0);
-
-    private void SetHeroLight(double opacity)
-    {
-        HeroPointerLight.BeginAnimation(OpacityProperty, new DoubleAnimation(opacity, TimeSpan.FromMilliseconds(180))
-        {
-            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-        });
+        HeroSurface.Height = Math.Clamp(height - 610, 120, 180);
+        HeroTitleText.FontSize = height < 780 ? 30 : 36;
     }
 }

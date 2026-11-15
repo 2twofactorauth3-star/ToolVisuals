@@ -6,7 +6,7 @@ public static class LauncherLanguage
 {
     private static readonly Dictionary<string, (string En, string Ru)> Texts = new()
     {
-        ["home"] = ("Overview", "Главная"), ["mods"] = ("Discover mods", "Каталог модов"), ["installed"] = ("My mods", "Мои моды"), ["settings"] = ("Settings", "Настройки"),
+        ["home"] = ("Play", "Играть"), ["mods"] = ("Discover mods", "Каталог модов"), ["installed"] = ("My mods", "Мои моды"), ["settings"] = ("Settings", "Настройки"),
         ["community"] = ("Community ↗", "Сообщество ↗"), ["source"] = ("Source code ↗", "Исходный код ↗"), ["choose"] = ("Minecraft version", "Версия Minecraft"), ["ready"] = ("Ready when you are", "Можно начинать"), ["selectFirst"] = ("Choose a version to get started", "Выбери версию для начала"), ["play"] = ("Play", "Играть"), ["cancel"] = ("Cancel", "Отменить"),
         ["search"] = ("Search mods…", "Поиск модов…"), ["searchButton"] = ("Search", "Найти"), ["install"] = ("Install", "Установить"), ["website"] = ("Website ↗", "На сайт ↗"), ["import"] = ("Import JAR", "Импорт JAR"),
         ["openProfile"] = ("Open profile", "Папка профиля"), ["openLogs"] = ("Open logs", "Папка логов"), ["refresh"] = ("Refresh", "Обновить"), ["enable"] = ("Enable", "Включить"), ["disable"] = ("Disable", "Выключить"), ["remove"] = ("Remove", "Убрать"),
@@ -31,6 +31,31 @@ public static class LauncherLanguage
         ["metadata"] = ("Checking Minecraft and Fabric", "Проверяем Minecraft и Fabric"), ["libraries"] = ("Downloading libraries", "Загружаем библиотеки"), ["assets"] = ("Downloading game resources", "Загружаем ресурсы игры"), ["minecraft"] = ("Downloading Minecraft", "Загружаем Minecraft"), ["visuals"] = ("Installing ToolVisuals", "Устанавливаем ToolVisuals"), ["javaDownload"] = ("Installing Java", "Устанавливаем Java"), ["modDownload"] = ("Resolving and downloading mods", "Проверяем и загружаем моды"),
         ["auth"] = ("Signing in…", "Входим в аккаунт…"), ["running"] = ("Minecraft is running", "Minecraft запущен"), ["exitError"] = ("Minecraft closed with an error. Details are in the launcher log.", "Minecraft закрылся с ошибкой. Подробности — в логе лаунчера."), ["previous"] = ("← Previous", "← Назад"), ["next"] = ("Next →", "Далее →"), ["browse"] = ("Browse…", "Обзор…"),
         ["installedHint"] = ("Disabling keeps the file. Removing moves it to the profile backup folder.", "Выключение сохраняет файл. Удалённые моды перемещаются в резервную папку профиля."), ["chooseAccount"] = ("Manage account", "Настроить аккаунт"), ["clearVersion"] = ("Clear selection", "Снять выбор"),
+        ["accounts"] = ("Accounts", "Аккаунты"),
+        ["launchAccount"] = ("Account", "Аккаунт"),
+        ["launchSettingsLink"] = ("Configure launch →", "Настроить запуск →"),
+        ["sessionSettings"] = ("Launch settings", "Параметры запуска"),
+        ["gameSettings"] = ("Game", "Игра"),
+        ["profileHint"] = ("Separate worlds and mods", "Отдельные миры и моды"),
+        ["appearance"] = ("Interface", "Интерфейс"),
+        ["afterLaunch"] = ("After launching Minecraft", "После запуска Minecraft"),
+        ["minimizeOnLaunch"] = ("Minimize the launcher after the game starts", "Сворачивать лаунчер после старта игры"),
+        ["gameOptionsHint"] = ("Graphics and gameplay options are configured in Minecraft.", "Графика и игровые параметры настраиваются в Minecraft."),
+        ["interfaceAnimations"] = ("Animate control highlights", "Анимировать подсветку элементов"),
+        ["animationsHint"] = ("Short hover transitions. Follows the Windows animation preference.", "Короткие переходы при наведении. Учитывается настройка анимаций Windows."),
+        ["compactInterface"] = ("Compact spacing", "Компактные отступы"),
+        ["compactHint"] = ("Reduce spacing while keeping text readable. Applied when saved.", "Меньше отступов с сохранением читаемости текста. Применяется после сохранения."),
+        ["resetMemory"] = ("Reset to 4 GB within the hardware limit", "Вернуть 4 ГБ с учётом предела памяти"),
+        ["unsaved"] = ("Unsaved changes", "Есть несохранённые правки"),
+        ["preferencesSaved"] = ("All changes saved", "Изменения сохранены"),
+        ["discard"] = ("Discard changes", "Отменить правки"),
+        ["discardOnClose"] = ("Close without saving your settings changes?", "Закрыть лаунчер без сохранения изменений настроек?"),
+        ["invalidMicrosoftId"] = ("Enter a valid Microsoft application ID.", "Укажи корректный ID приложения Microsoft."),
+        ["readingMods"] = ("Reading profile mods…", "Читаем моды профиля…"),
+        ["gigabytes"] = ("GB", "ГБ"),
+        ["minimize"] = ("Minimize", "Свернуть"),
+        ["maximize"] = ("Maximize or restore", "Развернуть или восстановить"),
+        ["close"] = ("Close", "Закрыть"),
     };
 
     public static string Current { get; private set; } = "en";

@@ -10,23 +10,26 @@ namespace ToolLauncher.Mods.Installation;
 
 public sealed class ModManager(LauncherPaths paths, RemoteClient remote, LauncherLog log)
 {
-    public IReadOnlyList<ModInfo> Installed(GameTarget target)
+    public IReadOnlyList<ModInfo> Installed(GameTarget target, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         string folder = Path.Combine(paths.Profile(target.Minecraft), "mods");
         if (!Directory.Exists(folder)) return [];
         var result = new List<ModInfo>();
         foreach (string path in Directory.EnumerateFiles(folder).Where(path => path.EndsWith(".jar", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jar.disabled", StringComparison.OrdinalIgnoreCase)))
         {
+            token.ThrowIfCancellationRequested();
             try { result.Add(ModArchive.Read(path)); }
             catch (Exception error) when (error is IOException or InvalidOperationException or System.Text.Json.JsonException) { log.Error("Read installed mod: " + path, error); }
         }
         return result.OrderBy(mod => mod.Id == "toolvisuals" ? 0 : 1).ThenBy(mod => mod.Name).ToArray();
     }
-    public IReadOnlyList<ModProject> AvailableProjects(IEnumerable<ModProject> projects, GameTarget target)
+    public IReadOnlyList<ModProject> AvailableProjects(IEnumerable<ModProject> projects, GameTarget target, CancellationToken token = default)
     {
         var identities = new List<ModIdentity>(BundledClient.ProvidedMods(target));
-        foreach (var mod in Installed(target))
+        foreach (var mod in Installed(target, token))
         {
+            token.ThrowIfCancellationRequested();
             try { identities.AddRange(ModArchive.ReadIdentities(mod.File)); }
             catch (Exception error) when (error is IOException or InvalidOperationException or System.Text.Json.JsonException)
             {

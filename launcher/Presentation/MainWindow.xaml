@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:accounts="clr-namespace:ToolLauncher.Presentation.Accounts" xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.MainWindow" Title="ToolLauncher" Icon="/ToolLauncher;component/Assets/ToolVisuals.Executable.ico" Width="1320" Height="860" MinWidth="1100" MinHeight="740" Background="#101215" Foreground="#F1F0EC" FontFamily="Segoe UI" FontSize="16" WindowStyle="None" ResizeMode="CanResize" UseLayoutRounding="True" SnapsToDevicePixels="True" WindowStartupLocation="CenterScreen" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Fixed" SizeChanged="WindowSizeChanged">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:accounts="clr-namespace:ToolLauncher.Presentation.Accounts" xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="ToolLauncher.Presentation.MainWindow" Title="ToolLauncher" Icon="/ToolLauncher;component/Assets/ToolVisuals.Executable.ico" Width="1240" Height="800" MinWidth="1100" MinHeight="740" Background="#101215" Foreground="#F1F0EC" FontFamily="Segoe UI" FontSize="16" WindowStyle="None" ResizeMode="CanResize" UseLayoutRounding="True" SnapsToDevicePixels="True" WindowStartupLocation="CenterScreen" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Fixed" SizeChanged="WindowSizeChanged">
   <shell:WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6" CornerRadius="14" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
   </shell:WindowChrome.WindowChrome>
@@ -30,13 +30,13 @@
         </StackPanel>
         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
           <Button x:Name="LanguageButton" Content="EN" Click="LanguageClick" Style="{StaticResource Quiet}" FontSize="14" Padding="12,8" Margin="0,0,18,0" />
-          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="MinimizeClick">
+          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="MinimizeClick" ToolTip="{DynamicResource Text.minimize}">
             <Path Data="M 0,5 L 11,5" Style="{StaticResource LineIcon}" />
           </Button>
-          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="MaximizeClick">
+          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="MaximizeClick" ToolTip="{DynamicResource Text.maximize}">
             <Path Data="M 0,0 L 10,0 L 10,10 L 0,10 Z" Style="{StaticResource LineIcon}" />
           </Button>
-          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="CloseClick">
+          <Button Width="38" Height="34" Padding="13" Style="{StaticResource Quiet}" Click="CloseClick" ToolTip="{DynamicResource Text.close}">
             <Path Data="M 0,0 L 10,10 M 10,0 L 0,10" Style="{StaticResource LineIcon}" />
           </Button>
         </StackPanel>
@@ -71,6 +71,12 @@
                 <TextBlock Text="{DynamicResource Text.installed}" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
+            <Button x:Name="AccountsNav" Click="NavigationClick" Tag="accounts" Style="{StaticResource Navigation}">
+              <StackPanel Orientation="Horizontal">
+                <Path Data="M 6,5 A 4,4 0 1 1 14,5 A 4,4 0 1 1 6,5 M 1,20 C 1,10 19,10 19,20" Style="{StaticResource NavIcon}" />
+                <TextBlock Text="{DynamicResource Text.accounts}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
             <Button x:Name="SettingsNav" Click="NavigationClick" Tag="settings" Style="{StaticResource Navigation}">
               <StackPanel Orientation="Horizontal">
                 <Path Data="M 0,5 L 20,5 M 0,15 L 20,15 M 7,1 L 7,9 M 14,11 L 14,19" Style="{StaticResource NavIcon}" />
@@ -102,7 +108,7 @@
             </Border>
           </StackPanel>
         </Grid>
-        <Grid Grid.Column="1" Margin="26,22,24,20">
+        <Grid x:Name="ContentArea" Grid.Column="1" Margin="28,26,28,22">
           <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -110,105 +116,52 @@
           <Grid x:Name="PageHost" Background="#101215">
             <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
               <StackPanel Margin="0,0,7,0">
-                <Border x:Name="HeroSurface" Height="340" CornerRadius="14" MouseMove="HeroMouseMove" MouseEnter="HeroMouseEnter" MouseLeave="HeroMouseLeave">
+                <Border x:Name="HeroSurface" Height="164" CornerRadius="12">
                   <Border.Background>
-                    <ImageBrush ImageSource="{StaticResource Landscape}" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    <ImageBrush ImageSource="{StaticResource Landscape}" Stretch="UniformToFill" AlignmentY="Center" />
                   </Border.Background>
-                  <Grid>
-                    <Border CornerRadius="14">
-                      <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                          <GradientStop Color="#E50C1217" Offset="0" />
-                          <GradientStop Color="#A30D1419" Offset="0.37" />
-                          <GradientStop Color="#280C1217" Offset="0.73" />
-                          <GradientStop Color="#110C1217" Offset="1" />
-                        </LinearGradientBrush>
-                      </Border.Background>
-                    </Border>
-                    <Border CornerRadius="14">
-                      <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                          <GradientStop Color="#00101419" Offset="0.42" />
-                          <GradientStop Color="#C9101419" Offset="1" />
-                        </LinearGradientBrush>
-                      </Border.Background>
-                    </Border>
-                    <Border x:Name="HeroPointerLight" CornerRadius="14" IsHitTestVisible="False" Opacity="0">
-                      <Border.Background>
-                        <RadialGradientBrush x:Name="HeroLightBrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.4" RadiusY="0.85">
-                          <GradientStop Color="#1CC8B7F6" Offset="0" />
-                          <GradientStop Color="#00C8B7F6" Offset="1" />
-                        </RadialGradientBrush>
-                      </Border.Background>
-                    </Border>
-                    <Grid Margin="32,25,30,24">
-                      <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                        <RowDefinition Height="Auto" />
-                      </Grid.RowDefinitions>
-                      <StackPanel Orientation="Horizontal">
-                        <Border Width="6" Height="6" CornerRadius="3" Background="#D3C4FF" Margin="0,0,9,0" VerticalAlignment="Center" />
-                        <TextBlock x:Name="HeroBuildLabel" Text="TOOLVISUALS" FontSize="14" Foreground="#DDD7EB" FontWeight="SemiBold" />
-                        <TextBlock Text="/ JAVA EDITION" FontSize="14" Foreground="#A7AAA9" Margin="10,0,0,0" />
-                      </StackPanel>
-                      <StackPanel Grid.Row="1" VerticalAlignment="Center" MaxWidth="480" HorizontalAlignment="Left" Margin="0,12,0,12">
-                        <TextBlock x:Name="HeroTitleText" Text="Minecraft" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="46" LineHeight="52" LineStackingStrategy="BlockLineHeight" Foreground="#F7F5EF" />
-                      </StackPanel>
-                    </Grid>
-                  </Grid>
+                  <Border CornerRadius="12">
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#F0101215" Offset="0" />
+                        <GradientStop Color="#A0101215" Offset="0.55" />
+                        <GradientStop Color="#30101215" Offset="1" />
+                      </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel Margin="26,22" VerticalAlignment="Center">
+                      <TextBlock x:Name="HeroBuildLabel" Text="TOOLVISUALS" FontSize="14" Foreground="#C9BAEE" FontWeight="SemiBold" />
+                      <TextBlock x:Name="HeroTitleText" Text="Minecraft" FontSize="36" FontWeight="SemiBold" Margin="0,9,0,0" />
+                    </StackPanel>
+                  </Border>
                 </Border>
-                <Grid Margin="0,23,0,12">
-                  <TextBlock Text="{DynamicResource Text.choose}" FontSize="21" FontWeight="SemiBold" />
-                  <Button Content="{DynamicResource Text.clearVersion}" Click="ClearVersionClick" Style="{StaticResource Quiet}" FontSize="14" Padding="4,4" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <Grid Margin="0,24,0,12">
+                  <TextBlock Text="{DynamicResource Text.choose}" FontSize="20" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource Text.profileHint}" Foreground="{StaticResource Muted}" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Center" />
                 </Grid>
-                <ListBox x:Name="VersionList" SelectionChanged="VersionChanged" ItemContainerStyle="{StaticResource VersionItem}" BorderThickness="0" Padding="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                  <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <UniformGrid Columns="3" />
-                    </ItemsPanelTemplate>
-                  </ListBox.ItemsPanel>
+                <ListBox x:Name="VersionList" SelectionChanged="VersionChanged" ItemContainerStyle="{StaticResource VersionItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                  <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ListBox.ItemsPanel>
                   <ListBox.ItemTemplate>
                     <DataTemplate>
-                      <Grid MinHeight="60">
-                        <Grid.RowDefinitions>
-                          <RowDefinition Height="Auto" />
-                          <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="{Binding Minecraft}" FontFamily="Segoe UI" FontSize="27" FontWeight="SemiBold" Foreground="#ECEAEF" />
-                        <Border Width="18" Height="18" CornerRadius="9" BorderBrush="#51515E" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                          <Border.Style>
-                            <Style TargetType="Border">
-                              <Setter Property="Background" Value="Transparent" />
-                              <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                  <Setter Property="Background" Value="#C6B6F5" />
-                                </DataTrigger>
-                              </Style.Triggers>
-                            </Style>
-                          </Border.Style>
-                          <Path Data="M 0,4 L 3,7 L 9,0" Width="9" Height="7" Stroke="#211B30" StrokeThickness="1.8" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path.Style>
-                              <Style TargetType="Path">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </Path.Style>
-                          </Path>
-                        </Border>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
-                          <TextBlock Text="Fabric" Foreground="#B8ADD0" FontSize="14" />
-                          <TextBlock Text="  /  " Foreground="#616571" FontSize="14" />
-                          <TextBlock Text="{Binding Java, StringFormat='Java {0}'}" Foreground="#969AA5" FontSize="14" />
-                        </StackPanel>
-                      </Grid>
+                      <StackPanel MinHeight="52">
+                        <TextBlock Text="{Binding Minecraft}" FontSize="24" FontWeight="SemiBold" />
+                        <TextBlock Text="Fabric" Foreground="{StaticResource Muted}" FontSize="14" Margin="0,6,0,0" />
+                      </StackPanel>
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
+                <Grid Margin="0,24,10,0">
+                  <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="24" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="{DynamicResource Text.launchAccount}" Style="{StaticResource Caption}" />
+                    <ComboBox x:Name="HomeAccountPicker" DisplayMemberPath="Label" SelectionChanged="AccountSelected" />
+                    <Button Content="{DynamicResource Text.chooseAccount}" Click="AccountSettingsClick" Style="{StaticResource Quiet}" FontSize="14" HorizontalAlignment="Left" Padding="0,8" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2">
+                    <TextBlock Text="{DynamicResource Text.sessionSettings}" Style="{StaticResource Caption}" />
+                    <TextBlock x:Name="HomeRuntimeText" FontSize="15" Margin="0,8,0,3" TextWrapping="Wrap" />
+                    <Button Content="{DynamicResource Text.launchSettingsLink}" Click="GameSettingsClick" Style="{StaticResource Quiet}" FontSize="14" HorizontalAlignment="Left" Padding="0,8" />
+                  </StackPanel>
+                </Grid>
               </StackPanel>
             </ScrollViewer>
             <Grid x:Name="ModsPage" Visibility="Collapsed">
@@ -253,7 +206,7 @@
                             </TextBlock>
                           </StackPanel>
                           <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <Button Content="{DynamicResource Text.install}" Style="{StaticResource Primary}" Click="InstallClick" Padding="12,8" />
+                            <Button Content="{DynamicResource Text.install}" Style="{StaticResource Primary}" Click="InstallClick" Padding="12,8" IsEnabled="{DynamicResource CanModifyMods}" />
                             <Button Content="{DynamicResource Text.website}" Style="{StaticResource Quiet}" Click="ModWebsiteClick" FontSize="14" Padding="7,6" Margin="0,4,0,0" />
                           </StackPanel>
                         </Grid>
@@ -263,10 +216,10 @@
                 </ListBox>
                 <TextBlock x:Name="CatalogEmpty" Text="{DynamicResource Text.selectFirst}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#9295AA" TextWrapping="Wrap" MaxWidth="400" TextAlignment="Center" />
               </Grid>
-              <DockPanel Grid.Row="3" Margin="0,8,0,0">
+              <DockPanel x:Name="CatalogActions" Grid.Row="3" Margin="0,8,0,0">
                 <Button Content="{DynamicResource Text.import}" Click="ImportClick" Style="{StaticResource Quiet}" DockPanel.Dock="Left" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                  <Button Content="{DynamicResource Text.previous}" Click="PreviousClick" Style="{StaticResource Quiet}" />
+                  <Button x:Name="PreviousCatalogPage" Content="{DynamicResource Text.previous}" Click="PreviousClick" Style="{StaticResource Quiet}" />
                   <TextBlock x:Name="PageNumber" Text="1" VerticalAlignment="Center" Margin="10,0" Foreground="#969BAF" />
                   <Button x:Name="NextCatalogPage" Content="{DynamicResource Text.next}" Click="NextClick" Style="{StaticResource Quiet}" />
                 </StackPanel>
@@ -299,20 +252,17 @@
                           <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Button Click="ToggleModClick" Margin="0,0,7,0" Padding="15,8">
                               <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Style TargetType="Button" BasedOn="{StaticResource ModMutationAction}">
                                   <Setter Property="Content" Value="{DynamicResource Text.enable}" />
                                   <Style.Triggers>
                                     <DataTrigger Binding="{Binding Enabled}" Value="True">
                                       <Setter Property="Content" Value="{DynamicResource Text.disable}" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Id}" Value="toolvisuals">
-                                      <Setter Property="IsEnabled" Value="False" />
-                                    </DataTrigger>
                                   </Style.Triggers>
                                 </Style>
                               </Button.Style>
                             </Button>
-                            <Button Content="{DynamicResource Text.remove}" Click="RemoveModClick" Style="{StaticResource Quiet}" Padding="10,8" />
+                            <Button Content="{DynamicResource Text.remove}" Click="RemoveModClick" Style="{StaticResource ModMutationAction}" Padding="10,8" />
                           </StackPanel>
                         </Grid>
                       </Border>
@@ -321,83 +271,101 @@
                 </ListBox>
                 <TextBlock x:Name="InstalledEmpty" Text="{DynamicResource Text.emptyInstalled}" Foreground="#9295AA" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" TextAlignment="Center" />
               </Grid>
-              <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">
+              <StackPanel x:Name="ModActions" Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">
                 <Button Content="{DynamicResource Text.import}" Click="ImportClick" Style="{StaticResource Primary}" />
                 <Button Content="{DynamicResource Text.openProfile}" Click="ProfileFolderClick" Style="{StaticResource Quiet}" Margin="8,0" />
                 <Button Content="{DynamicResource Text.refresh}" Click="RefreshModsClick" Style="{StaticResource Quiet}" />
               </StackPanel>
             </Grid>
-            <Grid x:Name="SettingsPage" Visibility="Collapsed">
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-              </Grid.RowDefinitions>
-              <TextBlock Text="{DynamicResource Text.settings}" FontSize="29" FontWeight="SemiBold" Margin="0,0,0,20" />
+            <Grid x:Name="AccountsPage" Visibility="Collapsed">
+              <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+              <TextBlock Text="{DynamicResource Text.accounts}" FontSize="29" FontWeight="SemiBold" Margin="0,0,0,22" />
               <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <Grid Margin="0,0,14,0">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="26" />
-                    <ColumnDefinition />
-                  </Grid.ColumnDefinitions>
-                  <StackPanel>
-                    <TextBlock Text="{DynamicResource Text.account}" FontWeight="SemiBold" FontSize="19" Margin="0,0,0,17" />
-                    <TextBlock Text="{DynamicResource Text.savedAccounts}" Style="{StaticResource Caption}" />
-                    <Grid>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                      </Grid.ColumnDefinitions>
-                      <ComboBox x:Name="AccountPicker" DisplayMemberPath="Label" SelectionChanged="AccountSelected" />
-                      <Button Grid.Column="2" Content="×" Click="RemoveAccountClick" ToolTip="{DynamicResource Text.removeAccount}" Padding="12,8" />
-                    </Grid>
-                    <TextBlock x:Name="AccountSelectionHint" Style="{StaticResource Hint}" FontSize="14" />
-                    <Button Content="{DynamicResource Text.importAccounts}" Click="AccountImportClick" Margin="0,0,0,18" />
-                    <TextBlock Text="{DynamicResource Text.nickname}" Style="{StaticResource Caption}" />
-                    <TextBox x:Name="NicknameInput" MaxLength="16" />
-                    <TextBlock Text="{DynamicResource Text.nicknameHint}" Style="{StaticResource Hint}" />
-                    <Button Content="{DynamicResource Text.signIn}" Click="SignInClick" />
-                    <Button Content="{DynamicResource Text.signOut}" Click="SignOutClick" Style="{StaticResource Quiet}" Margin="0,6,0,20" />
-                    <TextBlock Text="{DynamicResource Text.msClientId}" Style="{StaticResource Caption}" />
-                    <TextBox x:Name="MicrosoftIdInput" MaxLength="36" FontSize="14" />
-                    <TextBlock Text="{DynamicResource Text.msHint}" Style="{StaticResource Hint}" />
-                  </StackPanel>
-                  <StackPanel Grid.Column="2">
-                    <Grid Margin="0,0,0,13">
-                      <TextBlock Text="{DynamicResource Text.memory}" FontWeight="SemiBold" FontSize="19" />
-                      <TextBlock x:Name="MemoryLabel" HorizontalAlignment="Right" Foreground="#BBA9F4" VerticalAlignment="Center" />
-                    </Grid>
-                    <Slider x:Name="MemorySlider" Minimum="1024" Maximum="1024" TickFrequency="256" IsSnapToTickEnabled="True" ValueChanged="MemoryChanged" Margin="0,7,0,8" />
-                    <TextBlock x:Name="MemoryBudgetHint" Style="{StaticResource Hint}" Margin="0,0,0,20" />
-                    <TextBlock Text="{DynamicResource Text.java}" FontSize="19" FontWeight="SemiBold" Margin="0,4,0,10" />
-                    <CheckBox x:Name="AutoJavaCheck" Content="{DynamicResource Text.autoJava}" />
-                    <TextBlock Text="Java 21" Style="{StaticResource Caption}" Margin="0,10,0,6" />
-                    <Grid>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="38" />
-                      </Grid.ColumnDefinitions>
-                      <TextBox x:Name="Java21Input" FontSize="14" />
-                      <Button Grid.Column="1" Content="…" Tag="21" Click="JavaBrowseClick" Padding="0" Margin="5,0,0,0" />
-                    </Grid>
-                    <TextBlock Text="Java 25" Style="{StaticResource Caption}" Margin="0,12,0,6" />
-                    <Grid>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="38" />
-                      </Grid.ColumnDefinitions>
-                      <TextBox x:Name="Java25Input" FontSize="14" />
-                      <Button Grid.Column="1" Content="…" Tag="25" Click="JavaBrowseClick" Padding="0" Margin="5,0,0,0" />
-                    </Grid>
-                    <TextBlock Text="{DynamicResource Text.javaHint}" Style="{StaticResource Hint}" />
-                  </StackPanel>
-                </Grid>
+                <StackPanel x:Name="AccountFields" MaxWidth="600" HorizontalAlignment="Left" Margin="0,0,18,0">
+                  <TextBlock Text="{DynamicResource Text.savedAccounts}" Style="{StaticResource Caption}" />
+                  <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <ComboBox x:Name="AccountPicker" DisplayMemberPath="Label" SelectionChanged="AccountSelected" MinWidth="300" />
+                    <Button Grid.Column="2" Content="{DynamicResource Text.remove}" Click="RemoveAccountClick" ToolTip="{DynamicResource Text.removeAccount}" />
+                  </Grid>
+                  <TextBlock x:Name="AccountSelectionHint" Style="{StaticResource Hint}" FontSize="14" />
+                  <Button Content="{DynamicResource Text.importAccounts}" Click="AccountImportClick" HorizontalAlignment="Left" Margin="0,0,0,22" />
+                  <TextBlock Text="{DynamicResource Text.nickname}" Style="{StaticResource Caption}" />
+                  <TextBox x:Name="NicknameInput" MaxLength="16" />
+                  <TextBlock Text="{DynamicResource Text.nicknameHint}" Style="{StaticResource Hint}" />
+                  <Button Content="{DynamicResource Text.signOut}" Click="SignOutClick" HorizontalAlignment="Left" />
+                  <Expander Header="Microsoft" Foreground="{StaticResource Muted}" Margin="0,24,0,0" IsExpanded="False">
+                    <StackPanel Margin="0,15,0,0">
+                      <TextBlock Text="{DynamicResource Text.msClientId}" Style="{StaticResource Caption}" />
+                      <TextBox x:Name="MicrosoftIdInput" MaxLength="36" FontSize="14" />
+                      <TextBlock Text="{DynamicResource Text.msHint}" Style="{StaticResource Hint}" />
+                      <Button Content="{DynamicResource Text.signIn}" Click="SignInClick" HorizontalAlignment="Left" />
+                    </StackPanel>
+                  </Expander>
+                </StackPanel>
               </ScrollViewer>
-              <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,18,0,0">
-                <Button Content="{DynamicResource Text.save}" Click="SaveSettingsClick" Style="{StaticResource Primary}" />
-                <Button Content="{DynamicResource Text.openLogs}" Click="LogsFolderClick" Style="{StaticResource Quiet}" Margin="12,0,0,0" />
+              <Button x:Name="SaveAccountSettingsButton" Grid.Row="2" Content="{DynamicResource Text.save}" Click="SaveSettingsClick" Style="{StaticResource Primary}" HorizontalAlignment="Left" Margin="0,18,0,0" />
+            </Grid>
+            <Grid x:Name="SettingsPage" Visibility="Collapsed">
+              <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+              <Grid Margin="0,0,0,20">
+                <TextBlock Text="{DynamicResource Text.settings}" FontSize="29" FontWeight="SemiBold" />
+                <TextBlock x:Name="SettingsStateText" Foreground="{StaticResource Muted}" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Center" />
+              </Grid>
+              <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
+                <Button x:Name="GameSettingsTab" Content="{DynamicResource Text.gameSettings}" Tag="game" Click="SettingsCategoryClick" Background="{StaticResource NavSelected}" />
+                <Button x:Name="AppearanceSettingsTab" Content="{DynamicResource Text.appearance}" Tag="appearance" Click="SettingsCategoryClick" Style="{StaticResource Quiet}" Margin="8,0" />
+                <Button x:Name="JavaSettingsTab" Content="Java" Tag="java" Click="SettingsCategoryClick" Style="{StaticResource Quiet}" />
+              </StackPanel>
+              <Grid x:Name="SettingsFields" Grid.Row="2">
+                <ScrollViewer x:Name="GameSettingsPanel" VerticalScrollBarVisibility="Auto">
+                  <StackPanel Margin="0,0,18,0" MaxWidth="640" HorizontalAlignment="Left">
+                    <Grid Margin="0,0,0,10">
+                      <TextBlock Text="{DynamicResource Text.memory}" FontWeight="SemiBold" FontSize="19" />
+                      <TextBlock x:Name="MemoryLabel" HorizontalAlignment="Right" Foreground="{StaticResource Accent}" />
+                    </Grid>
+                    <Slider x:Name="MemorySlider" Minimum="1024" Maximum="1024" TickFrequency="256" IsSnapToTickEnabled="True" ValueChanged="MemoryChanged" Margin="0,7,0,8" MinWidth="480" />
+                    <TextBlock x:Name="MemoryBudgetHint" Style="{StaticResource Hint}" />
+                    <Button Content="{DynamicResource Text.resetMemory}" Click="RecommendedMemoryClick" HorizontalAlignment="Left" Style="{StaticResource Quiet}" Padding="0,8" />
+                    <Border Height="1" Background="{StaticResource Line}" Margin="0,24" />
+                    <TextBlock Text="{DynamicResource Text.afterLaunch}" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,8" />
+                    <CheckBox x:Name="MinimizeOnLaunchCheck" Content="{DynamicResource Text.minimizeOnLaunch}" />
+                    <TextBlock Text="{DynamicResource Text.gameOptionsHint}" Style="{StaticResource Hint}" />
+                  </StackPanel>
+                </ScrollViewer>
+                <ScrollViewer x:Name="AppearanceSettingsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                  <StackPanel Margin="0,0,18,0" MaxWidth="640" HorizontalAlignment="Left">
+                    <TextBlock Text="{DynamicResource Text.appearance}" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,14" />
+                    <CheckBox x:Name="AnimationsCheck" Content="{DynamicResource Text.interfaceAnimations}" />
+                    <TextBlock Text="{DynamicResource Text.animationsHint}" Style="{StaticResource Hint}" />
+                    <CheckBox x:Name="CompactModeCheck" Content="{DynamicResource Text.compactInterface}" />
+                    <TextBlock Text="{DynamicResource Text.compactHint}" Style="{StaticResource Hint}" />
+                  </StackPanel>
+                </ScrollViewer>
+                <ScrollViewer x:Name="JavaSettingsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                  <StackPanel Margin="0,0,18,0" MaxWidth="640" HorizontalAlignment="Left">
+                    <TextBlock Text="{DynamicResource Text.java}" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,10" />
+                    <CheckBox x:Name="AutoJavaCheck" Content="{DynamicResource Text.autoJava}" />
+                    <TextBlock Text="{DynamicResource Text.javaHint}" Style="{StaticResource Hint}" />
+                    <StackPanel x:Name="JavaPaths" MinWidth="480">
+                      <TextBlock Text="Java 21" Style="{StaticResource Caption}" Margin="0,14,0,6" />
+                      <Grid><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="Java21Input" FontSize="14" />
+                        <Button Grid.Column="1" Content="…" Tag="21" Click="JavaBrowseClick" Padding="0" Margin="8,0,0,0" ToolTip="{DynamicResource Text.browse}" />
+                      </Grid>
+                      <TextBlock Text="Java 25" Style="{StaticResource Caption}" Margin="0,16,0,6" />
+                      <Grid><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="Java25Input" FontSize="14" />
+                        <Button Grid.Column="1" Content="…" Tag="25" Click="JavaBrowseClick" Padding="0" Margin="8,0,0,0" ToolTip="{DynamicResource Text.browse}" />
+                      </Grid>
+                    </StackPanel>
+                  </StackPanel>
+                </ScrollViewer>
+              </Grid>
+              <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,20,0,0">
+                <Button x:Name="SaveSettingsButton" Content="{DynamicResource Text.save}" Click="SaveSettingsClick" Style="{StaticResource Primary}" />
+                <Button x:Name="DiscardSettingsButton" Content="{DynamicResource Text.discard}" Click="DiscardSettingsClick" Style="{StaticResource Quiet}" Margin="8,0" />
+                <Button Content="{DynamicResource Text.openLogs}" Click="LogsFolderClick" Style="{StaticResource Quiet}" />
               </StackPanel>
             </Grid>
           </Grid>
