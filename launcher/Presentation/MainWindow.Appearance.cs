@@ -17,10 +17,14 @@ public partial class MainWindow
         var target = settings.SelectedVersion == null ? null : GameTarget.Find(settings.SelectedVersion);
         HomeRuntimeText.Text = (target == null ? "Java" : "Java " + target.Java) + " · " + (settings.MemoryMiB / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
         MemoryLabel.Text = (MemorySlider.Value / 1024d).ToString("0.##") + " " + LauncherLanguage.Get("gigabytes");
-        double spacing = settings.CompactInterface ? 14 : 20;
-        ContentArea.Margin = page == "home" ? new Thickness(spacing, 0, spacing, 14) : new Thickness(spacing + 6, 12, spacing + 6, 18);
+        double spacing = settings.CompactInterface ? 18 : 24;
+        ContentArea.Margin = page == "home" ? new Thickness(spacing, 0, spacing, 20) : new Thickness(spacing + 6, 12, spacing + 6, 18);
         LaunchDock.Margin = new Thickness(spacing, 0, spacing, spacing);
-        Resources["NavigationPadding"] = new Thickness(12, settings.CompactInterface ? 10 : 13, 12, settings.CompactInterface ? 10 : 13);
+        bool home = page == "home";
+        LaunchTitleText.Visibility = LaunchStatePanel.Visibility = home ? Visibility.Visible : Visibility.Collapsed;
+        LaunchTitleGap.Height = new GridLength(home ? 20 : 0);
+        LaunchDock.Padding = home ? new Thickness(24, 20, 24, 20) : new Thickness(18, 14, 18, 14);
+        Resources["NavigationPadding"] = new Thickness(16, settings.CompactInterface ? 11 : 14, 16, settings.CompactInterface ? 11 : 14);
         bool animate = settings.InterfaceAnimations && SystemParameters.ClientAreaAnimation;
         HoverFeedback.SetEnabled(RootVisual, animate);
         Resources["PopupMotion"] = animate ? PopupAnimation.Fade : PopupAnimation.None;
@@ -35,6 +39,8 @@ public partial class MainWindow
             bool selected = (string)button.Tag == page;
             button.SetResourceReference(BackgroundProperty, selected ? "NavSelected" : "Sidebar");
             button.SetResourceReference(ForegroundProperty, selected ? "SelectedForeground" : "Muted");
+            button.SetResourceReference(BorderBrushProperty, selected ? "Accent" : "TransparentBrush");
+            button.FontWeight = selected ? FontWeights.SemiBold : FontWeights.Normal;
         }
     }
 
@@ -43,6 +49,6 @@ public partial class MainWindow
     private void ResizeHero(double height)
     {
         if (HeroTitleText == null) return;
-        HeroTitleText.FontSize = height < 780 ? 54 : 66;
+        HeroTitleText.FontSize = height < 780 ? 46 : 54;
     }
 }

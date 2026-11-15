@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Win32;
 using ToolLauncher.Accounts;
 using ToolLauncher.Core;
@@ -66,6 +67,8 @@ public partial class MainWindow : Window
         PlayButton.IsEnabled = !busy && !gameRunning && !signInRequired && settings.SelectedVersion != null;
         LaunchStatus.Visibility = busy || signInRequired || gameRunning || settings.SelectedVersion == null ? Visibility.Visible : Visibility.Collapsed;
         PlayActionText.Text = LauncherLanguage.Get(gameRunning ? "runningAction" : busy ? "busyAction" : "play");
+        LaunchStateText.Text = LauncherLanguage.Get(gameRunning ? "running" : busy ? "launchBusy" : signInRequired ? "launchSignIn" : settings.SelectedVersion == null ? "launchChoose" : "launchReady");
+        LaunchStateDot.Background = new SolidColorBrush(gameRunning || PlayButton.IsEnabled ? Color.FromRgb(75, 203, 117) : Color.FromRgb(221, 175, 92));
         if (!busy) StatusText.Text = signInRequired ? LauncherLanguage.Get("accountSignInRequired")
             : gameRunning ? LauncherLanguage.Get("running") : settings.SelectedVersion == null ? LauncherLanguage.Get("selectFirst") : "";
         VersionList.IsEnabled = !busy && !gameRunning;

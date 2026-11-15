@@ -4,8 +4,8 @@
   </shell:WindowChrome.WindowChrome>
   <Border x:Name="RootVisual" BorderBrush="#302B3B" BorderThickness="1" CornerRadius="16" Background="{StaticResource Surface}">
     <Grid>
-      <Grid.ColumnDefinitions><ColumnDefinition Width="204" /><ColumnDefinition /></Grid.ColumnDefinitions>
-      <Grid.RowDefinitions><RowDefinition Height="58" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+      <Grid.ColumnDefinitions><ColumnDefinition Width="224" /><ColumnDefinition /></Grid.ColumnDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="94" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
       <Border Grid.RowSpan="3" Background="{StaticResource Sidebar}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0" CornerRadius="16,0,0,16">
         <Grid>
           <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
@@ -15,8 +15,8 @@
               <Image.Clip><RectangleGeometry Rect="0,0,38,38" RadiusX="10" RadiusY="10" /></Image.Clip>
             </Image>
             <StackPanel Grid.Column="2" VerticalAlignment="Center">
-              <TextBlock Text="ToolVisuals" FontSize="17" FontWeight="SemiBold" />
-              <TextBlock Text="Launcher" FontSize="14" Foreground="{StaticResource Muted}" Margin="0,2,0,0" />
+              <TextBlock Text="ToolVisuals" FontSize="19" FontWeight="SemiBold" />
+              <TextBlock Text="Launcher" FontSize="15" Foreground="{StaticResource Muted}" Margin="0,2,0,0" />
             </StackPanel>
           </Grid>
           <StackPanel Grid.Row="1" Margin="12,0">
@@ -59,7 +59,7 @@
         </Grid>
       </Border>
       <Grid Grid.Column="1" Grid.Row="0" MouseLeftButtonDown="HeaderDrag" Background="Transparent" Margin="22,0,12,0">
-        <TextBlock x:Name="CurrentPageTitle" Text="{DynamicResource Text.home}" FontSize="15" Foreground="{StaticResource Muted}" VerticalAlignment="Center" />
+        <TextBlock x:Name="CurrentPageTitle" Text="{DynamicResource Text.home}" FontSize="28" FontWeight="Bold" Foreground="#F5F5F7" VerticalAlignment="Center" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
           <Button x:Name="LanguageButton" Content="EN" Click="LanguageClick" Style="{StaticResource Quiet}" Padding="11,8" FontSize="14" Margin="0,0,14,0" />
           <Button Width="36" Height="34" Padding="12" Style="{StaticResource Quiet}" Click="MinimizeClick" ToolTip="{DynamicResource Text.minimize}"><Path Data="M 0,5 L 11,5" Style="{StaticResource LineIcon}" /></Button>
@@ -71,34 +71,40 @@
         <Grid.RowDefinitions><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
         <Grid x:Name="PageHost">
           <Grid x:Name="HomePage">
-            <Border x:Name="HeroSurface" CornerRadius="20">
+            <Grid.RowDefinitions><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+            <Border x:Name="HeroSurface" CornerRadius="18" BorderBrush="#3A3D44" BorderThickness="1" RenderOptions.BitmapScalingMode="HighQuality">
               <Border.Background><ImageBrush ImageSource="{StaticResource Landscape}" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" /></Border.Background>
               <Grid>
-                <Border CornerRadius="20">
-                  <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                      <GradientStop Color="#00110E1A" Offset="0.18" />
-                      <GradientStop Color="#30110E1A" Offset="0.52" />
-                      <GradientStop Color="#EB110E1A" Offset="1" />
-                    </LinearGradientBrush>
-                  </Border.Background>
+                <Border CornerRadius="18">
+                  <Border.Background><LinearGradientBrush StartPoint="0,0.4" EndPoint="0.9,0.8"><GradientStop Color="#D00C1015" Offset="0" /><GradientStop Color="#000C1015" Offset="1" /></LinearGradientBrush></Border.Background>
                 </Border>
-                <Border Background="#A516111F" CornerRadius="8" Padding="12,8" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="28">
-                  <TextBlock Text="MINECRAFT JAVA EDITION" FontSize="14" Foreground="#EEE8FA" FontWeight="SemiBold" />
+                <Border CornerRadius="18">
+                  <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#000C1015" Offset="0.45" /><GradientStop Color="#A80C1015" Offset="1" /></LinearGradientBrush></Border.Background>
                 </Border>
-                <StackPanel x:Name="HeroIdentity" VerticalAlignment="Bottom" Margin="34,28,34,30">
-                  <TextBlock x:Name="HeroTitleText" Text="ToolVisuals" FontSize="62" FontWeight="SemiBold" Foreground="#FFFFFF" />
-                  <StackPanel Orientation="Horizontal" Margin="3,10,0,0">
-                    <Border Width="5" Height="5" CornerRadius="3" Background="#B99CFF" VerticalAlignment="Center" Margin="0,0,9,0" />
-                    <TextBlock x:Name="HeroBuildLabel" FontSize="15" Foreground="#DBD2EB" />
-                  </StackPanel>
-                  <StackPanel Orientation="Horizontal" Margin="0,23,0,0">
-                    <Button Content="{DynamicResource Text.installed}" Click="NavigationClick" Tag="installed" Background="#A62A223A" BorderBrush="#66645673" Padding="16,10" FontSize="14" />
-                    <Button Content="{DynamicResource Text.openProfile}" Click="ProfileFolderClick" Background="#A62A223A" BorderBrush="#66645673" Padding="16,10" Margin="10,0,0,0" FontSize="14" IsEnabled="{DynamicResource CanOpenProfile}" />
-                  </StackPanel>
+                <StackPanel x:Name="HeroIdentity" VerticalAlignment="Bottom" Margin="30,24,30,28">
+                  <TextBlock Text="MINECRAFT JAVA EDITION" FontSize="15" Foreground="#D2D4DB" Margin="0,0,0,8" />
+                  <TextBlock x:Name="HeroTitleText" Text="ToolVisuals" FontSize="54" FontWeight="SemiBold" Foreground="#FFFFFF" />
+                  <StackPanel Orientation="Horizontal" Margin="2,12,0,0"><Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource Accent}" VerticalAlignment="Center" Margin="0,0,12,0" /><TextBlock x:Name="HeroBuildLabel" FontSize="16" Foreground="#ECECF1" /></StackPanel>
                 </StackPanel>
               </Grid>
             </Border>
+            <Grid Grid.Row="1" Margin="0,18,0,0">
+              <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="18" /><ColumnDefinition /></Grid.ColumnDefinitions>
+              <Button x:Name="QuickModsButton" Click="NavigationClick" Tag="installed" Style="{StaticResource QuickAction}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="24" /><ColumnDefinition Width="18" /><ColumnDefinition /><ColumnDefinition Width="18" /></Grid.ColumnDefinitions>
+                  <Path Data="M 1,1 L 8,1 L 8,8 L 1,8 Z M 12,1 L 19,1 L 19,8 L 12,8 Z M 1,12 L 8,12 L 8,19 L 1,19 Z M 12,12 L 19,12 L 19,19 L 12,19 Z" Style="{StaticResource LineIcon}" Width="24" Height="24" />
+                  <TextBlock Grid.Column="2" Text="{DynamicResource Text.installed}" FontSize="18" VerticalAlignment="Center" />
+                  <Path Grid.Column="3" Data="M 1,9 L 19,9 M 12,2 L 19,9 L 12,16" Style="{StaticResource LineIcon}" Width="18" Height="18" Opacity="0.65" />
+                </Grid>
+              </Button>
+              <Button x:Name="QuickFolderButton" Grid.Column="2" Click="ProfileFolderClick" Style="{StaticResource QuickAction}" IsEnabled="{DynamicResource CanOpenProfile}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="24" /><ColumnDefinition Width="18" /><ColumnDefinition /><ColumnDefinition Width="18" /></Grid.ColumnDefinitions>
+                  <Path Data="M 1,4 L 8,4 L 11,7 L 23,7 L 23,21 L 1,21 Z" Style="{StaticResource LineIcon}" Width="24" Height="24" />
+                  <TextBlock Grid.Column="2" Text="{DynamicResource Text.openProfile}" FontSize="18" VerticalAlignment="Center" />
+                  <Path Grid.Column="3" Data="M 1,9 L 19,9 M 12,2 L 19,9 L 12,16" Style="{StaticResource LineIcon}" Width="18" Height="18" Opacity="0.65" />
+                </Grid>
+              </Button>
+            </Grid>
           </Grid>
             <Grid x:Name="ModsPage" Visibility="Collapsed">
               <Grid.RowDefinitions>
@@ -108,7 +114,7 @@
                 <RowDefinition Height="Auto" />
               </Grid.RowDefinitions>
               <StackPanel>
-                <TextBlock Text="{DynamicResource Text.mods}" FontSize="28" FontWeight="SemiBold" />
+
               </StackPanel>
               <Grid Grid.Row="1" Margin="0,4,0,18">
                 <Grid.ColumnDefinitions>
@@ -168,7 +174,7 @@
                 <RowDefinition Height="Auto" />
               </Grid.RowDefinitions>
               <StackPanel>
-                <TextBlock Text="{DynamicResource Text.installed}" FontSize="28" FontWeight="SemiBold" />
+
                 <TextBlock Text="{DynamicResource Text.installedHint}" Style="{StaticResource Hint}" />
               </StackPanel>
               <Grid Grid.Row="1">
@@ -215,7 +221,7 @@
             </Grid>
             <Grid x:Name="AccountsPage" Visibility="Collapsed">
               <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-              <TextBlock Text="{DynamicResource Text.accounts}" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,22" />
+
               <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <Border Background="{StaticResource Card}" CornerRadius="16" BorderBrush="{StaticResource Line}" BorderThickness="1" VerticalAlignment="Top">
                 <StackPanel x:Name="AccountFields" MaxWidth="680" HorizontalAlignment="Stretch" Margin="22,18">
@@ -247,7 +253,7 @@
             <Grid x:Name="SettingsPage" Visibility="Collapsed">
               <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
               <Grid Margin="0,0,0,20">
-                <TextBlock Text="{DynamicResource Text.settings}" FontSize="28" FontWeight="SemiBold" />
+
                 <TextBlock x:Name="SettingsStateText" Foreground="{StaticResource Muted}" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Center" />
               </Grid>
               <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
@@ -323,37 +329,24 @@
             </Grid>
           </Border>
       </Grid>
-      <Border x:Name="LaunchDock" Grid.Column="1" Grid.Row="2" CornerRadius="16" Background="#1C1825" BorderBrush="#3A304C" BorderThickness="1" Margin="20,0,20,20" Padding="20,16">
+      <Border x:Name="LaunchDock" Grid.Column="1" Grid.Row="2" CornerRadius="16" Background="{StaticResource CardFill}" BorderBrush="{StaticResource Line}" BorderThickness="1" Margin="24,0,24,22" Padding="24,20">
         <Grid>
-          <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="14" /><ColumnDefinition Width="216" /><ColumnDefinition Width="14" /><ColumnDefinition Width="174" /><ColumnDefinition Width="10" /><ColumnDefinition Width="46" /></Grid.ColumnDefinitions>
-          <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="10" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-          <TextBlock Text="{DynamicResource Text.launchAccount}" Foreground="{StaticResource Muted}" FontSize="14" />
-          <Grid Grid.Column="2">
-            <TextBlock Text="{DynamicResource Text.launchVersion}" Foreground="{StaticResource Muted}" FontSize="14" />
-            <TextBlock x:Name="HomeRuntimeText" Foreground="#B8AACB" FontSize="14" HorizontalAlignment="Right" />
+          <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="14" /><ColumnDefinition Width="166" /><ColumnDefinition Width="14" /><ColumnDefinition Width="160" /><ColumnDefinition Width="14" /><ColumnDefinition Width="170" /></Grid.ColumnDefinitions>
+          <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="LaunchTitleGap" Height="20" /><RowDefinition Height="Auto" /><RowDefinition Height="8" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+          <TextBlock x:Name="LaunchTitleText" Text="{DynamicResource Text.launchGame}" FontSize="24" FontWeight="Bold" Grid.ColumnSpan="3" />
+          <StackPanel x:Name="LaunchStatePanel" Grid.Column="4" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"><Border x:Name="LaunchStateDot" Width="9" Height="9" CornerRadius="5" Background="#4BCB75" VerticalAlignment="Center" Margin="0,0,10,0" /><TextBlock x:Name="LaunchStateText" FontSize="15" Foreground="#D4D5DC" VerticalAlignment="Center" /></StackPanel>
+          <TextBlock Grid.Row="2" Text="{DynamicResource Text.launchAccount}" Foreground="{StaticResource Muted}" FontSize="14" />
+          <TextBlock Grid.Column="2" Grid.Row="2" Text="{DynamicResource Text.launchVersion}" Foreground="{StaticResource Muted}" FontSize="14" />
+          <ComboBox x:Name="HomeAccountPicker" Grid.Row="4" SelectionChanged="AccountSelected" ToolTip="{DynamicResource Text.launchAccount}" MinHeight="54">
+            <ComboBox.ItemTemplate><DataTemplate><Grid ToolTip="{Binding Label}"><Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions><Border Width="28" Height="28" CornerRadius="6" Background="#302A3D"><Path Data="M 6,5 A 4,4 0 1 1 14,5 A 4,4 0 1 1 6,5 M 1,20 C 1,10 19,10 19,20" Stroke="#CBB9F2" StrokeThickness="1.5" Stretch="Uniform" Width="17" Height="19" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><TextBlock Grid.Column="2" Text="{Binding Profile.Name}" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" /></Grid></DataTemplate></ComboBox.ItemTemplate>
+          </ComboBox>
+          <Grid Grid.Column="2" Grid.Row="4">
+            <ComboBox x:Name="VersionList" DisplayMemberPath="Minecraft" SelectionChanged="VersionChanged" ToolTip="{DynamicResource Text.launchVersion}" MinHeight="54" FontSize="18" />
+            <TextBlock Text="{DynamicResource Text.pickVersion}" Foreground="{StaticResource Muted}" Margin="13,0,30,0" FontSize="14" VerticalAlignment="Center" IsHitTestVisible="False"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding SelectedItem, ElementName=VersionList}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
           </Grid>
-          <ComboBox x:Name="HomeAccountPicker" Grid.Row="2" DisplayMemberPath="Label" SelectionChanged="AccountSelected" ToolTip="{DynamicResource Text.launchAccount}" />
-          <Grid Grid.Column="2" Grid.Row="2">
-            <ComboBox x:Name="VersionList" DisplayMemberPath="Minecraft" SelectionChanged="VersionChanged" ToolTip="{DynamicResource Text.choose}" />
-            <TextBlock Text="{DynamicResource Text.pickVersion}" Foreground="{StaticResource Muted}" Margin="13,0,32,0" VerticalAlignment="Center" IsHitTestVisible="False">
-              <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding SelectedItem, ElementName=VersionList}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style>
-            </TextBlock>
-          </Grid>
-          <Button x:Name="PlayButton" Grid.Column="4" Grid.Row="2" Click="PlayClick" Style="{StaticResource LaunchAction}" IsEnabled="False">
-            <Grid><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="14" /><ColumnDefinition Width="13" /></Grid.ColumnDefinitions>
-              <TextBlock x:Name="PlayActionText" Text="{DynamicResource Text.play}" VerticalAlignment="Center" />
-              <Path Grid.Column="2" Data="M 0,0 L 8,5 L 0,10 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="11" Height="13" VerticalAlignment="Center" />
-            </Grid>
-          </Button>
-          <Button Grid.Column="6" Grid.Row="2" Click="GameSettingsClick" Padding="13" Background="#30263F" ToolTip="{DynamicResource Text.launchSettingsLink}"><Path Data="M 0,5 L 20,5 M 0,15 L 20,15 M 7,1 L 7,9 M 14,11 L 14,19" Style="{StaticResource LineIcon}" Width="20" Height="20" /></Button>
-          <Grid x:Name="LaunchStatus" Grid.Row="3" Grid.ColumnSpan="7" Margin="0,14,0,0" Visibility="Collapsed">
-            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Center">
-              <TextBlock x:Name="StatusText" Foreground="#C7BBD8" FontSize="14" TextTrimming="CharacterEllipsis" />
-              <ProgressBar x:Name="InstallBar" Height="4" Margin="0,10,0,0" Background="#352B45" Foreground="#A27AFF" BorderThickness="0" Visibility="Collapsed" />
-            </StackPanel>
-            <Button x:Name="CancelButton" Grid.Column="1" Content="{DynamicResource Text.cancel}" Click="CancelClick" Style="{StaticResource Quiet}" Padding="12,6" Margin="12,0,0,0" Visibility="Collapsed" />
-          </Grid>
+          <Button x:Name="LaunchSettingsButton" Grid.Column="4" Grid.Row="4" Click="GameSettingsClick" Padding="12" Background="{StaticResource InputFill}" BorderBrush="{StaticResource InputLine}" ToolTip="{DynamicResource Text.launchSettingsLink}"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="20" /><ColumnDefinition Width="10" /><ColumnDefinition /></Grid.ColumnDefinitions><Path Data="M 8,1 L 12,1 L 13,4 L 16,6 L 19,6 L 21,10 L 19,13 L 19,16 L 15,18 L 12,17 L 9,19 L 5,17 L 5,14 L 2,11 L 3,7 L 6,6 Z M 8,10 A 3,3 0 1 1 14,10 A 3,3 0 1 1 8,10" Style="{StaticResource LineIcon}" Width="20" Height="20" /><TextBlock x:Name="HomeRuntimeText" Grid.Column="2" FontSize="14" FontWeight="Normal" VerticalAlignment="Center" TextAlignment="Center" /></Grid></Button>
+          <Button x:Name="PlayButton" Grid.Column="6" Grid.Row="4" Click="PlayClick" Style="{StaticResource LaunchAction}" IsEnabled="False"><StackPanel Orientation="Horizontal" HorizontalAlignment="Center"><TextBlock x:Name="PlayActionText" Text="{DynamicResource Text.play}" VerticalAlignment="Center" /><Path Data="M 0,0 L 8,5 L 0,10 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="12" Height="14" VerticalAlignment="Center" Margin="12,0,0,0" /></StackPanel></Button>
+          <Grid x:Name="LaunchStatus" Grid.Row="5" Grid.ColumnSpan="7" Margin="0,14,0,0" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><StackPanel VerticalAlignment="Center"><TextBlock x:Name="StatusText" Foreground="{StaticResource Muted}" FontSize="14" TextTrimming="CharacterEllipsis" /><ProgressBar x:Name="InstallBar" Height="4" Margin="0,10,0,0" Background="#303139" Foreground="{StaticResource Accent}" BorderThickness="0" Visibility="Collapsed" /></StackPanel><Button x:Name="CancelButton" Grid.Column="1" Content="{DynamicResource Text.cancel}" Click="CancelClick" Style="{StaticResource Quiet}" Padding="12,6" Margin="12,0,0,0" Visibility="Collapsed" /></Grid>
         </Grid>
       </Border>
       <accounts:AccountImportPanel x:Name="AccountImportOverlay" Grid.ColumnSpan="2" Grid.RowSpan="3" Panel.ZIndex="100" Visibility="Collapsed" />
