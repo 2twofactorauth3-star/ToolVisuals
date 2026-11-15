@@ -61,7 +61,7 @@ public final class HandItemGlow {
             float factor = Math.min(.5f, 1024f / Math.max(target.width, target.height));
             int width = Math.max(1, Math.round(target.width * factor)), height = Math.max(1, Math.round(target.height * factor));
             if (mask == null || mask.width != width || mask.height != height) {
-                close(); mask = new TextureTarget(width, height, true); blur = new TextureTarget(width, height, false);
+                close(); mask = LegacyItemTargets.create(width, height, true); blur = LegacyItemTargets.create(width, height, false);
                 mask.setClearColor(0, 0, 0, 0);
             }
             try (var state = LegacyItemTargets.bind(mask)) {
@@ -105,8 +105,8 @@ public final class HandItemGlow {
     private static void failed(RuntimeException error) { ready = false; retry = System.nanoTime() + 5_000_000_000L; ClientErrors.report("Render held-item glow", error); }
     public static void close() {
         ready = false;
-        if (mask != null) { mask.destroyBuffers(); mask = null; }
-        if (blur != null) { blur.destroyBuffers(); blur = null; }
+        if (mask != null) { LegacyItemTargets.destroy(mask); mask = null; }
+        if (blur != null) { LegacyItemTargets.destroy(blur); blur = null; }
         TYPES.clear();
     }
 }
