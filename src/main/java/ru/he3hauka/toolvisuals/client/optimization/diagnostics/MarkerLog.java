@@ -1,7 +1,5 @@
 package ru.he3hauka.toolvisuals.client.optimization.diagnostics;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -9,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class MarkerLog {
     public static final long MAX_BYTES=2*1024*1024;

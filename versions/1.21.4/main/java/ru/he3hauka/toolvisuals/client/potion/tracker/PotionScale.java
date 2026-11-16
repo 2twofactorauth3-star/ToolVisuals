@@ -1,7 +1,11 @@
 package ru.he3hauka.toolvisuals.client.potion.tracker;
 
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.ItemStack;
+
+
 public final class PotionScale {
     private PotionScale(){}
-    public static boolean instant(net.minecraft.world.effect.MobEffect effect){return effect.isInstantenous();}
-    public static float value(net.minecraft.world.item.ItemStack item){return 1;}
+    public static boolean instant(MobEffect effect){return effect.isInstantenous();}
+    public static float value(ItemStack item){return 1;}
 }

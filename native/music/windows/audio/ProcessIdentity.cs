@@ -1,3 +1,4 @@
+using System.IO;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -20,7 +21,7 @@ namespace ToolVisuals.Media.Audio
             {
                 var path = new StringBuilder(32768); int length = path.Capacity;
                 if (!QueryFullProcessImageName(handle, 0, path, ref length)) throw new Win32Exception(Marshal.GetLastWin32Error(), "Cannot read audio process image");
-                string image = path.ToString(), name = System.IO.Path.GetFileNameWithoutExtension(image), application = "";
+                string image = path.ToString(), name = Path.GetFileNameWithoutExtension(image), application = "";
                 uint size = 512; var app = new StringBuilder((int)size);
                 int result = GetApplicationUserModelId(handle, ref size, app);
                 if (result == 0) application = app.ToString();

@@ -4,26 +4,29 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.client.renderer.state.ParticlesRenderState;
 import net.minecraft.world.level.dimension.DimensionType;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.animation.death.DeathAscension;
+import ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService;
+import ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.world.VisualWorld;
-import ru.he3hauka.toolvisuals.client.animation.death.DeathAscension;
-import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.WORLD_CUSTOMIZER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
+import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelExtractorMixin {
     @Shadow @Final private LevelRenderState levelRenderState;
     @Shadow @Final private ParticlesRenderState particlesRenderState;
     @Inject(method={"blockChanged","setBlocksDirty","setBlockDirty(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;)V","setLevel","onResourceManagerReload"},at=@At("HEAD"))
-    private void toolvisuals$invalidate(CallbackInfo callback){ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService.invalidate();}
+    private void toolvisuals$invalidate(CallbackInfo callback){OcclusionService.invalidate();}
     @Inject(method="renderLevel",at=@At(value="INVOKE",target="Lnet/minecraft/client/renderer/LevelRenderer;addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/culling/Frustum;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;ZLnet/minecraft/client/renderer/state/LevelRenderState;Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/util/profiling/ProfilerFiller;)V"))
     private void toolvisuals$world(CallbackInfo callback) {
         var state=levelRenderState;var config=ToolVisualsClient.CONFIG;var sky=state.skyRenderState;
@@ -45,7 +48,7 @@ public abstract class LevelExtractorMixin {
         if(NoRender.hides(STARS))sky.starBrightness=0;
         if(NoRender.hides(END_FLASH))sky.endFlashIntensity=0;
         if(NoRender.hides(WORLD_BORDER))state.worldBorderRenderState.alpha=0;
-        if(NoRender.hides(BLOCK_OUTLINE)||ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.active())state.blockOutlineRenderState=null;
+        if(NoRender.hides(BLOCK_OUTLINE)||BlockOverlay.active())state.blockOutlineRenderState=null;
         if(NoRender.hides(BLOCK_BREAKING))state.blockBreakingRenderStates.clear();
         if(NoRender.hides(ALL_PARTICLES))particlesRenderState.reset();
         VisualWorld.extract(state);DeathAscension.extract(state);

@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.mixin.optimization;
 
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import org.spongepowered.asm.mixin.*;
-
 import ru.he3hauka.toolvisuals.client.optimization.blockentity.*;
 
 @Mixin(ChestBlockEntity.class)

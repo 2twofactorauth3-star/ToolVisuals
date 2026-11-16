@@ -3,15 +3,16 @@ package ru.he3hauka.toolvisuals.network.ingress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.network.EmoteWire;
 import ru.he3hauka.toolvisuals.animation.network.PacketBudget;
 import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
 import ru.he3hauka.toolvisuals.animation.protocol.social.SocialCommandWire;
 import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryWire;
-import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeTransferWire;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
+import ru.he3hauka.toolvisuals.minigame.network.MiniGameWire;
+import ru.he3hauka.toolvisuals.network.friends.FriendWire;
 import ru.he3hauka.toolvisuals.network.presence.PresenceWire;
 
 public final class RequestAdmission {
@@ -23,11 +24,11 @@ public final class RequestAdmission {
         CAPE(CapeWire.REQUEST_CHANNEL,CapeTransferWire.PACKET_LIMIT),
         ANIMATED_CAPE(CapeWire.ANIMATED_REQUEST_CHANNEL,CapeTransferWire.PACKET_LIMIT),
         CAPE_FRAGMENT(CapeTransferWire.REQUEST_CHANNEL,CapeTransferWire.MAX_REQUEST),
-        FRIENDS(ru.he3hauka.toolvisuals.network.friends.FriendWire.REQUEST_CHANNEL,ru.he3hauka.toolvisuals.network.friends.FriendWire.MAX_REQUEST),
+        FRIENDS(FriendWire.REQUEST_CHANNEL,FriendWire.MAX_REQUEST),
         PRESENCE(PresenceWire.REQUEST_CHANNEL,1),
         ACCESSORY(AccessoryWire.REQUEST_CHANNEL,AccessoryWire.MAX_REQUEST),
         SOCIAL_COMMAND(SocialCommandWire.REQUEST_CHANNEL,SocialCommandWire.MAX_REQUEST),
-        MINI_GAMES(ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.REQUEST_CHANNEL,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.MAX_REQUEST);
+        MINI_GAMES(MiniGameWire.REQUEST_CHANNEL,MiniGameWire.MAX_REQUEST);
 
         public final String id;
         public final int maximumBytes;

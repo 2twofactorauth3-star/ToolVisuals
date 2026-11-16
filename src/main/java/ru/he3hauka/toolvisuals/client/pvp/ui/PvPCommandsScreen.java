@@ -1,15 +1,13 @@
 package ru.he3hauka.toolvisuals.client.pvp.ui;
 
-import java.util.*;
-
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.*;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
@@ -17,6 +15,7 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.pvp.CombatCommands;
 
@@ -47,14 +46,13 @@ public final class PvPCommandsScreen extends Screen {
         controls.clear();rows.clear();viewport=new UiViewport(width,height,minecraft.getWindow().getGuiScale());
         pw=Math.min(680,viewport.width-32);ph=Math.min(480,viewport.height-32);px=(viewport.width-pw)/2;py=(viewport.height-ph)/2;
         control(px+pw-40,py+12,26,26,UiI18n.tr("toolvisuals.ui.back"),ICON,UiPaint.Icon.BACK,this::onClose);
-        command=addWidget(new EditBox(UiFont.get(),px+30,py+88,pw-170,32,tr("input")) {
+        command=addWidget(new CenteredEditBox(UiFont.get(),px+30,py+88,pw-170,32,tr("input")) {
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
                 if(getValue().isEmpty()) {
                     line(g,tr("input"),getX(),getY(),getWidth(),getHeight(),.9f,palette.muted);
                     if(!isFocused())return;
                 }
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
+                super.extractWidgetRenderState(g,mx,my,partial);
             }
         });
         command.setBordered(false);command.setTextShadow(false);command.setMaxLength(CombatCommands.MAX_LENGTH);command.setValue(draft);

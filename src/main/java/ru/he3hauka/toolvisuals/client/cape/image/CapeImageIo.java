@@ -1,10 +1,12 @@
 package ru.he3hauka.toolvisuals.client.cape.image;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class CapeImageIo {
     private static final ThreadPoolExecutor WORKER=new ThreadPoolExecutor(1,1,30,TimeUnit.SECONDS,new ArrayBlockingQueue<>(1),job->{var thread=new Thread(job,"ToolVisuals cape images");thread.setDaemon(true);return thread;});
@@ -15,8 +17,8 @@ public final class CapeImageIo {
         try {
             WORKER.execute(()->{
                 try{var result=work.run();client.execute(()->complete.accept(result));}
-                catch(Exception|LinkageError error){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Process cape image",error);client.execute(()->failed.accept(error));}
+                catch(Exception|LinkageError error){ClientErrors.report("Process cape image",error);client.execute(()->failed.accept(error));}
             });
-        } catch(java.util.concurrent.RejectedExecutionException error){failed.accept(error);}
+        } catch(RejectedExecutionException error){failed.accept(error);}
     }
 }

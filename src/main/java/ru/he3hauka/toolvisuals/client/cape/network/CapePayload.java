@@ -5,9 +5,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-
-import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeTransferWire;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
 
 public final class CapePayload {
     private CapePayload(){}

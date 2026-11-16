@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.minigame.ui;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.minigame.GameKind;

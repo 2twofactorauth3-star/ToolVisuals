@@ -1,12 +1,11 @@
 package ru.he3hauka.toolvisuals.client.presents.network;
 
 import io.netty.handler.codec.DecoderException;
+import java.util.function.Function;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
-import java.util.function.Function;
 
 public record WorldContextPayload(WorldContextWire.State value) implements WorldContextMessage {
     public static final Type<WorldContextPayload> TYPE = new Type<>(Identifier.parse(WorldContextWire.CHANNEL));

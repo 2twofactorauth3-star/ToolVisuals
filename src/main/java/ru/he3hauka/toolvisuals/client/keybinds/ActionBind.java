@@ -1,7 +1,7 @@
 package ru.he3hauka.toolvisuals.client.keybinds;
 
 import java.util.*;
-
+import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
 public record ActionBind(UUID id,String name,String key,Kind kind,String value,boolean enabled) {
@@ -18,7 +18,7 @@ public record ActionBind(UUID id,String name,String key,Kind kind,String value,b
         if(text==null||text.length()>maximum||text.codePoints().anyMatch(Character::isISOControl))throw new IllegalArgumentException("Invalid binding text");return text.strip();
     }
     public ActionBind enabled(boolean selected){return new ActionBind(id,name,key,kind,value,selected);}
-    public boolean available(ru.he3hauka.toolvisuals.client.config.ClientConfig config) {
+    public boolean available(ClientConfig config) {
         return config.available(VisualModule.KEYBINDS) && (kind != Kind.MODULE
                 || Arrays.stream(VisualModule.values()).anyMatch(module -> module.id.equals(value) && config.available(module)));
     }

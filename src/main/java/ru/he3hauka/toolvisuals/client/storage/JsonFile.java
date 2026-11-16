@@ -1,15 +1,15 @@
 package ru.he3hauka.toolvisuals.client.storage;
 
-import ru.he3hauka.toolvisuals.storage.AtomicFiles;
-
+import com.google.gson.JsonElement;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-
-import com.google.gson.JsonElement;
+import java.util.Objects;
+import java.util.function.Supplier;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.storage.AtomicFiles;
 
 public final class JsonFile {
     public enum Status { READY, DIRTY, LOAD_FAILED, WRITE_FAILED }
@@ -26,7 +26,7 @@ public final class JsonFile {
         this(path, standardLimits(maximum));
     }
     public JsonFile(Path path, BoundedJson.Limits limits) {
-        this.path = path.toAbsolutePath().normalize(); this.limits = java.util.Objects.requireNonNull(limits);
+        this.path = path.toAbsolutePath().normalize(); this.limits = Objects.requireNonNull(limits);
     }
     private static BoundedJson.Limits standardLimits(int maximum){
         if(maximum<1||maximum>BoundedJson.MAX_BYTES)throw new IllegalArgumentException("Invalid JSON file limit");
@@ -67,7 +67,7 @@ public final class JsonFile {
         }
     }
 
-    public void writeSnapshot(java.util.function.Supplier<String> snapshot) throws IOException {
+    public void writeSnapshot(Supplier<String> snapshot) throws IOException {
         final String json;
         try { json = snapshot.get(); }
         catch (RuntimeException error) {

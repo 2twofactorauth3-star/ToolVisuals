@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;

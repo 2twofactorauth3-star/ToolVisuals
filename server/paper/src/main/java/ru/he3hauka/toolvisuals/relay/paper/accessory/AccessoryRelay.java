@@ -2,8 +2,8 @@ package ru.he3hauka.toolvisuals.relay.paper.accessory;
 
 import java.util.UUID;
 import ru.he3hauka.toolvisuals.animation.network.*;
-import ru.he3hauka.toolvisuals.network.RevisionOutbox;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.*;
+import ru.he3hauka.toolvisuals.network.RevisionOutbox;
 
 public final class AccessoryRelay {
     public static final class Endpoint {
@@ -23,8 +23,7 @@ public final class AccessoryRelay {
     private final RelayLimits sends=new RelayLimits(System.nanoTime(),64,256,16,32);
     public AccessoryRelay(UUID server){sessions=new AccessorySessions(server,RelayLimits.MAX_PLAYERS);}
     public synchronized boolean accept(Endpoint endpoint,long now){
-        if(!endpoint.inputBudget.available(now)||!inputBudget.available(now))return false;
-        endpoint.inputBudget.allow(now);inputBudget.allow(now);return true;
+        return endpoint.inputBudget.allowTogether(inputBudget, now);
     }
     public AccessorySessions.Update update(UUID actor,long epoch,AccessoryWire.Request request){return sessions.update(actor,epoch,request);}
     public AccessoryWire.State state(UUID actor){return sessions.state(actor);}

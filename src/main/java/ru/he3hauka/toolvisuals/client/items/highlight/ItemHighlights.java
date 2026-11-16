@@ -8,13 +8,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.items.highlight.ui.ItemHighlightsScreen;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.ITEM_HIGHLIGHTS;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class ItemHighlights {
-    public record GuiStyle(int color, float radius) {}
+    public record GuiStyle(int color, float radius, float phase) {}
     public interface GuiState { GuiStyle toolvisuals$itemGlow(); }
-    private static final GuiStyle NONE = new GuiStyle(0, 0);
+    private static final GuiStyle NONE = new GuiStyle(0, 0, -1);
     private static final ThreadLocal<GuiStyle> GUI = ThreadLocal.withInitial(() -> NONE);
     private static final ThreadLocal<Boolean> HOTBAR = ThreadLocal.withInitial(() -> false);
     private static final IdentityHashMap<Item, Integer> COLORS = new IdentityHashMap<>();
@@ -40,7 +41,7 @@ public final class ItemHighlights {
         boolean preview = screen instanceof ItemHighlightsScreen && config.available(ITEM_HIGHLIGHTS);
         boolean visible = preview || config.active(ITEM_HIGHLIGHTS) && (HOTBAR.get() ? config.flag(ITEM_HIGHLIGHT_HOTBAR) : screen instanceof AbstractContainerScreen<?> && config.flag(ITEM_HIGHLIGHT_INVENTORY));
         int color = visible ? color(stack) : 0;
-        GUI.set(color == 0 ? NONE : new GuiStyle((color & 0xffffff) | Math.round(config.number(ITEM_HIGHLIGHT_STRENGTH) * 255) << 24, config.number(ITEM_HIGHLIGHT_RADIUS)));
+        GUI.set(color == 0 ? NONE : new GuiStyle((color & 0xffffff) | Math.round(config.number(ITEM_HIGHLIGHT_STRENGTH) * 255) << 24, config.number(ITEM_HIGHLIGHT_RADIUS), config.flag(ITEM_HIGHLIGHT_SHIMMER) ? ItemGlowStyle.phase() : -1));
         return before;
     }
     public static GuiStyle extracting() { return GUI.get(); }

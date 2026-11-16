@@ -1,29 +1,33 @@
 package ru.he3hauka.toolvisuals.mixin.gui;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.state.GuiItemRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiClip;
+import ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems;
 
 @Mixin(GuiRenderer.class)
 public abstract class GuiRendererMixin {
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(method = "submitBlitFromItemAtlas",
+    @ModifyExpressionValue(method = "submitBlitFromItemAtlas",
             at = @At(value = "FIELD", target = "Lcom/mojang/blaze3d/textures/FilterMode;NEAREST:Lcom/mojang/blaze3d/textures/FilterMode;"))
-    private com.mojang.blaze3d.textures.FilterMode toolvisuals$smoothHudSampler(
-            com.mojang.blaze3d.textures.FilterMode original,
-            @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) net.minecraft.client.gui.render.state.GuiItemRenderState item) {
-        return ((ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems.State)(Object)item).toolvisuals$smoothItem()
-                ? com.mojang.blaze3d.textures.FilterMode.LINEAR : original;
+    private FilterMode toolvisuals$smoothHudSampler(
+            FilterMode original,
+            @Local(argsOnly = true) GuiItemRenderState item) {
+        return ((SmoothHudItems.State)(Object)item).toolvisuals$smoothItem()
+                ? FilterMode.LINEAR : original;
     }
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(method = "prepareItemElements", at = @At(value = "INVOKE",
+    @ModifyExpressionValue(method = "prepareItemElements", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/render/GuiRenderer;getGuiScaleInvalidatingItemAtlasIfChanged()I"))
     private int toolvisuals$itemResolution(int original) { return Math.max(2, original); }
     @Inject(method = "executeDraw", at = @At("HEAD"), cancellable = true)

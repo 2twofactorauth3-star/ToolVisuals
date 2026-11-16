@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.AccountStore;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;

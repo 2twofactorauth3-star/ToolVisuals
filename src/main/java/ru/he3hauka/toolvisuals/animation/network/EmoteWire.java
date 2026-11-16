@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.Emote;
 
 public final class EmoteWire {

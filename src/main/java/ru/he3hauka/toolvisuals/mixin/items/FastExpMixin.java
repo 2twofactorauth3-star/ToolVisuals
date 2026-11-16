@@ -10,8 +10,8 @@ import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.FAST_EXP;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.FAST_EXP_DELAY;
@@ -25,7 +25,7 @@ public abstract class FastExpMixin {
         var result = original.call(gameMode,player,hand);
         if (bottle && result.consumesAction() && ToolVisualsClient.CONFIG.active(FAST_EXP)){
             rightClickDelay = Math.min(rightClickDelay,(int)ToolVisualsClient.CONFIG.value(FAST_EXP_DELAY));
-            if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(FAST_EXP,"delay_applied","ticks="+rightClickDelay);
+            if(ModuleLog.active())ModuleLog.action(FAST_EXP,"delay_applied","ticks="+rightClickDelay);
         }
         return result;
     }

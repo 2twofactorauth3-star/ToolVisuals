@@ -1,11 +1,9 @@
 package ru.he3hauka.toolvisuals.client.utility.privacy;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameMask;
 import ru.he3hauka.toolvisuals.client.optimization.cache.BoundedCache;

@@ -1,8 +1,7 @@
 package ru.he3hauka.toolvisuals.mixin.accounts;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.mojang.authlib.services.ProfileResult;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.multiplayer.ProfileKeyPairManager;

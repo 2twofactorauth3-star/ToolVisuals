@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.utility.chat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.multiplayer.chat.GuiMessageSource;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;

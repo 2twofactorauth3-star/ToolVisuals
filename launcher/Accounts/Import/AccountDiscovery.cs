@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ToolLauncher.Diagnostics;
 using ToolLauncher.Storage;
 using ToolLauncher.Accounts.Profiles;
@@ -40,7 +41,7 @@ public sealed class AccountDiscovery(LauncherLog log)
             }
             catch (FileNotFoundException) { }
             catch (DirectoryNotFoundException) { }
-            catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Text.Json.JsonException or InvalidOperationException)
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException)
             {
                 unreadable++;
                 log.Error("Read account metadata from " + file.Launcher, error);

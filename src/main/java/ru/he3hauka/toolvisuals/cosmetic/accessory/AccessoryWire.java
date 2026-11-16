@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.cosmetic.accessory;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
 import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticState;
 

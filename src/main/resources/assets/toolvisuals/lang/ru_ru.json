@@ -1925,5 +1925,6 @@
   "toolvisuals.setting.item_highlight_slot_fill": "Заливать весь слот",
   "toolvisuals.setting.item_highlight_slot_opacity": "Плотность заливки",
   "toolvisuals.setting.item_highlight_hand_strength": "Яркость в руках",
-  "toolvisuals.setting.item_highlight_hand_radius": "Размер в руках"
+  "toolvisuals.setting.item_highlight_hand_radius": "Размер в руках",
+  "toolvisuals.setting.item_highlight_shimmer": "Плавный перелив"
 }

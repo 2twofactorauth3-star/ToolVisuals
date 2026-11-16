@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory.animation;
 
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook;
 
 import static ru.he3hauka.toolvisuals.client.cosmetic.accessory.animation.MotionSample.*;

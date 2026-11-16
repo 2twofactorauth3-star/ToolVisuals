@@ -2,6 +2,10 @@ package ru.he3hauka.toolvisuals.client.compatibility.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
@@ -13,8 +17,8 @@ public final class VersionGui {
         Cursor(int shape){this.shape=shape;}
     }
     private VersionGui() {}
-    public static void centered(net.minecraft.client.gui.GuiGraphics graphics,int x,int y,net.minecraft.network.chat.Component text){graphics.drawCenteredString(Minecraft.getInstance().font,text,x,y,0xffffffff);}
-    public static void potionIcon(net.minecraft.client.gui.GuiGraphics graphics,net.minecraft.client.renderer.texture.TextureAtlasSprite sprite,int x,int y,int width,int height){graphics.blit(net.minecraft.client.renderer.RenderType::guiTextured,sprite.atlasLocation(),x,y,sprite.getU0()*256,sprite.getV0()*256,width,height,Math.round((sprite.getU1()-sprite.getU0())*256),Math.round((sprite.getV1()-sprite.getV0())*256),256,256,0xffffffff);}
+    public static void centered(GuiGraphics graphics,int x,int y,Component text){graphics.drawCenteredString(Minecraft.getInstance().font,text,x,y,0xffffffff);}
+    public static void potionIcon(GuiGraphics graphics,TextureAtlasSprite sprite,int x,int y,int width,int height){graphics.blit(RenderType::guiTextured,sprite.atlasLocation(),x,y,sprite.getU0()*256,sprite.getV0()*256,width,height,Math.round((sprite.getU1()-sprite.getU0())*256),Math.round((sprite.getV1()-sprite.getV0())*256),256,256,0xffffffff);}
     public static Vector2f transform(PoseStack pose,float x,float y,Vector2f target){var matrix=pose.last().pose();return target.set(matrix.m00()*x+matrix.m10()*y+matrix.m30(),matrix.m01()*x+matrix.m11()*y+matrix.m31());}
     public static void cursor(Cursor cursor){if(cursor.handle==0)cursor.handle=GLFW.glfwCreateStandardCursor(cursor.shape);GLFW.glfwSetCursor(Minecraft.getInstance().getWindow().getWindow(),cursor.handle);}
 }

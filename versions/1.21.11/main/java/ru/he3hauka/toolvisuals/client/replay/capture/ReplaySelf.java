@@ -1,16 +1,18 @@
 package ru.he3hauka.toolvisuals.client.replay.capture;
 
-import java.util.List;
 import io.netty.buffer.Unpooled;
+import java.util.List;
+import java.util.function.IntFunction;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import ru.he3hauka.toolvisuals.client.replay.io.ReplayFrame;
 import ru.he3hauka.toolvisuals.client.replay.io.ReplayFormat;
+import ru.he3hauka.toolvisuals.client.replay.io.ReplayFrame;
 
 public final class ReplaySelf {
     private static final List<EquipmentSlot> SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
@@ -30,7 +32,7 @@ public final class ReplaySelf {
             buffer.writeInt(player.hurtTime); buffer.writeInt(player.deathTime);
             buffer.writeFloat(player.oAttackAnim);buffer.writeFloat(player.attackAnim);
             buffer.writeBoolean(player.swinging);
-            if(player.swinging){buffer.writeBoolean(player.swingingArm==net.minecraft.world.InteractionHand.OFF_HAND);buffer.writeInt(player.swingTime);}
+            if(player.swinging){buffer.writeBoolean(player.swingingArm==InteractionHand.OFF_HAND);buffer.writeInt(player.swingTime);}
             boolean changed = equipment == null;
             if (!changed) for (int slot = 0; slot < SLOTS.size(); slot++)
                 if (!ItemStack.matches(equipment[slot], player.getItemBySlot(SLOTS.get(slot)))) { changed = true; break; }
@@ -50,7 +52,7 @@ public final class ReplaySelf {
     }
 
     public static void apply(ReplayFrame frame, RegistryAccess registry, String dimension,
-                             java.util.function.IntFunction<RemotePlayer> owner) {
+                             IntFunction<RemotePlayer> owner) {
         var bytes = Unpooled.wrappedBuffer(frame.payload.duplicate().clear());
         var buffer = new RegistryFriendlyByteBuf(bytes, registry);
         try {
@@ -62,8 +64,8 @@ public final class ReplaySelf {
             float health = buffer.readFloat(), absorption = buffer.readFloat();
             int hurt = buffer.readInt(), death = buffer.readInt();float oldAttack=buffer.readFloat(),attack = buffer.readFloat();
             boolean swinging=buffer.readBoolean();
-            var swingingArm=net.minecraft.world.InteractionHand.MAIN_HAND;int swingTime=0;
-            if(swinging){swingingArm=buffer.readBoolean()?net.minecraft.world.InteractionHand.OFF_HAND:net.minecraft.world.InteractionHand.MAIN_HAND;swingTime=buffer.readInt();}
+            var swingingArm=InteractionHand.MAIN_HAND;int swingTime=0;
+            if(swinging){swingingArm=buffer.readBoolean()?InteractionHand.OFF_HAND:InteractionHand.MAIN_HAND;swingTime=buffer.readInt();}
             if(swingTime<0||swingTime>1000)throw new IllegalArgumentException("Invalid recorded swing time");
             if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z) || Math.abs(x) > 30000000 || Math.abs(y) > 30000000 || Math.abs(z) > 30000000
                     || !Float.isFinite(yaw) || !Float.isFinite(pitch) || !Float.isFinite(head) || !Float.isFinite(body)

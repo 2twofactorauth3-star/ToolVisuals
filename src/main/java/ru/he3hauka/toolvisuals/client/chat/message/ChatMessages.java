@@ -3,7 +3,7 @@ package ru.he3hauka.toolvisuals.client.chat.message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 public final class ChatMessages {
@@ -27,7 +27,7 @@ public final class ChatMessages {
     }
 
     public static void notice(String key, Object... arguments) {
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.event("Notice",key,"argument_count="+arguments.length);
+        if(ModuleLog.active())ModuleLog.event("Notice",key,"argument_count="+arguments.length);
         send(translated(key, arguments));
     }
 

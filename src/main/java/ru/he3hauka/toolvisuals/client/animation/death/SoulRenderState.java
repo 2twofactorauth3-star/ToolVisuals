@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.ItemStack;
-
 import ru.he3hauka.toolvisuals.client.animation.pose.*;
 
 import static ru.he3hauka.toolvisuals.client.animation.pose.PlayerPose.limb;

@@ -5,8 +5,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
-import ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems;
 import ru.he3hauka.toolvisuals.client.hud.inventory.InventoryHud;
+import ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems;
 
 final class FriendInventoryPaint {
     static final int WIDTH=164,HEIGHT=75;

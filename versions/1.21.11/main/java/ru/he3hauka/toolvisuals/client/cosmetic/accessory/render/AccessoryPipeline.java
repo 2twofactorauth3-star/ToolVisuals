@@ -1,9 +1,9 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory.render;
 
 import com.mojang.blaze3d.pipeline.*;
+import com.mojang.blaze3d.platform.DepthTestFunction;
 import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.mixin.render.RenderPipelinesAccessor;
 import ru.he3hauka.toolvisuals.mixin.render.RenderSetupAccessor;
 import ru.he3hauka.toolvisuals.mixin.render.RenderTypeAccessor;
@@ -11,7 +11,7 @@ import ru.he3hauka.toolvisuals.mixin.render.RenderTypeAccessor;
 public final class AccessoryPipeline {
     private static final RenderPipeline PIPELINE=RenderPipeline.builder(RenderPipelinesAccessor.toolvisuals$debugFilledSnippet())
             .withLocation(Identifier.parse("toolvisuals:pipeline/accessories"))
-            .withDepthTestFunction(com.mojang.blaze3d.platform.DepthTestFunction.LEQUAL_DEPTH_TEST).withDepthWrite(true)
+            .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).withDepthWrite(true)
             .withoutBlend().withCull(false).build();
     public static final RenderType TYPE=create();
     private AccessoryPipeline(){}

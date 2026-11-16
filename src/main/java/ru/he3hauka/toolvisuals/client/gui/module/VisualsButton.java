@@ -1,15 +1,18 @@
 package ru.he3hauka.toolvisuals.client.gui.module;
 
 import java.util.function.BooleanSupplier;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-
+import net.minecraft.network.chat.MutableComponent;
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 public class VisualsButton extends Button {
     public enum Kind { TAB, CHIP, GHOST, ICON, SWITCH, OPTION, MODULE, MENU }
@@ -39,10 +42,10 @@ public class VisualsButton extends Button {
         this.opacity = opacity;
         this.elapsed = elapsed;
     }
-    @Override public void playDownSound(net.minecraft.client.sounds.SoundManager manager) {
-        var config=ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG;
-        if(muteClick||moduleSound&&config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.SOUND_CUSTOMIZER)
-                &&config.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.SOUND_MODULES))return;
+    @Override public void playDownSound(SoundManager manager) {
+        var config=ToolVisualsClient.CONFIG;
+        if(muteClick||moduleSound&&config.active(VisualModule.SOUND_CUSTOMIZER)
+                &&config.flag(VisualSetting.SOUND_MODULES))return;
         super.playDownSound(manager);
     }
 
@@ -124,7 +127,7 @@ public class VisualsButton extends Button {
     }
 
     @Override
-    protected net.minecraft.network.chat.MutableComponent createNarrationMessage() {
+    protected MutableComponent createNarrationMessage() {
         if (selected != null) return UiI18n.tr("toolvisuals.toggle_narration", getMessage(),
                 UiI18n.tr(selected.getAsBoolean() ? "toolvisuals.ui.on" : "toolvisuals.ui.off"));
         return super.createNarrationMessage();

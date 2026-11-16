@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.menu;
 
 import java.util.List;
-
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 

@@ -1,7 +1,5 @@
 package ru.he3hauka.toolvisuals.client.replay.io;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,6 +8,8 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class ReplayLibrary {
     private ReplayLibrary() {}
@@ -33,7 +33,7 @@ public final class ReplayLibrary {
 
     public static List<ReplaySnapshot> list(Path directory) throws IOException {
         Files.createDirectories(directory);
-        var results = new java.util.PriorityQueue<ReplaySnapshot>(Comparator.comparingLong(value -> value.header.createdMillis));
+        var results = new PriorityQueue<ReplaySnapshot>(Comparator.comparingLong(value -> value.header.createdMillis));
         try (var entries = Files.newDirectoryStream(directory, "*.tvr")) {
             int inspected = 0;
             for (var path : entries) {

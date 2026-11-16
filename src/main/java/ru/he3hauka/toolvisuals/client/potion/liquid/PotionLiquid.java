@@ -2,9 +2,12 @@ package ru.he3hauka.toolvisuals.client.potion.liquid;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.BUFF_TRACKER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.BUFF_LIQUID;
 
@@ -12,10 +15,10 @@ public final class PotionLiquid {
     public interface Layers {ItemStackRenderState.LayerRenderState[] toolvisuals$potionLayers();int toolvisuals$potionLayerCount();}
     public interface Layer {void toolvisuals$drain(float fill);}
     private PotionLiquid(){}
-    public static boolean activeHand(net.minecraft.world.InteractionHand used,net.minecraft.world.entity.HumanoidArm main,ItemDisplayContext context){
+    public static boolean activeHand(InteractionHand used,HumanoidArm main,ItemDisplayContext context){
         if(context!=ItemDisplayContext.FIRST_PERSON_LEFT_HAND&&context!=ItemDisplayContext.FIRST_PERSON_RIGHT_HAND&&context!=ItemDisplayContext.THIRD_PERSON_LEFT_HAND&&context!=ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)return false;
-        var shown=context==ItemDisplayContext.FIRST_PERSON_LEFT_HAND||context==ItemDisplayContext.THIRD_PERSON_LEFT_HAND?net.minecraft.world.entity.HumanoidArm.LEFT:net.minecraft.world.entity.HumanoidArm.RIGHT;
-        return shown==(used==net.minecraft.world.InteractionHand.MAIN_HAND?main:main.getOpposite());
+        var shown=context==ItemDisplayContext.FIRST_PERSON_LEFT_HAND||context==ItemDisplayContext.THIRD_PERSON_LEFT_HAND?HumanoidArm.LEFT:HumanoidArm.RIGHT;
+        return shown==(used==InteractionHand.MAIN_HAND?main:main.getOpposite());
     }
     public static void apply(ItemStackRenderState state,ItemStack stack,ItemDisplayContext context,LivingEntity player){
         var config=ToolVisualsClient.CONFIG;

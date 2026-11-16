@@ -1,15 +1,15 @@
 package ru.he3hauka.toolvisuals.client.discord.ipc;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.*;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public interface RpcTransport extends AutoCloseable {
     boolean connected() throws IOException;
@@ -26,7 +26,7 @@ public interface RpcTransport extends AutoCloseable {
             if(windows){for(int i=0;i<10;i++)endpoints.add("\\\\.\\pipe\\"+namespace+i);}
             else {
                 var directories=new LinkedHashSet<String>();for(String key:List.of("XDG_RUNTIME_DIR","TMPDIR","TMP","TEMP")){String value=System.getenv(key);if(value!=null&&!value.isBlank())directories.add(value);}directories.add("/tmp");
-                for(String directory:directories)try{var path=Path.of(directory);if(path.isAbsolute())for(int i=0;i<10;i++)endpoints.add(path.resolve(namespace+i).toString());}catch(java.nio.file.InvalidPathException error){ClientErrors.report("Discord RPC endpoint discovery",error);}
+                for(String directory:directories)try{var path=Path.of(directory);if(path.isAbsolute())for(int i=0;i<10;i++)endpoints.add(path.resolve(namespace+i).toString());}catch(InvalidPathException error){ClientErrors.report("Discord RPC endpoint discovery",error);}
             }
         }
         public RpcTransport open() throws IOException {

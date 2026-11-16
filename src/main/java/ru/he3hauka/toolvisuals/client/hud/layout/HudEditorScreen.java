@@ -1,22 +1,21 @@
 package ru.he3hauka.toolvisuals.client.hud.layout;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
-import com.mojang.blaze3d.platform.InputConstants;
+import java.util.function.BooleanSupplier;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
-import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
 import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
+import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
@@ -47,7 +46,7 @@ public final class HudEditorScreen extends Screen implements MovementScreen {
         super(UiI18n.tr("toolvisuals.hud.editor")); this.parent = parent;
         positions.putAll(ToolVisualsClient.CONFIG.hudPositions());
         scales.putAll(ToolVisualsClient.CONFIG.hudScales());
-        net.minecraft.client.KeyMapping.releaseAll();
+        KeyMapping.releaseAll();
     }
     @Override protected void init() {
         saveToolbar();draggingToolbar=false;
@@ -66,7 +65,7 @@ public final class HudEditorScreen extends Screen implements MovementScreen {
         positionToolbar();
         frame = System.nanoTime();
     }
-    private VisualsButton button(int w, String key, Runnable action, java.util.function.BooleanSupplier value) {
+    private VisualsButton button(int w, String key, Runnable action, BooleanSupplier value) {
         return addWidget(new VisualsButton(0,0,w,30,UiI18n.tr("toolvisuals.hud." + key), VisualsButton.Kind.CHIP,
                 null, Component.empty(), action, value));
     }
@@ -141,7 +140,7 @@ public final class HudEditorScreen extends Screen implements MovementScreen {
             super.mouseClicked(local,twice);return true;
         }
         if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
-        var element=ru.he3hauka.toolvisuals.client.hud.layout.HudDragging.pick(bounds,value->true,event.x(),event.y());
+        var element=HudDragging.pick(bounds,value->true,event.x(),event.y());
         if(element!=null){
             var box = bounds.get(element);
             selected = dragging = element; dragBounds = box;

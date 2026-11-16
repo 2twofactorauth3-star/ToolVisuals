@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.compatibility.render;
 
-import java.util.LinkedHashMap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import java.util.LinkedHashMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.client.renderer.ShaderProgram;

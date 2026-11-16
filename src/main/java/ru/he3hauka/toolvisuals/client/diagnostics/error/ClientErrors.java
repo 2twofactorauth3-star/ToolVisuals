@@ -1,9 +1,10 @@
 package ru.he3hauka.toolvisuals.client.diagnostics.error;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class ClientErrors {
-    private static final org.slf4j.Logger LOGGER=LoggerFactory.getLogger("ToolVisuals/Error");
+    private static final Logger LOGGER=LoggerFactory.getLogger("ToolVisuals/Error");
     private static final ErrorRepeats REPEATS=new ErrorRepeats(128,60_000_000_000L);
     private static Thread.UncaughtExceptionHandler installed,previous;
     private ClientErrors(){}

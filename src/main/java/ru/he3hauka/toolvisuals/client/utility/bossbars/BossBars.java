@@ -1,18 +1,17 @@
 package ru.he3hauka.toolvisuals.client.utility.bossbars;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.BossEvent;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.hud.HudFormats;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudPlacement;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -22,7 +21,7 @@ public final class BossBars {
         var entries=events.stream().map(e->new BossBarGroups.Entry(e.getName().getString(),color(e.getColor().name()),e.getProgress(),e.getOverlay().name())).toList();drawEntries(g,entries);
     }
     public static void preview(GuiGraphicsExtractor g) {
-        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.BOSS_BAR_CUSTOMIZER))return;
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.BOSS_BAR_CUSTOMIZER))return;
         drawEntries(g,List.of(new BossBarGroups.Entry("Wither",0xff9674f5,.7f,"PROGRESS"),new BossBarGroups.Entry("Wither",0xff9674f5,.5f,"PROGRESS"),new BossBarGroups.Entry("Ender Dragon",0xffe680d2,.85f,"PROGRESS")));
     }
     private static void drawEntries(GuiGraphicsExtractor g,List<BossBarGroups.Entry> entries) {

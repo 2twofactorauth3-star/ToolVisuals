@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.animation.movement;
 
+import java.util.Objects;
 import ru.he3hauka.toolvisuals.client.animation.pose.PlayerPose;
 
 import static ru.he3hauka.toolvisuals.client.animation.pose.PlayerPose.limb;
@@ -7,7 +8,7 @@ import static ru.he3hauka.toolvisuals.client.animation.pose.PlayerPose.limb;
 public final class MovementPoses {
     public enum Activity { NONE,EAT,DRINK,MAP,BLOCK,CLIMB,CRAWL,ROW,RIDE,INSPECT }
     public record Input(Activity activity,boolean left,double phase,float pitch,float rowingRight,float rowingLeft){
-        public Input{java.util.Objects.requireNonNull(activity);if(!Double.isFinite(phase)||!Float.isFinite(pitch)||!Float.isFinite(rowingRight)||!Float.isFinite(rowingLeft))throw new IllegalArgumentException("Invalid movement pose input");}
+        public Input{Objects.requireNonNull(activity);if(!Double.isFinite(phase)||!Float.isFinite(pitch)||!Float.isFinite(rowingRight)||!Float.isFinite(rowingLeft))throw new IllegalArgumentException("Invalid movement pose input");}
     }
     private MovementPoses(){}
     public static PlayerPose sample(Input input){

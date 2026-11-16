@@ -1,8 +1,9 @@
 package ru.he3hauka.toolvisuals.client.waypoint;
 
+import java.io.IOException;
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.storage.LevelResource;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
 
@@ -22,7 +23,7 @@ public final class Waypoints {
             if(connection!=null) {
                 var server=client.getSingleplayerServer();var remote=client.getCurrentServer();
                 if(server!=null)context="world:"+server.getWorldPath(LevelResource.ROOT).toAbsolutePath().normalize();
-                else if(remote!=null)context="server:"+remote.ip.strip().toLowerCase(java.util.Locale.ROOT);
+                else if(remote!=null)context="server:"+remote.ip.strip().toLowerCase(Locale.ROOT);
             }
         }
         if(client.player==null||client.level==null)return;
@@ -31,7 +32,7 @@ public final class Waypoints {
             try {
                 var p=client.player;ToolVisualsClient.WAYPOINTS.death(context,dimension(),p.getX(),p.getY(),p.getZ());
                 ClientActions.notice("waypoints.death_saved");
-            } catch(java.io.IOException|IllegalArgumentException|IllegalStateException error) {
+            } catch(IOException|IllegalArgumentException|IllegalStateException error) {
                 ClientActions.notice("waypoints.save_error");
             }
         }

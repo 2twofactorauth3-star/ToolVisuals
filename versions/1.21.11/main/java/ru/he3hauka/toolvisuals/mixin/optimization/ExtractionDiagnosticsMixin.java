@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+
 import static ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Section.*;
 
 @Mixin(LevelRenderer.class)

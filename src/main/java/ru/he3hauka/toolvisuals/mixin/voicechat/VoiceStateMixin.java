@@ -4,7 +4,6 @@ import de.maxhenkel.voicechat.voice.client.ClientPlayerStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;

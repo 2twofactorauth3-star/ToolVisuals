@@ -5,10 +5,10 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.*;
 import javax.imageio.ImageIO;
-
-import ru.he3hauka.toolvisuals.storage.AtomicFiles;
+import ru.he3hauka.toolvisuals.client.cape.image.CapeImages;
 import ru.he3hauka.toolvisuals.client.storage.BoundedInputStream;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
+import ru.he3hauka.toolvisuals.storage.AtomicFiles;
 
 import static ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign.*;
 
@@ -21,7 +21,7 @@ public final class CapePng {
         try(var stream=new BoundedInputStream(Files.newInputStream(path),MAX_BYTES)){return decode(stream.readAllBytes());}
     }
     public static CapeImageImport readImport(Path path) throws IOException {
-        return ru.he3hauka.toolvisuals.client.cape.image.CapeImages.read(path);
+        return CapeImages.read(path);
     }
     public static CapeDesign decode(byte[] bytes) throws IOException {
         return fromImage(image(bytes,true));

@@ -1,12 +1,11 @@
 package ru.he3hauka.toolvisuals.client.utility;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class UtilityPreferences {
@@ -66,7 +65,7 @@ public final class UtilityPreferences {
                         saved.favorites==null?Set.of():saved.favorites,saved.packSets==null?Map.of():saved.packSets);
             });
             if(loaded!=null)state=loaded;
-        }catch(IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot load utility preferences; original file preserved",error);}
+        }catch(IOException error){LoggerFactory.getLogger("ToolVisuals").warn("Cannot load utility preferences; original file preserved",error);}
     }
     public void save() throws IOException {file.write(JSON.toJson(state));}
     private void update(Snapshot next) throws IOException {file.write(JSON.toJson(next));state=next;}

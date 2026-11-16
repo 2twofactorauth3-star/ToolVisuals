@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook;
 
 public final class AccessoryLayer extends RenderLayer<AvatarRenderState,PlayerModel> {

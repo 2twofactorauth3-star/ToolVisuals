@@ -2,13 +2,13 @@ package ru.he3hauka.toolvisuals.mixin.replay;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
 import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
+import ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
 
 @Mixin(Minecraft.class)
 public abstract class ReplayFrameMixin {

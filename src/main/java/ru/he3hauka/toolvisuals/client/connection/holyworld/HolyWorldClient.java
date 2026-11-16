@@ -6,17 +6,22 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
-
+import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
+import net.minecraft.network.Connection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload;
+import ru.he3hauka.toolvisuals.client.connection.policy.FeatureScreens;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.mixin.holyworld.HandshakeServerAddressAccessor;
 import ru.he3hauka.toolvisuals.mixin.holyworld.ServerAddressAccessor;
 
 public final class HolyWorldClient {
     private static final HolyWorldSession SESSION = new HolyWorldSession(ToolVisualsClient.CONFIG.serverPolicy);
-    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("ToolVisuals/HolyWorld");
+    private static final Logger LOGGER = LoggerFactory.getLogger("ToolVisuals/HolyWorld");
     private static long appliedRevision;
     private static boolean announced;
 
@@ -61,7 +66,7 @@ public final class HolyWorldClient {
         return data == null ? address(client) : data.ip;
     }
 
-    public static boolean captureAllowed(Minecraft client, net.minecraft.network.Connection connection) {
+    public static boolean captureAllowed(Minecraft client, Connection connection) {
         return !HolyWorldHosts.matches(address(connection.getPacketListener(), client));
     }
     public static boolean protectedServer() { return SESSION.protectedServer(); }
@@ -71,7 +76,7 @@ public final class HolyWorldClient {
     }
 
     private static void tick(Minecraft client) {
-        if (ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active()) return;
+        if (ReplayScope.active()) return;
         SESSION.identify(address(client));
         if (client.getConnection() == null || client.player == null || client.level == null) return;
         SESSION.advertise(ClientPlayNetworking.canSend(FeatureControlPayload.TYPE));
@@ -108,8 +113,8 @@ public final class HolyWorldClient {
         var policy = ToolVisualsClient.CONFIG.serverPolicy;
         if (policy.revision() != appliedRevision) {
             appliedRevision = policy.revision();
-            if (ru.he3hauka.toolvisuals.client.connection.policy.FeatureScreens.blocked(client.gui.screen())
-                    || client.gui.screen() instanceof net.minecraft.client.gui.screens.options.controls.KeyBindsScreen)
+            if (FeatureScreens.blocked(client.gui.screen())
+                    || client.gui.screen() instanceof KeyBindsScreen)
                 client.gui.setScreen(null);
         }
         if (!announced && SESSION.protectedServer()) {

@@ -6,7 +6,6 @@ import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
 import ru.he3hauka.toolvisuals.client.hud.animation.BetterHud;
 
 @Mixin(Hud.class)

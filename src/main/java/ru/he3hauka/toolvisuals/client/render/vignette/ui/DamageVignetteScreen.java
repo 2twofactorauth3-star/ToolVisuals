@@ -15,6 +15,7 @@ import ru.he3hauka.toolvisuals.client.render.vignette.VignetteOverlay;
 import ru.he3hauka.toolvisuals.client.render.vignette.VignettePulse;
 import ru.he3hauka.toolvisuals.client.render.vignette.VignetteSettings;
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.DAMAGE_VIGNETTE;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 

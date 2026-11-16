@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +19,6 @@ import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.hand.HandProperty;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
 import ru.he3hauka.toolvisuals.client.hand.editor.HandInteraction;
-import ru.he3hauka.toolvisuals.client.hand.editor.HandProjection;
 import ru.he3hauka.toolvisuals.client.hand.render.HandRendering;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
@@ -55,7 +55,7 @@ public final class HandEditorOverlay {
         if(dedicated)button(unit,"done",owner::onClose,null);
         frame=System.nanoTime();
     }
-    private void button(int width,String key,Runnable action,java.util.function.BooleanSupplier state) {
+    private void button(int width,String key,Runnable action,BooleanSupplier state) {
         buttons.add(new VisualsButton(toolbarX+buttons.size()*(width+5),toolbarY,width,28,text(key),VisualsButton.Kind.CHIP,
                 null,Component.empty(),action,state));
     }

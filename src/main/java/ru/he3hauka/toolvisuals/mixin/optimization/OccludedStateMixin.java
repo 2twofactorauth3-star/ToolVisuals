@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.mixin.optimization;
 
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.spongepowered.asm.mixin.*;
-
 import ru.he3hauka.toolvisuals.client.optimization.occlusion.OccludedState;
 
 @Mixin(EntityRenderState.class)

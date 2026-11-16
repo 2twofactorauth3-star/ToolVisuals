@@ -5,11 +5,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.player.Player;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.mixin.entity.EntityRemovalInvoker;
 
 public final class CrystalOptimizer {
@@ -26,7 +26,7 @@ public final class CrystalOptimizer {
         long timeout=CrystalPredictions.timeout(ToolVisualsClient.CONFIG.value(VisualSetting.CRYSTAL_RECOVERY),ping);
         if(PENDING.begin(crystal.getId(),crystal,System.nanoTime(),timeout))world.removeEntity(crystal.getId(),Entity.RemovalReason.DISCARDED);
     }
-    public static void confirmed(int id){if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;scope(Minecraft.getInstance());PENDING.confirmed(id);}
+    public static void confirmed(int id){if(ReplayScope.active())return;scope(Minecraft.getInstance());PENDING.confirmed(id);}
     public static void tick(Minecraft client){
         scope(client);if(world==null||client.player==null){PENDING.clear();return;}
         var ready=ToolVisualsClient.CONFIG.active(VisualModule.CRYSTAL_OPTIMIZER)&&client.player.isAlive()?PENDING.expired(System.nanoTime()):PENDING.drain();

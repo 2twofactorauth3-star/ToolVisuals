@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
-
 import ru.he3hauka.toolvisuals.client.voice.VoiceChat;
 
 @Mixin(value=PTTKeyHandler.class,remap=false)

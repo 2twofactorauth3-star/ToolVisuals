@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.optimization.blockentity;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public final class PreparationCache<T> {
@@ -16,7 +17,7 @@ public final class PreparationCache<T> {
         if(matches(scope,key,tick,revision,variant))return value;
         T next=source.get();
         this.scope=scope;this.key=key;this.tick=tick;this.revision=revision;this.variant=variant;
-        value=next;java.util.Arrays.fill(derived,null);
+        value=next;Arrays.fill(derived,null);
         return next;
     }
     public Object derive(T source,int index,Supplier<Object> factory){

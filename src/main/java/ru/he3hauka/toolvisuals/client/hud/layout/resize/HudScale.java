@@ -5,6 +5,7 @@ import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+
 import static java.util.Map.entry;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;

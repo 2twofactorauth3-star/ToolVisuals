@@ -1,11 +1,11 @@
 package ru.he3hauka.toolvisuals.client.voice;
 
 import de.maxhenkel.voicechat.VoicechatClient;
+import de.maxhenkel.voicechat.gui.VoiceChatSettingsScreen;
 import de.maxhenkel.voicechat.gui.onboarding.OnboardingManager;
 import de.maxhenkel.voicechat.voice.client.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-
 import ru.he3hauka.toolvisuals.mixin.voicechat.VoiceMicInvoker;
 
 public final class BundledVoiceChat {
@@ -42,6 +42,6 @@ public final class BundledVoiceChat {
     public static void settings(Screen parent){
         if(!VoiceChat.policy().enabled())return;
         if(OnboardingManager.isOnboarding())OnboardingManager.startOnboarding(parent);
-        else Minecraft.getInstance().gui.setScreen(new de.maxhenkel.voicechat.gui.VoiceChatSettingsScreen(parent));
+        else Minecraft.getInstance().gui.setScreen(new VoiceChatSettingsScreen(parent));
     }
 }

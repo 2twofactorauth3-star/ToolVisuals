@@ -1,21 +1,22 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory;
 
 import java.util.*;
-
 import net.fabricmc.fabric.api.client.networking.v1.*;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Items;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.animation.EffectTime;
 import ru.he3hauka.toolvisuals.client.animation.PlaybackClient;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.animation.*;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.network.AccessoryPayload;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.*;
+import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.*;
 import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica;
 
@@ -45,7 +46,7 @@ public final class AccessoryClient {
             if(pending!=null&&ack.requestId()==pending.requestId()&&ack.epoch()==epoch&&Objects.equals(server,ack.server())&&ack.accepted()){pending=null;confirmed=true;}
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->reset(true));
-        ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity,level)->{REMOTE.unload(entity.getUUID());MOTION.forget(entity.getUUID());});
+        ReplayLifecycle.unload((entity,level)->{REMOTE.unload(entity.getUUID());MOTION.forget(entity.getUUID());});
     }
     private static void receive(Minecraft client,AccessoryWire.State state){
         if(!available()||!Objects.equals(PlaybackClient.server(),state.server()))return;
@@ -81,8 +82,8 @@ public final class AccessoryClient {
         if(pending!=null&&(lastSent==Long.MIN_VALUE||now-lastSent>=2_000_000_000L)){ClientPlayNetworking.send(new AccessoryPayload.Request(pending));lastSent=now;}
     }
     public static AccessoryFrame frame(Entity actor,AvatarRenderState state,float partial){
-        if(ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview.preparing())return null;
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return null;
+        if(PlayerPreview.preparing())return null;
+        if(ReplayScope.active())return null;
         var client=Minecraft.getInstance();var config=ToolVisualsClient.CONFIG;
         scope(client);
         if(client.player==null||client.level==null||actor.level()!=client.level||!config.active(COSMETICS)||state.isInvisible||state.isSpectator||NoRender.hidesEntity(actor))return null;

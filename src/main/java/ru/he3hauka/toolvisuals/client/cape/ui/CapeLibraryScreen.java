@@ -3,12 +3,11 @@ package ru.he3hauka.toolvisuals.client.cape.ui;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.UUID;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.cape.CapeStore;
 import ru.he3hauka.toolvisuals.client.cape.CapeTexture;
@@ -18,7 +17,7 @@ import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 final class CapeLibraryScreen extends VisualEditorScreen {
     private final CapeEditorScreen editor;
     private int page;
-    private final Map<java.util.UUID,CapeTexture> previews=new HashMap<>();
+    private final Map<UUID,CapeTexture> previews=new HashMap<>();
     private String status="";
     CapeLibraryScreen(CapeEditorScreen parent){super(parent,CapeEditorScreen.text("library"));editor=parent;}
     @Override protected void init(){

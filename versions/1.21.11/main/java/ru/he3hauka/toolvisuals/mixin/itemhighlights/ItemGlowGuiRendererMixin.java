@@ -8,6 +8,7 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.state.BlitRenderState;
 import net.minecraft.client.gui.render.state.GuiItemRenderState;
 import net.minecraft.client.gui.render.state.GuiRenderState;
+import org.joml.Matrix3x2f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,9 +31,9 @@ public abstract class ItemGlowGuiRendererMixin {
         float span = (float)pixels / atlasPixels, pad = padding * span / 16;
         var glow = new BlitRenderState(ItemGlowPipeline.GUI,
                 TextureSetup.singleTexture(itemsAtlasView, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)),
-                new org.joml.Matrix3x2f(item.pose()), item.x() - padding, item.y() - padding, item.x() + 16 + padding, item.y() + 16 + padding,
+                new Matrix3x2f(item.pose()), item.x() - padding, item.y() - padding, item.x() + 16 + padding, item.y() + 16 + padding,
                 u0 - pad, u0 + span + pad, v0 + pad, v0 - span - pad, style.color(), item.scissorArea());
-        ((ItemGlowQuad.State)(Object)glow).toolvisuals$itemGlowQuad(new ItemGlowQuad(Math.round((u0 + span * .5f) * atlasPixels), Math.round((v0 - span * .5f) * atlasPixels), pixels, style.radius() * pixels / 16));
+        ((ItemGlowQuad.State)(Object)glow).toolvisuals$itemGlowQuad(new ItemGlowQuad(Math.round((u0 + span * .5f) * atlasPixels), Math.round((v0 - span * .5f) * atlasPixels), pixels, style.radius() * pixels / 16, style.phase()));
         renderState.submitBlitToCurrentLayer(glow);
     }
 }

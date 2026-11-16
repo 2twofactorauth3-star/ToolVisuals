@@ -1,15 +1,13 @@
 package ru.he3hauka.toolvisuals.client.items;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.lwjgl.sdl.SDLKeyboard;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.mixin.items.ContainerScreenInvoker;

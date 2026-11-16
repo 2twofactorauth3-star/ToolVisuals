@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.cape;
 
 import java.util.Arrays;
-
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 import static ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign.*;

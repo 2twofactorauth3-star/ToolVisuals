@@ -1,20 +1,25 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory.ui;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.function.IntConsumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Pose;
-
 import ru.he3hauka.toolvisuals.client.*;
-import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
-import ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryClient;
-import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
 import ru.he3hauka.toolvisuals.client.cape.CapeClient;
 import ru.he3hauka.toolvisuals.client.cape.CapeTexture;
+import ru.he3hauka.toolvisuals.client.cape.ui.CapeEditorScreen;
+import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
+import ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryClient;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.animation.*;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.*;
+import ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen;
+import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -35,7 +40,7 @@ public final class CosmeticsScreen extends VisualEditorScreen {
     private boolean animated,rotating,armor;
     private MotionPreview.Action movement=MotionPreview.Action.STILL;
     private final CosmeticMotion previewMotion=new CosmeticMotion();
-    private static final java.util.UUID PREVIEW_ACTOR=new java.util.UUID(0,77);
+    private static final UUID PREVIEW_ACTOR=new UUID(0,77);
     private long previewTick=Long.MIN_VALUE;
     private float previousYaw=180;
     private double previewTurn;
@@ -57,21 +62,21 @@ public final class CosmeticsScreen extends VisualEditorScreen {
         button(174,316,146,32,text("head_color"),UiPaint.Icon.RENDER,()->color(true),null);
         slider(20,364,300,text("back_size"),.65,1.35,.05,()->backScale,value->{backScale=(float)value;cached=null;},value->Math.round(value*100)+"%");
         slider(20,404,300,text("head_size"),.65,1.35,.05,()->headScale,value->{headScale=(float)value;cached=null;},value->Math.round(value*100)+"%");
-        slider(20,444,300,text("speed"),.5,2,.1,()->speed,value->{speed=(float)value;cached=null;},value->String.format(java.util.Locale.ROOT,"%.1fx",value));
+        slider(20,444,300,text("speed"),.5,2,.1,()->speed,value->{speed=(float)value;cached=null;},value->String.format(Locale.ROOT,"%.1fx",value));
         button(20,488,300,28,text("animated"),null,()->{animated=!animated;cached=null;},()->animated);
         button(700,64,128,28,text("armor"),null,()->armor=!armor,()->armor);
-        for(var next:MotionPreview.Action.values())button(350+(next.ordinal()%4)*120,445+(next.ordinal()/4)*32,112,28,text("movement_"+next.name().toLowerCase(java.util.Locale.ROOT)),null,()->movement=next,()->movement==next);
+        for(var next:MotionPreview.Action.values())button(350+(next.ordinal()%4)*120,445+(next.ordinal()/4)*32,112,28,text("movement_"+next.name().toLowerCase(Locale.ROOT)),null,()->movement=next,()->movement==next);
         var presets=AccessoryPresets.Preset.values();
         pages(728,506,presetPage,presets.length,PRESET_PAGE_SIZE,page->presetPage=page);
         for(int i=presetPage*PRESET_PAGE_SIZE;i<Math.min(presets.length,(presetPage+1)*PRESET_PAGE_SIZE);i++){
             var preset=presets[i];
-            button(350+(i%PRESET_PAGE_SIZE)*120,534,112,24,text("preset_"+preset.name().toLowerCase(java.util.Locale.ROOT)),null,()->{load(AccessoryPresets.create(preset));yaw=180;rebuildWidgets();},null);
+            button(350+(i%PRESET_PAGE_SIZE)*120,534,112,24,text("preset_"+preset.name().toLowerCase(Locale.ROOT)),null,()->{load(AccessoryPresets.create(preset));yaw=180;rebuildWidgets();},null);
         }
         button(20,568,136,28,UiI18n.tr("toolvisuals.editor.cancel"),null,this::onClose,null);
         save=button(166,568,154,28,UiI18n.tr("toolvisuals.editor.apply"),UiPaint.Icon.CHECK,()->{ToolVisualsClient.CONFIG.setAccessories(draft());onClose();},null);
         button(350,568,140,28,text("clear"),UiPaint.Icon.RESET,()->{load(AccessoryLook.EMPTY);rebuildWidgets();},null);
-        if(ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))button(498,568,160,28,UiI18n.tr("toolvisuals.outfits.title"),UiPaint.Icon.STAR,()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cosmetic.outfit.ui.OutfitScreen(this,this::draft,this::load)),null);
-        button(666,568,162,28,UiI18n.tr("toolvisuals.capes.title"),UiPaint.Icon.RENDER,()->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.cape.ui.CapeEditorScreen(this)),null);
+        if(ToolVisualsClient.CONFIG.available(ClientFeature.OUTFITS))button(498,568,160,28,UiI18n.tr("toolvisuals.outfits.title"),UiPaint.Icon.STAR,()->minecraft.gui.setScreen(new OutfitScreen(this,this::draft,this::load)),null);
+        button(666,568,162,28,UiI18n.tr("toolvisuals.capes.title"),UiPaint.Icon.RENDER,()->minecraft.gui.setScreen(new CapeEditorScreen(this)),null);
     }
     private void catalog(boolean headSlot){
         Enum<?>[] entries=headSlot?AccessoryLook.Head.values():AccessoryLook.Back.values();
@@ -79,13 +84,13 @@ public final class CosmeticsScreen extends VisualEditorScreen {
         pages(220,y-28,page,entries.length,PAGE_SIZE,next->{if(headSlot)headPage=next;else backPage=next;});
         for(int i=page*PAGE_SIZE;i<Math.min(entries.length,(page+1)*PAGE_SIZE);i++){
             var entry=entries[i];int index=i%PAGE_SIZE;
-            button(20+(index%2)*154,y+(index/2)*32,146,28,text((headSlot?"head_":"back_")+entry.name().toLowerCase(java.util.Locale.ROOT)),null,()->{
+            button(20+(index%2)*154,y+(index/2)*32,146,28,text((headSlot?"head_":"back_")+entry.name().toLowerCase(Locale.ROOT)),null,()->{
                 if(headSlot)head=(AccessoryLook.Head)entry;else back=(AccessoryLook.Back)entry;
                 cached=null;yaw=headSlot?0:180;
             },()->entry==(headSlot?head:back));
         }
     }
-    private void pages(int x,int y,int page,int count,int size,java.util.function.IntConsumer change){
+    private void pages(int x,int y,int page,int count,int size,IntConsumer change){
         button(x,y,26,24,Component.literal("‹"),null,()->{change.accept(page-1);rebuildWidgets();},null).active=page>0;
         button(x+64,y,26,24,Component.literal("›"),null,()->{change.accept(page+1);rebuildWidgets();},null).active=(page+1)*size<count;
     }

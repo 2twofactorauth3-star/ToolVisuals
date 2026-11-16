@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.config.color;
 
 import java.util.EnumSet;
-
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;

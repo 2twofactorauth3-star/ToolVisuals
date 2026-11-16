@@ -11,14 +11,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.he3hauka.toolvisuals.client.replay.capture.ReplayCapture;
+import ru.he3hauka.toolvisuals.client.replay.capture.VirtualReplayConnection;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 @Mixin(Connection.class)
 public abstract class ReplayConnectionMixin {
     @Unique private ProtocolInfo<?> toolvisuals$inbound;
     @Inject(method="send(Lnet/minecraft/network/protocol/Packet;Lio/netty/channel/ChannelFutureListener;Z)V",at=@At("HEAD"),cancellable=true)
     private void toolvisuals$keepReplayTrafficLocal(CallbackInfo callback){
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active()
-                &&!((Object)this instanceof ru.he3hauka.toolvisuals.client.replay.capture.VirtualReplayConnection))callback.cancel();
+        if(ReplayScope.active()
+                &&!((Object)this instanceof VirtualReplayConnection))callback.cancel();
     }
 
     @Inject(method = "setupInboundProtocol", at = @At("TAIL"))

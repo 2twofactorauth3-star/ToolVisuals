@@ -1,12 +1,10 @@
 package ru.he3hauka.toolvisuals.client.hud;
 
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.crosshair.CrosshairPainter;
 import ru.he3hauka.toolvisuals.client.friends.ui.FriendsListHud;
@@ -15,6 +13,8 @@ import ru.he3hauka.toolvisuals.client.gui.render.UiSprites;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.hud.armor.ArmorHud;
 import ru.he3hauka.toolvisuals.client.hud.cooldown.CooldownHud;
+import ru.he3hauka.toolvisuals.client.hud.health.HealthIndicator;
+import ru.he3hauka.toolvisuals.client.hud.info.InfoHudPanel;
 import ru.he3hauka.toolvisuals.client.hud.inventory.InventoryHud;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudEditorScreen;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
@@ -23,9 +23,16 @@ import ru.he3hauka.toolvisuals.client.hud.modules.ModuleListLimit;
 import ru.he3hauka.toolvisuals.client.hud.modules.ModuleListOrder;
 import ru.he3hauka.toolvisuals.client.hud.tab.ExtraTab;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.music.ui.MusicHud;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
+import ru.he3hauka.toolvisuals.client.potion.ui.BuffTrackerHud;
+import ru.he3hauka.toolvisuals.client.presents.ui.PresentsHud;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
+import ru.he3hauka.toolvisuals.client.session.ui.SessionStatsHud;
+import ru.he3hauka.toolvisuals.client.social.presence.ui.ClientListHud;
 import ru.he3hauka.toolvisuals.client.waypoint.WorldLabels;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
@@ -42,27 +49,27 @@ public final class VisualHud {
     private static String moduleUser = "";
     private VisualHud() {}
     public static void draw(GuiGraphicsExtractor graphics) {
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;
+        if(ReplayScope.active())return;
         var client = Minecraft.getInstance();
         if (client.player == null || !HudPlacement.preview() && (client.gui.screen() instanceof HudEditorScreen
-                || ExtraTab.showing() || client.gui.hud.isHidden() || NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.ALL_HUD))) return;
+                || ExtraTab.showing() || client.gui.hud.isHidden() || NoRender.hides(RenderOption.ALL_HUD))) return;
         var config = ToolVisualsClient.CONFIG;
         var palette = config.lightTheme() ? LIGHT : DARK;
         WorldLabels.draw(graphics,palette);
-        ru.he3hauka.toolvisuals.client.presents.ui.PresentsHud.draw(graphics,palette);
+        PresentsHud.draw(graphics,palette);
         ExtraHud.draw(graphics, palette);
-        if(HudPlacement.show(HEALTH_INDICATOR))ru.he3hauka.toolvisuals.client.hud.health.HealthIndicator.draw(graphics,palette);
+        if(HudPlacement.show(HEALTH_INDICATOR))HealthIndicator.draw(graphics,palette);
         if (HudPlacement.show(COOLDOWN_HUD)) CooldownHud.draw(graphics,palette);
-        if (HudPlacement.show(BUFF_TRACKER)) ru.he3hauka.toolvisuals.client.potion.ui.BuffTrackerHud.draw(graphics,palette);
+        if (HudPlacement.show(BUFF_TRACKER)) BuffTrackerHud.draw(graphics,palette);
         if (HudPlacement.show(FRIENDS_LIST)) FriendsListHud.draw(graphics,palette);
-        if (HudPlacement.show(CLIENT_LIST)) ru.he3hauka.toolvisuals.client.social.presence.ui.ClientListHud.draw(graphics,palette);
-        if (HudPlacement.show(SESSION_STATS)) ru.he3hauka.toolvisuals.client.session.ui.SessionStatsHud.draw(graphics,palette);
-        if (HudPlacement.show(MUSIC_HUD)) ru.he3hauka.toolvisuals.client.music.ui.MusicHud.draw(graphics,palette);
+        if (HudPlacement.show(CLIENT_LIST)) ClientListHud.draw(graphics,palette);
+        if (HudPlacement.show(SESSION_STATS)) SessionStatsHud.draw(graphics,palette);
+        if (HudPlacement.show(MUSIC_HUD)) MusicHud.draw(graphics,palette);
         if (HudPlacement.show(INVENTORY_HUD)) InventoryHud.draw(graphics, palette);
         if (HudPlacement.show(INFO_HUD)) {
             float scale = config.number(HUD_SCALE) / client.getWindow().getGuiScale();
             graphics.pose().pushMatrix(); graphics.pose().scale(scale, scale);
-            ru.he3hauka.toolvisuals.client.hud.info.InfoHudPanel.draw(graphics,client,config,palette);
+            InfoHudPanel.draw(graphics,client,config,palette);
             if (config.flag(HUD_MODULES)) {
                 int right = Math.round(graphics.guiWidth() / scale) - 12, y = 12;
                 var active = modules(graphics);
@@ -96,8 +103,8 @@ public final class VisualHud {
         String user = Minecraft.getInstance().getUser().getName();
         if (!Optimizations.enabled(OPT_FAST_HUD) || moduleRevision != config.revision()
                 || moduleDensity != density || !moduleUser.equals(user)) {
-            var active = java.util.Arrays.stream(VisualModule.values()).filter(config::active).toList();
-            var widths = new java.util.EnumMap<VisualModule, Float>(VisualModule.class);
+            var active = Arrays.stream(VisualModule.values()).filter(config::active).toList();
+            var widths = new EnumMap<VisualModule, Float>(VisualModule.class);
             for (var module : active) widths.put(module, UiPaint.textWidth(graphics, module.title, MODULE_TEXT_SCALE));
             moduleChips = ModuleListOrder.sort(active, (int)config.value(HUD_MODULE_ORDER), widths::get).stream()
                     .map(module -> new ModuleChip(NameProtect.text(module.title), widths.get(module) + 16)).toList();

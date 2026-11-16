@@ -1,17 +1,19 @@
 package ru.he3hauka.toolvisuals.relay.paper.reward;
 
+import net.kyori.adventure.audience.Audience;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.he3hauka.toolvisuals.relay.paper.config.ServerConfiguration;
+import ru.he3hauka.toolvisuals.relay.paper.message.ServerMessages;
 import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
 import ru.he3hauka.toolvisuals.relay.paper.storage.RewardStorage;
 import ru.he3hauka.toolvisuals.relay.paper.storage.StorageWorker;
@@ -101,7 +103,7 @@ public final class RewardService implements AutoCloseable {
         long total = account.total(System.nanoTime());
         if (total < settings.requiredMillis) { message(player, "remaining", "%time%", duration(settings.requiredMillis - total)); return; }
         if (!account.beginClaim(System.nanoTime())) { message(player, "busy"); return; }
-        final java.util.List<String> commands;
+        final List<String> commands;
         try { commands = settings.commands(player.getName(), id); }
         catch (IllegalArgumentException error) { account.endClaim(); message(player, "unavailable"); return; }
         long epoch = account.epoch(); UUID claim = UUID.randomUUID();
@@ -155,14 +157,14 @@ public final class RewardService implements AutoCloseable {
         if (closing || !plugin.isEnabled()) return;
         String text = settings.messages.getOrDefault(key, key);
         for (int index = 0; index + 1 < replacements.length; index += 2) text = text.replace(replacements[index], replacements[index + 1]);
-        var message = ru.he3hauka.toolvisuals.relay.paper.message.ServerMessages.text(text);
-        try { player.getScheduler().run(plugin, task -> ((net.kyori.adventure.audience.Audience)player).sendMessage(message), null); }
+        var message = ServerMessages.text(text);
+        try { player.getScheduler().run(plugin, task -> ((Audience)player).sendMessage(message), null); }
         catch (RuntimeException ignored) {}
     }
 
     private static String duration(long millis) {
         long seconds = (millis + 999) / 1000;
-        return String.format(java.util.Locale.ROOT, "%02d:%02d:%02d", seconds / 3600, seconds / 60 % 60, seconds % 60);
+        return String.format(Locale.ROOT, "%02d:%02d:%02d", seconds / 3600, seconds / 60 % 60, seconds % 60);
     }
 
     @Override public void close() {

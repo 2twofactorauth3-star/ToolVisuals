@@ -1,7 +1,10 @@
 package ru.he3hauka.toolvisuals.animation.protocol;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import static ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.*;
@@ -24,11 +27,11 @@ public final class PlaybackReplica {
     private Phase phase=Phase.STOPPED;
     private Request pending;
     private final Map<UUID,State> versions=new LinkedHashMap<>();
-    private final java.util.Set<UUID> unloaded=new java.util.HashSet<>();
+    private final Set<UUID> unloaded=new HashSet<>();
     private final Map<UUID,Long> cancelledPairs=new LinkedHashMap<>();
     private final Map<UUID,Consent> consents=new LinkedHashMap<>();
 
-    public PlaybackReplica(UUID owner){this.owner=java.util.Objects.requireNonNull(owner);}
+    public PlaybackReplica(UUID owner){this.owner=Objects.requireNonNull(owner);}
     private long next(){return ++sequence;}
     public boolean ready(){return ready;}
     public UUID server(){return server;}

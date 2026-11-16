@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.relay.paper.placeholder;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
 
 public final class PlaceholderHook {

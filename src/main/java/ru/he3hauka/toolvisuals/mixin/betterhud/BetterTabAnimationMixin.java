@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.world.scores.*;
 import org.spongepowered.asm.mixin.Mixin;
-
 import ru.he3hauka.toolvisuals.client.hud.animation.BetterHud;
 
 @Mixin(PlayerTabOverlay.class)

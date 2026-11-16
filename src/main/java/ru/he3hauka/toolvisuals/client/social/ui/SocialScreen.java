@@ -2,12 +2,10 @@ package ru.he3hauka.toolvisuals.client.social.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;

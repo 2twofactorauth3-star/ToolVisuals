@@ -1,8 +1,11 @@
 package ru.he3hauka.toolvisuals.client.music.ui;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import java.math.BigDecimal;
 import java.util.EnumMap;
 import java.util.Map;
-import com.mojang.blaze3d.platform.InputConstants;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,9 +18,10 @@ import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.music.MusicClient;
 import ru.he3hauka.toolvisuals.client.music.model.MediaAction;
+import ru.he3hauka.toolvisuals.client.music.model.MediaAdjustment;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSession;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSnapshot;
-import ru.he3hauka.toolvisuals.client.music.model.MediaAdjustment;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MUSIC_HUD;
 
 public final class MusicScreen extends VisualEditorScreen {
@@ -63,7 +67,7 @@ public final class MusicScreen extends VisualEditorScreen {
         button(26,SOURCES_Y+164,132,28,MusicPaint.text("retry"),UiPaint.Icon.RESET,MusicClient::retry,null);
         button(522,SOURCES_Y+164,132,28,UiI18n.tr("toolvisuals.ui.back"),UiPaint.Icon.BACK,this::onClose,null);
     }
-    private void control(int x,int y,int size,MediaAction action,java.util.function.Supplier<UiPaint.Icon> icon,java.util.function.BooleanSupplier selected) {
+    private void control(int x,int y,int size,MediaAction action,Supplier<UiPaint.Icon> icon,BooleanSupplier selected) {
         var button=addWidget(new MediaButton(px+x,py+y,size,MusicPaint.text(action.wire),icon,()->palette,()->{
             var session=session();MusicClient.command(displayed,session,action,action==MediaAction.MUTE&&session!=null&&!session.volume().muted()?1:0);
         },selected));
@@ -87,7 +91,7 @@ public final class MusicScreen extends VisualEditorScreen {
         var toggle=transport.get(MediaAction.TOGGLE);toggle.setMessage(MusicPaint.text(session!=null&&session.playing()?"pause":"play"));
         speed.active=MediaAction.RATE.available(session);
         double rate=session==null?1:session.rate();
-        if(rate!=shownRate){shownRate=rate;speed.setMessage(Component.literal(java.math.BigDecimal.valueOf(rate).stripTrailingZeros().toPlainString()+"×"));}
+        if(rate!=shownRate){shownRate=rate;speed.setMessage(Component.literal(BigDecimal.valueOf(rate).stripTrailingZeros().toPlainString()+"×"));}
         boolean canSeek=MediaAction.SEEK.available(session);
         backward.active=canSeek||MediaAction.REWIND.available(session);forward.active=canSeek||MediaAction.FORWARD.available(session);
         backward.setMessage(Component.literal(canSeek?"−10s":"«"));forward.setMessage(Component.literal(canSeek?"+10s":"»"));

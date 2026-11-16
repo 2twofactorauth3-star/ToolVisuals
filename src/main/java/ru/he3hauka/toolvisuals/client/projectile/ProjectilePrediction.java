@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.projectile;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -12,7 +11,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.*;
 import org.joml.Quaternionf;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.PROJECTILE_PREDICTION;

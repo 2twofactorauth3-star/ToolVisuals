@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.mixin.shulkertooltip;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -11,13 +10,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.component.TooltipProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.items.shulkertooltip.ShulkerPreview;
 import ru.he3hauka.toolvisuals.client.items.shulkertooltip.ShulkerTooltips;
 

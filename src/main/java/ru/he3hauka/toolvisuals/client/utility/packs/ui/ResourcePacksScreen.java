@@ -1,14 +1,13 @@
 package ru.he3hauka.toolvisuals.client.utility.packs.ui;
 
-import java.util.*;
-
 import com.mojang.blaze3d.Blaze3D;
+import java.util.*;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.Pack;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.utility.packs.ResourcePacks;
@@ -46,7 +45,7 @@ public final class ResourcePacksScreen extends UtilityScreen {
         pages(packs.size(),this::refresh);
         for(int i=0;i<7&&page*7+i<packs.size();i++) {
             var pack=packs.get(page*7+i);previews.request(pack.getId(),()->ResourcePacks.icon(pack));
-            var row=button(66,114+i*40,444,36,pack.getTitle(),draft.contains(pack.getId())?UiPaint.Icon.CHECK:null,()->toggle(pack),()->draft.contains(pack.getId()));listControls.add(row);row.active=!pack.isRequired();row.setTooltip(net.minecraft.client.gui.components.Tooltip.create(pack.getDescription()));
+            var row=button(66,114+i*40,444,36,pack.getTitle(),draft.contains(pack.getId())?UiPaint.Icon.CHECK:null,()->toggle(pack),()->draft.contains(pack.getId()));listControls.add(row);row.active=!pack.isRequired();row.setTooltip(Tooltip.create(pack.getDescription()));
             var favorite=button(520,114+i*40,36,36,Component.empty(),preferences.favorite(pack.getId())?UiPaint.Icon.STAR_FILLED:UiPaint.Icon.STAR,()->persist(()->preferences.toggleFavorite(pack.getId()),this::refresh),null);listControls.add(favorite);
             var order=button(564,114+i*40,32,36,Component.literal("↑"),null,()->raise(pack.getId()),null);listControls.add(order);order.active=draft.contains(pack.getId())&&!pack.isFixedPosition();
         }

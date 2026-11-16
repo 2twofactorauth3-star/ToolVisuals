@@ -2,14 +2,16 @@ package ru.he3hauka.toolvisuals.client.animation.movement;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.*;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.EffectTime;
 import ru.he3hauka.toolvisuals.client.animation.pose.PlayerPoseState;
+import ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 import static ru.he3hauka.toolvisuals.client.animation.movement.MovementPoses.Activity.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.EXTRA_ANIMATIONS;
@@ -19,7 +21,7 @@ public final class ExtraAnimations {
     private static final PoseTransitions TRANSITIONS=new PoseTransitions();
     private static Object connection,world,player;
     private ExtraAnimations(){}
-    public static void initialize(){ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity,level)->TRANSITIONS.remove(entity.getUUID()));}
+    public static void initialize(){ReplayLifecycle.unload((entity,level)->TRANSITIONS.remove(entity.getUUID()));}
     public static void tick(Minecraft client){
         scope(client);
         if(client.level!=null)TRANSITIONS.expire(client.level.getGameTime());
@@ -29,7 +31,7 @@ public final class ExtraAnimations {
     }
     public static void extract(Entity entity,AvatarRenderState state,float partial,boolean emote){
         var visual=(PlayerPoseState)state;visual.toolvisuals$actionPose(null);
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;
+        if(ReplayScope.active())return;
         var client=Minecraft.getInstance();var config=ToolVisualsClient.CONFIG;
         scope(client);
         if(emote||client.player==null||client.level==null||entity.level()!=client.level||!config.active(EXTRA_ANIMATIONS)||!(entity instanceof LivingEntity actor)
@@ -37,7 +39,7 @@ public final class ExtraAnimations {
         var activity=NONE;boolean left=false;float rowingRight=0,rowingLeft=0;
         double clock=EffectTime.at(client.level.getGameTime(),partial),phase=clock*.12;
         if(actor.isUsingItem()){
-            left=actor.getMainArm()==HumanoidArm.LEFT;if(actor.getUsedItemHand()==net.minecraft.world.InteractionHand.OFF_HAND)left=!left;
+            left=actor.getMainArm()==HumanoidArm.LEFT;if(actor.getUsedItemHand()==InteractionHand.OFF_HAND)left=!left;
             if(config.flag(EXTRA_USE_ITEMS))activity=switch(actor.getUseItem().getUseAnimation()){case EAT->EAT;case DRINK->DRINK;case BLOCK->BLOCK;default->NONE;};
             phase=actor.getTicksUsingItem(partial)*.9;
         }else if(config.flag(EXTRA_CLIMB)&&actor.onClimbable()){activity=CLIMB;phase=actor.getY()*4;}

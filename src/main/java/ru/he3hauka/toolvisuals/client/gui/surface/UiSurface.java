@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.gui.surface;
 
 import java.awt.image.BufferedImage;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 
 public enum UiSurface {

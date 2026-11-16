@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.replay;
 
-import java.util.List;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.List;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketDecoder;
 import net.minecraft.network.ProtocolInfo;

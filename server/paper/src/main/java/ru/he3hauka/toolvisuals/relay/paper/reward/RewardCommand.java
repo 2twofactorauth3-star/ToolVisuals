@@ -1,9 +1,10 @@
 package ru.he3hauka.toolvisuals.relay.paper.reward;
 
+import net.kyori.adventure.audience.Audience;
 import java.util.List;
-
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import ru.he3hauka.toolvisuals.relay.paper.message.ServerMessages;
 
 public final class RewardCommand implements CommandExecutor, TabCompleter {
     private final RewardService rewards;
@@ -20,7 +21,7 @@ public final class RewardCommand implements CommandExecutor, TabCompleter {
 
     private void message(CommandSender sender, String key, String fallback) {
         String text = settings == null ? fallback : settings.messages.getOrDefault(key, fallback);
-        ((net.kyori.adventure.audience.Audience)sender).sendMessage(ru.he3hauka.toolvisuals.relay.paper.message.ServerMessages.text(text));
+        ((Audience)sender).sendMessage(ServerMessages.text(text));
     }
 
     @Override public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) { return List.of(); }

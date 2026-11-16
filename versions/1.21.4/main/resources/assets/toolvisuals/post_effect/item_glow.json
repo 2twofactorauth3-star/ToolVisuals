@@ -11,8 +11,62 @@
           "bilinear": true
         }
       ],
-      "output": "toolvisuals:item_glow_blur",
-      "uniforms": [],
+      "output": "toolvisuals:item_glow_bloom",
+      "uniforms": [
+        {
+          "name": "BlurDirection",
+          "values": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "program": "toolvisuals:post/item_glow_blur"
+    },
+    {
+      "inputs": [
+        {
+          "sampler_name": "Mask",
+          "target": "toolvisuals:item_glow_bloom",
+          "bilinear": true
+        }
+      ],
+      "output": "toolvisuals:item_glow_scratch",
+      "uniforms": [
+        {
+          "name": "BlurDirection",
+          "values": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "program": "toolvisuals:post/item_glow_blur"
+    },
+    {
+      "inputs": [
+        {
+          "sampler_name": "Mask",
+          "target": "toolvisuals:item_glow_scratch",
+          "bilinear": true
+        }
+      ],
+      "output": "toolvisuals:item_glow_bloom",
+      "uniforms": [
+        {
+          "name": "BlurDirection",
+          "values": [
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      ],
       "program": "toolvisuals:post/item_glow_blur"
     },
     {
@@ -29,7 +83,7 @@
         },
         {
           "sampler_name": "Glow",
-          "target": "toolvisuals:item_glow_blur",
+          "target": "toolvisuals:item_glow_bloom",
           "bilinear": true
         }
       ],

@@ -7,7 +7,6 @@ import net.caffeinemc.mods.sodium.client.render.chunk.compile.ChunkBuildOutput;
 import net.caffeinemc.mods.sodium.client.render.chunk.compile.tasks.ChunkBuilderMeshingTask;
 import net.caffeinemc.mods.sodium.client.util.task.CancellationToken;
 import org.spongepowered.asm.mixin.Mixin;
-
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 
 @Mixin(value=ChunkBuilderMeshingTask.class,remap=false)

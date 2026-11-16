@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.armor.render;
 
+import com.mojang.renderpearl.api.pipeline.*;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
-import com.mojang.renderpearl.api.pipeline.*;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.resources.Identifier;

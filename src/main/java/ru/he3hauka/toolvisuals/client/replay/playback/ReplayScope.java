@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.replay.playback;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 
 public final class ReplayScope {
@@ -16,7 +17,7 @@ public final class ReplayScope {
         CURRENT.set(scene);
         try {
             scene.state().install(client);
-            client.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            client.options.setCameraType(CameraType.FIRST_PERSON);
             action.run();
         } finally {
             try { scene.capture(client); }

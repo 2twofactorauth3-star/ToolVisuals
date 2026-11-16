@@ -23,6 +23,7 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
 import ru.he3hauka.toolvisuals.client.hand.render.HandRendering;
 import ru.he3hauka.toolvisuals.client.render.NoSwing;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 

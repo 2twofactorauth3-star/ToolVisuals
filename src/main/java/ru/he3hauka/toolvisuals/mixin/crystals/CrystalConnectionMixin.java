@@ -5,7 +5,6 @@ import net.minecraft.network.protocol.game.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.optimization.crystal.CrystalOptimizer;
 
 @Mixin(ClientPacketListener.class)

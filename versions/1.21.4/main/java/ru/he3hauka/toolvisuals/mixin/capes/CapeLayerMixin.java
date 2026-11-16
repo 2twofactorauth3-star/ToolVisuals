@@ -1,24 +1,23 @@
 package ru.he3hauka.toolvisuals.mixin.capes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.Identifier;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.cape.CapeClient;
 import ru.he3hauka.toolvisuals.client.cape.render.CapeRenderRules;
-import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
-import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryVisualState;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 @Mixin(CapeLayer.class)
 public abstract class CapeLayerMixin {

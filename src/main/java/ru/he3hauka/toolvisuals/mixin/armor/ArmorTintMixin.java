@@ -8,12 +8,13 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.UvMapping;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
-import ru.he3hauka.toolvisuals.client.armor.ArmorTint;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.armor.ArmorTint;
+import ru.he3hauka.toolvisuals.client.armor.render.ArmorRenderTypes;
 import ru.he3hauka.toolvisuals.client.render.hitcolor.HitColors;
 
 @Mixin(EquipmentLayerRenderer.class)
@@ -27,8 +28,8 @@ public abstract class ArmorTintMixin {
         boolean fill=ArmorTint.filled(state);
         boolean trim=uv!=null||type==RenderTypes.trimmedArmorGlint();
         if(fill&&trim)return;
-        if(tint!=0&&!trim){type=ru.he3hauka.toolvisuals.client.armor.render.ArmorRenderTypes.renderType(type,fill);color=tint;}
-        if(trim&&ArmorTint.hit(state))color=net.minecraft.util.ARGB.multiply(color,HitColors.modelTint(ToolVisualsClient.CONFIG));
+        if(tint!=0&&!trim){type=ArmorRenderTypes.renderType(type,fill);color=tint;}
+        if(trim&&ArmorTint.hit(state))color=ARGB.multiply(color,HitColors.modelTint(ToolVisualsClient.CONFIG));
         original.call(collector, model, state, pose, type, light, overlay, color, uv, outline);
     }
 }

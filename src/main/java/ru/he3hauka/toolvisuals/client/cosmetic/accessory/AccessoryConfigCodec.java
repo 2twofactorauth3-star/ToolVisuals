@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory;
 
 import java.util.Base64;
-
 import ru.he3hauka.toolvisuals.cosmetic.accessory.*;
 
 public final class AccessoryConfigCodec {

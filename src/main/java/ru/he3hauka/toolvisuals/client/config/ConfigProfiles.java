@@ -1,18 +1,17 @@
 package ru.he3hauka.toolvisuals.client.config;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class ConfigProfiles {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -46,7 +45,7 @@ public final class ConfigProfiles {
                     String name = validName(data.get("name").getAsString());
                     String settings = ClientConfig.normalizePreset(GSON.toJson(data.getAsJsonObject("settings")));
                     found.add(new Profile(id, name, Math.max(0, data.get("updatedAt").getAsLong()), settings));
-                } catch (IOException | com.google.gson.JsonParseException | IllegalArgumentException | IllegalStateException | NullPointerException error) {
+                } catch (IOException | JsonParseException | IllegalArgumentException | IllegalStateException | NullPointerException error) {
                     ClientErrors.report("Read saved config profile "+file.getFileName(),error);
                 }
             }
@@ -127,7 +126,7 @@ public final class ConfigProfiles {
         var data = new JsonObject(); data.addProperty("version", 1); data.addProperty("id", profile.id);
         data.addProperty("name", profile.name); data.addProperty("updatedAt", profile.updatedAt);
         data.add("settings", JsonParser.parseString(profile.settings));
-        ru.he3hauka.toolvisuals.client.storage.JsonFile.write(target,GSON.toJson(data),MAX_BYTES);
+        JsonFile.write(target,GSON.toJson(data),MAX_BYTES);
     }
     public static String validName(String name) {
         if (name == null) throw new IllegalArgumentException("Missing profile name");

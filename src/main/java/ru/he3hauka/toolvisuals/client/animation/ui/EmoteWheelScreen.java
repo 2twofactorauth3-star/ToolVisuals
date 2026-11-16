@@ -1,8 +1,9 @@
 package ru.he3hauka.toolvisuals.client.animation.ui;
 
-import java.util.List;
-
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.*;
@@ -12,7 +13,6 @@ import net.minecraft.world.entity.Pose;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
 import ru.he3hauka.toolvisuals.animation.Emote;
 import ru.he3hauka.toolvisuals.animation.EmoteGroup;
 import ru.he3hauka.toolvisuals.client.*;
@@ -23,6 +23,8 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 public final class EmoteWheelScreen extends Screen {
     private final Screen parent;
@@ -38,7 +40,7 @@ public final class EmoteWheelScreen extends Screen {
     private static Component tr(String key,Object... args){return UiI18n.tr("toolvisuals.emotes."+key,args);}
     @Override protected void init() {
         var viewport=new UiViewport(width,height,minecraft.getWindow().getGuiScale());scale=Math.min(viewport.scale,Math.min(width/580f,height/590f));cx=width/scale/2;cy=height/scale/2+12;frame=previewStart=System.nanoTime();
-        var widgets=new java.util.ArrayList<VisualsButton>();
+        var widgets=new ArrayList<VisualsButton>();
         for(var category:EmoteGroup.values())widgets.add(addWidget(new VisualsButton(Math.round(cx-247+category.ordinal()*100),Math.round(cy-224),94,30,tr("group."+category.id),VisualsButton.Kind.CHIP,null,Component.empty(),()->category(category),()->group==category)));
         widgets.add(button(cx-134,cy+220,128,tr("back"),this::onClose));
         widgets.add(button(cx+6,cy+220,128,tr("stop"),()->{Emotes.stop(true);minecraft.gui.setScreen(null);}));
@@ -48,7 +50,7 @@ public final class EmoteWheelScreen extends Screen {
     @Override public boolean isPauseScreen(){return false;}
     @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float partial){g.fill(0,0,width,height,UiPaint.alpha(0x9a080812,entrance.value()));}
     @Override public void extractRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
-        if(minecraft.player==null||!ToolVisualsClient.CONFIG.active(ru.he3hauka.toolvisuals.client.module.VisualModule.ANIMATIONS)){onClose();return;}
+        if(minecraft.player==null||!ToolVisualsClient.CONFIG.active(VisualModule.ANIMATIONS)){onClose();return;}
         long now=System.nanoTime();float elapsed=Math.clamp((now-frame)/1e9f,0,.1f);frame=now;float visible=entrance.step(1,elapsed,16);
         var palette=new UiPalette(ToolVisualsClient.CONFIG.lightTheme()?1:0);float x=mx/scale,y=my/scale;
         if(!keyboard)select(RadialMenuGeometry.index(x-cx,y-cy,88,184,hover.length));
@@ -68,9 +70,9 @@ public final class EmoteWheelScreen extends Screen {
         if(selected>=0) {
             var emote=group.emotes().get(selected);UiPaint.centered(g,tr(emote.key).getString(),cx-78,cy-77,156,24,.84f,palette.text,visible);
             preview(g,emote,now,visible);
-            UiPaint.centered(g,String.format(java.util.Locale.ROOT,"%.1f s",emote.duration/20f),cx-64,cy+60,128,20,.7f,palette.muted,visible);
+            UiPaint.centered(g,String.format(Locale.ROOT,"%.1f s",emote.duration/20f),cx-64,cy+60,128,20,.7f,palette.muted,visible);
         }else{UiPaint.icon(g,UiPaint.Icon.PLAYER,cx-18,cy-30,36,palette.accentText,visible);UiPaint.centered(g,tr("choose").getString(),cx-74,cy+15,148,22,.78f,palette.muted,visible);}
-        boolean sharing=ToolVisualsClient.CONFIG.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.EMOTE_SYNC);
+        boolean sharing=ToolVisualsClient.CONFIG.flag(VisualSetting.EMOTE_SYNC);
         UiPaint.centered(g,tr(!sharing?"private":Emotes.synchronizedServer(selected<0?null:group.emotes().get(selected))?"shared":"local").getString(),cx-236,cy+190,472,22,.75f,palette.muted,visible);
         for(var button:buttons){UiPaint.rounded(g,button.getX(),button.getY(),button.getWidth(),30,7,UiPaint.alpha(palette.panel,visible));button.frame(palette,visible,elapsed);button.extractRenderState(g,Math.round(x),Math.round(y),partial);}
         g.pose().popMatrix();

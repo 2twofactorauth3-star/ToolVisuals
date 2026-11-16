@@ -1,10 +1,11 @@
 package ru.he3hauka.toolvisuals.client.config;
 
+import java.util.Set;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 final class ConfigTransferRules {
-    static final java.util.Set<VisualModule> PERSONAL_MODULES=java.util.Set.of(VisualModule.AUCTION_HELPER,VisualModule.KEYBINDS,VisualModule.VOICE_CHAT,VisualModule.MINI_GAMES);
+    static final Set<VisualModule> PERSONAL_MODULES=Set.of(VisualModule.AUCTION_HELPER,VisualModule.KEYBINDS,VisualModule.VOICE_CHAT,VisualModule.MINI_GAMES);
     private ConfigTransferRules(){}
     static String preset(ConfigSnapshot snapshot){
         var json=ConfigCodec.object(snapshot);

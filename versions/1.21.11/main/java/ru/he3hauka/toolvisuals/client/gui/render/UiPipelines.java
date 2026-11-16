@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.gui.render;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.mixin.render.RenderPipelinesAccessor;
 
 public final class UiPipelines {

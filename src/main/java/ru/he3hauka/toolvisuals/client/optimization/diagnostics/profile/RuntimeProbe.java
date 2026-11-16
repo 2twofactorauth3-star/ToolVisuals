@@ -2,12 +2,13 @@ package ru.he3hauka.toolvisuals.client.optimization.diagnostics.profile;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.List;
 
 public final class RuntimeProbe {
     public record Point(long cpu,long allocated,long heap,long committed,long maximum) {}
     public record Gc(long count,long milliseconds) {}
-    private static final java.lang.management.ThreadMXBean THREADS=ManagementFactory.getThreadMXBean();
+    private static final ThreadMXBean THREADS=ManagementFactory.getThreadMXBean();
     private static final com.sun.management.ThreadMXBean ALLOCATION=THREADS instanceof com.sun.management.ThreadMXBean bean?bean:null;
     private RuntimeProbe() {}
     public static Point current() {

@@ -1,20 +1,19 @@
 package ru.he3hauka.toolvisuals.client.connection.ui;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
@@ -24,6 +23,7 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
@@ -81,14 +81,13 @@ public final class ConnectionScreen extends Screen {
         lastFrame=System.nanoTime();
     }
     private EditBox field(int x,int y,int width,int height,Component label) {
-        var field=new EditBox(UiFont.get(),x,y,width,height,label) {
+        var field=new CenteredEditBox(UiFont.get(),x,y,width,height,label) {
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
                 if(getValue().isEmpty()&&!isFocused()) {
                     UiPaint.baseline(g,UiPaint.fit(g,label,getWidth(),1),getX(),
                             UiPaint.textBaseline(g,getY(),getHeight(),1),1,palette.muted,1);return;
                 }
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
+                super.extractWidgetRenderState(g,mx,my,partial);
             }
         };
         field.setBordered(false);field.setTextShadow(false);return field;
@@ -99,7 +98,7 @@ public final class ConnectionScreen extends Screen {
     private void updateActions() {
         if(save==null||join==null||nickname==null||address==null)return;
         save.active=ConnectionIdentity.valid(nickname.getValue());
-        nickname.setTooltip(save.active?null:net.minecraft.client.gui.components.Tooltip.create(tr("invalid_nickname")));
+        nickname.setTooltip(save.active?null:Tooltip.create(tr("invalid_nickname")));
         join.active=save.active&&ServerAddress.isValidAddress(address.getValue().strip());
     }
     private void apply(boolean connect) {
@@ -107,7 +106,7 @@ public final class ConnectionScreen extends Screen {
         String server=address.getValue().strip();
         if(connect&&!ServerAddress.isValidAddress(server))return;
         try{ConnectionIdentity.apply(minecraft,nickname.getValue());}
-        catch(java.io.IOException error){nickname.setTooltip(net.minecraft.client.gui.components.Tooltip.create(UiI18n.tr("toolvisuals.accounts.io_error")));return;}
+        catch(IOException error){nickname.setTooltip(Tooltip.create(UiI18n.tr("toolvisuals.accounts.io_error")));return;}
         if(ServerAddress.isValidAddress(server)) {minecraft.options.lastMpIp=server;minecraft.options.save();}
         if(connect) ConnectScreen.startConnecting(parent,minecraft,ServerAddress.parseString(server),
                 new ServerData(server,server,ServerData.Type.OTHER),false,null);

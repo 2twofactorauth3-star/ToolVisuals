@@ -4,7 +4,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,11 +11,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.menu.TitleMenuButtons;
 import ru.he3hauka.toolvisuals.client.menu.ToolVisualsTitleMenu;
+import ru.he3hauka.toolvisuals.client.menu.vanilla.NativeAccountsScreen;
+import ru.he3hauka.toolvisuals.client.menu.vanilla.NativeVersionsScreen;
 
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin extends Screen {
@@ -47,8 +47,8 @@ public abstract class TitleScreenMixin extends Screen {
                 rowY-=shift;
                 settings.setY(rowY+24);quit.setY(rowY+24);
             }
-            addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.main.accounts"),button->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.menu.vanilla.NativeAccountsScreen(this))).bounds(x,rowY,half,20).build());
-            addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.main.versions"),button->minecraft.gui.setScreen(new ru.he3hauka.toolvisuals.client.menu.vanilla.NativeVersionsScreen(this))).bounds(x+half+4,rowY,half,20).build());
+            addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.main.accounts"),button->minecraft.gui.setScreen(new NativeAccountsScreen(this))).bounds(x,rowY,half,20).build());
+            addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.main.versions"),button->minecraft.gui.setScreen(new NativeVersionsScreen(this))).bounds(x+half+4,rowY,half,20).build());
             int switchWidth=Math.clamp(width/2-116,44,90);
             addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.main.switch"),button->toolvisuals$switchMenu()).bounds(8,height-32,switchWidth,20).build());
         }

@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
 
 public final class RewardDelivery implements AutoCloseable {

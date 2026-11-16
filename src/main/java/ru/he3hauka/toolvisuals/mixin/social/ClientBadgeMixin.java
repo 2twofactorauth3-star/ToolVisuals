@@ -11,12 +11,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.label.NameTagRows;
+import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.social.badge.BadgeLabels;
 import ru.he3hauka.toolvisuals.client.social.badge.BadgeRenderState;
 

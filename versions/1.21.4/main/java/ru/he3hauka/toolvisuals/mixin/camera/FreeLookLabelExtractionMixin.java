@@ -7,8 +7,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.camera.FreeLook;
+import ru.he3hauka.toolvisuals.client.compatibility.render.VersionState;
 
 @Mixin(EntityRenderer.class)
 public abstract class FreeLookLabelExtractionMixin {
@@ -16,7 +16,7 @@ public abstract class FreeLookLabelExtractionMixin {
     private void toolvisuals$hideOwnLabels(Entity entity, EntityRenderState state, float partialTick,
             CallbackInfo ci) {
         if (FreeLook.owns(entity) && (!FreeLook.showsOwnLabels(entity) || state.nameTag == null)) {
-            state.nameTag = null; ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.clearScore(state); state.nameTagAttachment = null;
+            state.nameTag = null; VersionState.clearScore(state); state.nameTagAttachment = null;
         }
     }
 }

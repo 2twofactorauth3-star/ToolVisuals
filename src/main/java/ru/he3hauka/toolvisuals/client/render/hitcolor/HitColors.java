@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.render.hitcolor;
 
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 

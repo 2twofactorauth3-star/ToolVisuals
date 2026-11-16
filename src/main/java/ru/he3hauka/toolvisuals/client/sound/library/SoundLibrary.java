@@ -2,6 +2,7 @@ package ru.he3hauka.toolvisuals.client.sound.library;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.audio.SoundBuffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -9,12 +10,13 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sound.sampled.AudioFormat;
-import com.mojang.blaze3d.audio.SoundBuffer;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer.Channel;
 import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 import ru.he3hauka.toolvisuals.storage.AtomicFiles;
@@ -49,7 +51,7 @@ public final class SoundLibrary {
             var value = GSON.fromJson(json, Saved.class);
             if (value == null || value.version != 1 || value.entries == null || value.entries.size() > LIMIT || value.selection == null)
                 throw new IOException("Invalid sound library");
-            var ids = new java.util.HashSet<String>(); long total = 0;
+            var ids = new HashSet<String>(); long total = 0;
             for (var entry : value.entries) { if (entry == null || !ids.add(entry.id())) throw new IOException("Duplicate sound ID"); total += entry.bytes(); }
             if (total > BYTE_BUDGET) throw new IOException("Sound library exceeds its byte budget");
             for (var selected : value.selection.entrySet()) {
@@ -90,7 +92,7 @@ public final class SoundLibrary {
         var selected = new LinkedHashMap<>(selection); selected.values().removeIf(id::equals);
         write(next, selected);
         try { Files.deleteIfExists(data(id)); }
-        catch (IOException error) { ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Remove custom sound file " + id, error); throw error; }
+        catch (IOException error) { ClientErrors.report("Remove custom sound file " + id, error); throw error; }
     }
 
     public SoundBuffer buffer(String id, String revision) throws IOException {

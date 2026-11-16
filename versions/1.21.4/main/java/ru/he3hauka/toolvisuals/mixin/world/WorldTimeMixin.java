@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.WORLD_CUSTOMIZER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.TIME;
 

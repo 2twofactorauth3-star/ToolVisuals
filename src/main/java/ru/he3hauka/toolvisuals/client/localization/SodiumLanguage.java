@@ -1,12 +1,10 @@
 package ru.he3hauka.toolvisuals.client.localization;
 
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.locale.Language;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 public final class SodiumLanguage {

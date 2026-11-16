@@ -2,9 +2,9 @@ package ru.he3hauka.toolvisuals.client.optimization.frame;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+import ru.he3hauka.toolvisuals.client.optimization.equipment.PreparedEquipment;
 import ru.he3hauka.toolvisuals.client.optimization.scene.NearbyEntities;
 import ru.he3hauka.toolvisuals.client.optimization.texture.TextureUploads;
 
@@ -35,7 +35,7 @@ public final class FrameMonitor {
         var config=ToolVisualsClient.CONFIG;
         if(world!=client.level){
             world=client.level;
-            ru.he3hauka.toolvisuals.client.optimization.equipment.PreparedEquipment.clear();
+            PreparedEquipment.clear();
             QUALITY.reset();
             nextTargetRefresh=0;
         }

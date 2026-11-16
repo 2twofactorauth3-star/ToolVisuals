@@ -1,13 +1,15 @@
 package ru.he3hauka.toolvisuals.client.optimization.diagnostics;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Supplier;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.capture.*;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.profile.*;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.report.*;
@@ -20,7 +22,7 @@ public final class Diagnostics {
     private static final FrameHistory HISTORY=new FrameHistory(2048);
     private static volatile boolean enabled,active;
     private static volatile FrameHistory.Snapshot view=HISTORY.snapshot();
-    private static final LongAdder[] COUNTERS=java.util.Arrays.stream(Counter.values()).map(value->new LongAdder()).toArray(LongAdder[]::new);
+    private static final LongAdder[] COUNTERS=Arrays.stream(Counter.values()).map(value->new LongAdder()).toArray(LongAdder[]::new);
     private static volatile DiagnosticContext context=DiagnosticContext.INACTIVE;
     private static volatile FreezeMonitor monitor=new FreezeMonitor();
     private static final ArrayBlockingQueue<FreezeEvent> EVENTS=new ArrayBlockingQueue<>(16);
@@ -121,8 +123,8 @@ public final class Diagnostics {
         catch(Exception error){disable();ClientErrors.report("Write performance diagnostic marker",error);}
         finally{schedule(log,active?25:enabled?200:1000);}
     }
-    private static boolean write(MarkerLog log,String text) throws java.io.IOException {
-        if(log.append(text)){knownSize+=text.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;return true;}
+    private static boolean write(MarkerLog log,String text) throws IOException {
+        if(log.append(text)){knownSize+=text.getBytes(StandardCharsets.UTF_8).length;return true;}
         saturated=true;stopCapture();return false;
     }
     private static String counters() {

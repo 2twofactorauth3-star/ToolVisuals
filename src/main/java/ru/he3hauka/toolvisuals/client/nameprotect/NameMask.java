@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.nameprotect;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;

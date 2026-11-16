@@ -1,8 +1,10 @@
 package ru.he3hauka.toolvisuals.client.items.highlight;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public final class ItemHighlightRules {
@@ -22,7 +24,7 @@ public final class ItemHighlightRules {
             if (!validId(id) || color == null || color < 0 || color > 0xffffff)
                 throw new IllegalArgumentException("Invalid item highlight rule");
         });
-        this.colors = java.util.Collections.unmodifiableMap(new java.util.TreeMap<>(colors));
+        this.colors = Collections.unmodifiableMap(new TreeMap<>(colors));
     }
 
     public static boolean validId(String id) { return id != null && id.length() <= 128 && ID.matcher(id).matches() && !id.equals("minecraft:air"); }

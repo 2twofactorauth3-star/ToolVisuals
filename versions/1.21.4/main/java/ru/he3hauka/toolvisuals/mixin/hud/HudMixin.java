@@ -1,16 +1,19 @@
 package ru.he3hauka.toolvisuals.mixin.hud;
 
-import net.minecraft.client.gui.Font;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
-
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.hud.VisualHud;
+import ru.he3hauka.toolvisuals.client.hud.layout.HudPlacement;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.optimization.diagnostics.DiagnosticHud;
+import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
@@ -18,15 +21,15 @@ import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 @Mixin(Hud.class)
 public abstract class HudMixin {
     @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void toolvisuals$visualHud(GuiGraphicsExtractor graphics, net.minecraft.client.DeltaTracker delta, CallbackInfo ci) {
-        long started=ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.start(ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Section.HUD);
-        try{ru.he3hauka.toolvisuals.client.hud.VisualHud.draw(graphics);}
-        finally{ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.end(ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Section.HUD,started);}
-        ru.he3hauka.toolvisuals.client.optimization.diagnostics.DiagnosticHud.draw(graphics);
+    private void toolvisuals$visualHud(GuiGraphicsExtractor graphics, DeltaTracker delta, CallbackInfo ci) {
+        long started=Diagnostics.start(Diagnostics.Section.HUD);
+        try{VisualHud.draw(graphics);}
+        finally{Diagnostics.end(Diagnostics.Section.HUD,started);}
+        DiagnosticHud.draw(graphics);
     }
     @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$extractRenderState(CallbackInfo ci) {
-        ru.he3hauka.toolvisuals.client.hud.layout.HudPlacement.beginFrame();
+        HudPlacement.beginFrame();
         if (NoRender.hides(ALL_HUD)) ci.cancel();
     }
 
@@ -47,10 +50,10 @@ public abstract class HudMixin {
     }
 
     @Inject(method = "extractCrosshair", at = @At("HEAD"), cancellable = true)
-    private void toolvisuals$extractCrosshair(GuiGraphicsExtractor graphics, net.minecraft.client.DeltaTracker delta, CallbackInfo ci) {
+    private void toolvisuals$extractCrosshair(GuiGraphicsExtractor graphics, DeltaTracker delta, CallbackInfo ci) {
         if (NoRender.hides(CROSSHAIR)) { ci.cancel(); return; }
-        if (ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG.active(ru.he3hauka.toolvisuals.client.module.VisualModule.CROSSHAIR)) {
-            ru.he3hauka.toolvisuals.client.hud.VisualHud.crosshair(graphics);
+        if (ToolVisualsClient.CONFIG.active(VisualModule.CROSSHAIR)) {
+            VisualHud.crosshair(graphics);
             ci.cancel();
         }
     }
@@ -87,8 +90,8 @@ public abstract class HudMixin {
 
     @Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$extractEffects(CallbackInfo ci) {
-        if (NoRender.hides(STATUS_EFFECTS) || ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG.active(
-                ru.he3hauka.toolvisuals.client.module.VisualModule.POTION_HUD)) ci.cancel();
+        if (NoRender.hides(STATUS_EFFECTS) || ToolVisualsClient.CONFIG.active(
+                VisualModule.POTION_HUD)) ci.cancel();
     }
 
     @Inject(method = "extractTitle", at = @At("HEAD"), cancellable = true)

@@ -6,11 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -41,7 +43,7 @@ public final class CapeImages {
                 dimensions(reader.getWidth(0),reader.getHeight(0));
                 if(format.equals("gif"))return GifCapeImport.read(reader);
                 BufferedImage image=reader.read(0);
-                try{dimensions(image.getWidth(),image.getHeight());return new CapeImageImport(image.getWidth(),image.getHeight(),java.util.List.of(new CapeImageImport.Frame(image)),CapeDesign.DEFAULT_FPS,1,false);}
+                try{dimensions(image.getWidth(),image.getHeight());return new CapeImageImport(image.getWidth(),image.getHeight(),List.of(new CapeImageImport.Frame(image)),CapeDesign.DEFAULT_FPS,1,false);}
                 finally{image.flush();}
             } finally {reader.dispose();}
         } catch(RuntimeException error){throw new IOException("Invalid cape image",error);}
@@ -67,7 +69,7 @@ public final class CapeImages {
             for(int i=0;i<design.frameCount;i++) {
                 var image=CapePng.atlas(design.frame(i));
                 try {
-                    var metadata=writer.getDefaultImageMetadata(javax.imageio.ImageTypeSpecifier.createFromRenderedImage(image),writer.getDefaultWriteParam());
+                    var metadata=writer.getDefaultImageMetadata(ImageTypeSpecifier.createFromRenderedImage(image),writer.getDefaultWriteParam());
                     var root=(IIOMetadataNode)metadata.getAsTree("javax_imageio_gif_image_1.0");
                     var control=(IIOMetadataNode)root.getElementsByTagName("GraphicControlExtension").item(0);
                     control.setAttribute("disposalMethod","restoreToBackgroundColor");control.setAttribute("userInputFlag","FALSE");

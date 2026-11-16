@@ -3,11 +3,11 @@ package ru.he3hauka.toolvisuals.client.nameprotect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.optimization.cache.BoundedCache;
 import ru.he3hauka.toolvisuals.client.optimization.text.StableText;
+import ru.he3hauka.toolvisuals.client.utility.privacy.PrivacyMode;
 
 public final class NameProtect {
     private static final ThreadLocal<Integer> RAW = ThreadLocal.withInitial(() -> 0);
@@ -27,11 +27,11 @@ public final class NameProtect {
         if (current == null || !current.name.equals(name) || !current.alias.equals(alias)) mask = current = new NameMask(name,alias);
         return current;
     }
-    public static String text(String text) { if(RAW.get()>0)return text;var m = mask();return ru.he3hauka.toolvisuals.client.utility.privacy.PrivacyMode.text(m == null ? text : m.apply(text)); }
-    public static FormattedText text(FormattedText text) { if(RAW.get()>0)return text;var m = mask();return ru.he3hauka.toolvisuals.client.utility.privacy.PrivacyMode.text(m == null ? text : m.apply(text)); }
+    public static String text(String text) { if(RAW.get()>0)return text;var m = mask();return PrivacyMode.text(m == null ? text : m.apply(text)); }
+    public static FormattedText text(FormattedText text) { if(RAW.get()>0)return text;var m = mask();return PrivacyMode.text(m == null ? text : m.apply(text)); }
     public static FormattedCharSequence text(FormattedCharSequence text) {
         if(RAW.get()>0)return text;
-        text=ru.he3hauka.toolvisuals.client.utility.privacy.PrivacyMode.text(text);
+        text=PrivacyMode.text(text);
         var m = mask(); if (m == null) return text;
         if (!(text instanceof StableText stable)) return m.apply(text);
         var key = new SequenceKey(m,stable); var cached = SEQUENCES.get(key);

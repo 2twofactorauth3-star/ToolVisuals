@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.render.filter;
 
 import net.minecraft.world.level.material.FogType;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.NO_FLUID;

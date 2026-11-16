@@ -1,19 +1,19 @@
 package ru.he3hauka.toolvisuals.client.presents;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.stream.Collectors;
 import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class PresentProgress {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Set<Integer> IDS = PresentCatalog.ALL.stream().map(Present::id).collect(java.util.stream.Collectors.toUnmodifiableSet());
+    private static final Set<Integer> IDS = PresentCatalog.ALL.stream().map(Present::id).collect(Collectors.toUnmodifiableSet());
     private final JsonFile file;
     private Map<String, Map<String, Set<Integer>>> catalogs = Map.of();
 

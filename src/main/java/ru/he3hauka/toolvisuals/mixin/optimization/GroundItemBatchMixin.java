@@ -1,10 +1,10 @@
 package ru.he3hauka.toolvisuals.mixin.optimization;
 
-import java.util.List;
-import java.util.RandomAccess;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.vertex.QuadInstance;
+import java.util.List;
+import java.util.RandomAccess;
 import net.minecraft.client.renderer.feature.FeatureFrameContext;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import net.minecraft.client.renderer.feature.RenderTypeFeatureRenderer;
@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.items.GroundItemBatch;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_FAST_VISUALS;
 
 @Mixin(ItemFeatureRenderer.class)

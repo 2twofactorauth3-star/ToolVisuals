@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.hud.cooldown;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;

@@ -2,7 +2,7 @@ package ru.he3hauka.toolvisuals.client.connection.policy;
 
 import java.util.Map;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
 public final class HolyWorldRules {
@@ -24,7 +24,7 @@ public final class HolyWorldRules {
             Map.entry(VisualModule.TOOL_PRESENTS, Basis.PRECAUTION),
             Map.entry(VisualModule.BUFF_TRACKER, Basis.PRECAUTION));
     public static final Set<String> BLOCKED = MODULES.keySet().stream().map(module -> module.id)
-            .collect(java.util.stream.Collectors.toUnmodifiableSet());
+            .collect(Collectors.toUnmodifiableSet());
 
     private HolyWorldRules() {}
 }

@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.compatibility.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import ru.he3hauka.toolvisuals.mixin.render.VersionCameraAccessor;
 
 public final class VersionCamera {

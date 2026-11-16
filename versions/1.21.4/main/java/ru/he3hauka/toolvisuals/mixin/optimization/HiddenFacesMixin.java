@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_HIDDEN_FACES;
 
 @Mixin(value=AbstractBlockRenderContext.class,remap=false)

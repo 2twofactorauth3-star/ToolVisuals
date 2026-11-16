@@ -9,6 +9,7 @@ import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.hand.HandProperty;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CUSTOM_HAND;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.HAND_CHAT_EDITOR;
 

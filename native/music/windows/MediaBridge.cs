@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -396,7 +397,7 @@ internal sealed class MediaBridge
     private void Error(string operation, Exception error)
     {
         if (output == null) { Console.Error.WriteLine(error); return; }
-        var win32 = error as System.ComponentModel.Win32Exception;
+        var win32 = error as Win32Exception;
         string details = (win32 == null ? "" : "Win32 " + win32.NativeErrorCode + ": ") + error.ToString();
         Send(new { kind = "error", operation = operation, message = Text(details, 8192), code = error.HResult });
     }

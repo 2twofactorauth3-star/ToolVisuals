@@ -4,13 +4,21 @@ import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-
+import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
+import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 import ru.he3hauka.toolvisuals.client.cape.network.CapePayload;
+import ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload;
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.network.AccessoryPayload;
+import ru.he3hauka.toolvisuals.client.friends.network.FriendPayload;
+import ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload;
+import ru.he3hauka.toolvisuals.client.presents.network.WorldContextMessage;
 import ru.he3hauka.toolvisuals.client.social.presence.network.PresencePayload;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryWire;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeWire;
+import ru.he3hauka.toolvisuals.minigame.network.MiniGameWire;
+import ru.he3hauka.toolvisuals.network.friends.FriendWire;
 import ru.he3hauka.toolvisuals.network.presence.PresenceWire;
+import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
 
 public final class EmotePacketGuard {
     private final PacketBudget requests;
@@ -37,23 +45,23 @@ public final class EmotePacketGuard {
     private boolean allowSingle(Packet<?> packet, long now) {
         if (packet instanceof ServerboundCustomPayloadPacket request) {
             var value=request.payload();
-            if(value instanceof ru.he3hauka.toolvisuals.client.friends.network.FriendPayload.Request)return assetRequests.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.network.friends.FriendWire.MAX_REQUEST);
+            if(value instanceof FriendPayload.Request)return assetRequests.allow(now)&&bytes.allow(now,FriendWire.MAX_REQUEST);
             if(value instanceof CapePayload.FragmentRequest part)return assetRequests.allow(now)&&bytes.allow(now,16+part.value().fragment().size());
             if(value instanceof CapePayload.AnimatedRequest animated&&animated.value().design()!=null&&animated.value().design().frameCount>1)return false;
-            if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload)return assetRequests.allow(now);
-            if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.Request)return requests.allow(now);
+            if(value instanceof FeatureControlPayload)return assetRequests.allow(now);
+            if(value instanceof MiniGamePayload.Request)return requests.allow(now);
             if(value instanceof EmoteRequestPayload||value instanceof SocialPayload.Request||value instanceof PlaybackPayload.Request||value instanceof SocialCommandPayload.Request)return requests.allow(now);
             if(value instanceof CapePayload.Request||value instanceof CapePayload.AnimatedRequest||value instanceof AccessoryPayload.Request||value instanceof PresencePayload.Request)return assetRequests.allow(now);
         }
         if (packet instanceof ClientboundCustomPayloadPacket state) {
             var value=state.payload();
-            if(value instanceof ru.he3hauka.toolvisuals.client.friends.network.FriendPayload.State friend){int cost=ru.he3hauka.toolvisuals.network.friends.FriendWire.size(friend.value());return (friend.value().kind()==ru.he3hauka.toolvisuals.network.friends.FriendWire.Kind.REPLY?controls:assets).allow(now)&&bytes.allow(now,cost);}
-            if(value instanceof ru.he3hauka.toolvisuals.client.connection.holyworld.network.FeatureControlPayload features)return controls.allow(now)&&bytes.allow(now,features.bytes().length);
-            if(value instanceof ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload.State)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.MAX_STATE);
-            if(value instanceof ru.he3hauka.toolvisuals.client.presents.network.WorldContextMessage)return controls.allow(now)&&bytes.allow(now,ru.he3hauka.toolvisuals.network.world.WorldContextWire.MAX_NAMED_BYTES);
+            if(value instanceof FriendPayload.State friend){int cost=FriendWire.size(friend.value());return (friend.value().kind()==FriendWire.Kind.REPLY?controls:assets).allow(now)&&bytes.allow(now,cost);}
+            if(value instanceof FeatureControlPayload features)return controls.allow(now)&&bytes.allow(now,features.bytes().length);
+            if(value instanceof MiniGamePayload.State)return controls.allow(now)&&bytes.allow(now,MiniGameWire.MAX_STATE);
+            if(value instanceof WorldContextMessage)return controls.allow(now)&&bytes.allow(now,WorldContextWire.MAX_NAMED_BYTES);
             if(value instanceof PlaybackPayload.Reply||value instanceof SocialCommandPayload.Reply||value instanceof CapePayload.Ack||value instanceof AccessoryPayload.Ack)return controls.allow(now);
-            if(value instanceof PlaybackPayload.State playback&&playback.value().mode()==ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.Mode.STOPPED
-                    ||value instanceof EmoteStatePayload emote&&emote.emote()==-1||value instanceof SocialPayload.State social&&social.value() instanceof ru.he3hauka.toolvisuals.animation.social.SocialProtocol.Stopped)return controls.allow(now);
+            if(value instanceof PlaybackPayload.State playback&&playback.value().mode()==PlaybackWire.Mode.STOPPED
+                    ||value instanceof EmoteStatePayload emote&&emote.emote()==-1||value instanceof SocialPayload.State social&&social.value() instanceof SocialProtocol.Stopped)return controls.allow(now);
             if(value instanceof EmoteStatePayload||value instanceof SocialPayload.State||value instanceof PlaybackPayload.State)return states.allow(now);
             int cost=value instanceof CapePayload.FragmentState part?48+part.value().fragment().size():value instanceof CapePayload.AnimatedState?CapeWire.MAX_ANIMATED_STATE:value instanceof CapePayload.State?CapeWire.MAX_STATE:value instanceof AccessoryPayload.State||value instanceof AccessoryPayload.ExpandedState?AccessoryWire.MAX_STATE:value instanceof PresencePayload.State?PresenceWire.MAX_BYTES:0;
             if(cost>0)return assets.allow(now)&&bytes.allow(now,cost);

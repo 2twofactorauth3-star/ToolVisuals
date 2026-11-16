@@ -5,7 +5,6 @@ import net.minecraft.client.gui.screens.options.controls.KeyBindsList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.policy.FeatureKeys;
 

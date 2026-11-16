@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using ToolLauncher.Storage;
 using System.Diagnostics;
 using System.Windows;
@@ -23,7 +25,7 @@ public partial class App : Application
             for (int index = 0; index < e.Args.Length; index++)
                 if (e.Args[index] == "--data-root" && index + 1 < e.Args.Length) dataRoot = Path.GetFullPath(e.Args[++index]);
             var paths = new LauncherPaths(dataRoot);
-            string identity = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(paths.Root.ToLowerInvariant())))[..20];
+            string identity = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(paths.Root.ToLowerInvariant())))[..20];
             singleInstance = new Mutex(true, "Local\\ToolLauncher-" + identity, out bool created);
             if (!created) { MessageBox.Show("ToolLauncher is already running.", "ToolLauncher"); Shutdown(); return; }
             services = new(paths.Root, memory: memory);

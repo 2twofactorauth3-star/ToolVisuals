@@ -1,3 +1,4 @@
+using ToolLauncher.Native;
 using ToolLauncher.Minecraft;
 using System.IO.Compression;
 using System.Text.Json;
@@ -28,7 +29,7 @@ public static class ModArchive
     }
     public static IReadOnlyList<ModIdentity> ReadIdentities(string archive)
     {
-        return ToolLauncher.Native.NativeJarScanner.ReadIdentities(archive);
+        return NativeJarScanner.ReadIdentities(archive);
     }
     public static IReadOnlyList<ModIdentity> ReadIdentities(Stream archive)
     {

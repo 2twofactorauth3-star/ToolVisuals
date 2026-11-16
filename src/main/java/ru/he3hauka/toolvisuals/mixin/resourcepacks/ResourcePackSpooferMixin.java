@@ -2,12 +2,10 @@ package ru.he3hauka.toolvisuals.mixin.resourcepacks;
 
 import java.net.URL;
 import java.util.UUID;
-
 import net.minecraft.client.resources.server.*;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.utility.packs.PackSpoofSession;

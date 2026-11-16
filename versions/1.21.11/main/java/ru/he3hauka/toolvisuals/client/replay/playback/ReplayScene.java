@@ -1,13 +1,14 @@
 package ru.he3hauka.toolvisuals.client.replay.playback;
 
+import com.mojang.authlib.GameProfile;
+import io.netty.buffer.Unpooled;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import com.mojang.authlib.GameProfile;
-import io.netty.buffer.Unpooled;
+import java.util.UUID;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
@@ -15,29 +16,37 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.client.multiplayer.LevelLoadTracker;
 import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.telemetry.TelemetryEventSender;
 import net.minecraft.client.telemetry.WorldSessionTelemetryManager;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.TickablePacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.configuration.ConfigurationProtocols;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
+import net.minecraft.network.protocol.game.ClientboundSetChunkCacheRadiusPacket;
 import net.minecraft.server.ServerLinks;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.flag.FeatureFlags;
 import ru.he3hauka.toolvisuals.client.replay.capture.ReplayPacketPolicy;
+import ru.he3hauka.toolvisuals.client.replay.capture.ReplaySelf;
 import ru.he3hauka.toolvisuals.client.replay.io.*;
+import ru.he3hauka.toolvisuals.mixin.entity.EntityRemovalInvoker;
 import ru.he3hauka.toolvisuals.mixin.replay.ReplayParticleAccessor;
 
 public final class ReplayScene implements AutoCloseable {
     public final ReplayHeader header;
     private ReplaySceneState state;
     private ReplayConnection connection;
-    private net.minecraft.client.player.RemotePlayer actor, camera;
+    private RemotePlayer actor, camera;
     private long position;
-    private final net.minecraft.client.DeltaTracker delta=new net.minecraft.client.DeltaTracker(){
+    private final DeltaTracker delta=new DeltaTracker(){
         @Override public float getGameTimeDeltaTicks(){return 0;}
         @Override public float getGameTimeDeltaPartialTick(boolean ignored){return position%50/50f;}
         @Override public float getRealtimeDeltaTicks(){return 1;}
@@ -78,17 +87,17 @@ public final class ReplayScene implements AutoCloseable {
     void capture(Minecraft client) { state = new ReplaySceneState(client); }
     public boolean ready() { return !closed && state.level != null && state.player != null; }
     public void position(long millis){position=millis;}
-    public net.minecraft.client.DeltaTracker delta(){return delta;}
+    public DeltaTracker delta(){return delta;}
 
-    private net.minecraft.client.player.RemotePlayer actor(int id) {
+    private RemotePlayer actor(int id) {
         var client = Minecraft.getInstance();
         if (actor != null && actor.level() == client.level && !actor.isRemoved() && actor.getId() == id) return actor;
-        client.level.removeEntity(id, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
-        ((ru.he3hauka.toolvisuals.mixin.entity.EntityRemovalInvoker)client.player).toolvisuals$restoreRemoval();
+        client.level.removeEntity(id, Entity.RemovalReason.DISCARDED);
+        ((EntityRemovalInvoker)client.player).toolvisuals$restoreRemoval();
         client.player.setId(Integer.MIN_VALUE + 1);
-        actor = new net.minecraft.client.player.RemotePlayer(client.level, new GameProfile(header.player, header.playerName)); actor.setId(id);
+        actor = new RemotePlayer(client.level, new GameProfile(header.player, header.playerName)); actor.setId(id);
         client.level.addEntity(actor);
-        camera = new net.minecraft.client.player.RemotePlayer(client.level, new GameProfile(java.util.UUID.randomUUID(), "ReplayCamera"));
+        camera = new RemotePlayer(client.level, new GameProfile(UUID.randomUUID(), "ReplayCamera"));
         camera.setPos(client.player.getX() + 4, client.player.getY() + 2, client.player.getZ() + 4); camera.setOldPosAndRot();
         client.setCameraEntity(camera);
         return actor;
@@ -118,7 +127,7 @@ public final class ReplayScene implements AutoCloseable {
         ReplayScope.run(this, () -> {
             state.level.tick(() -> true); state.level.tickEntities(); state.particles.tick(); state.game.tick();
             state.level.getChunkSource().getLightEngine().runLightUpdates();
-            if(connection.getPacketListener() instanceof net.minecraft.network.TickablePacketListener listener)listener.tick();
+            if(connection.getPacketListener() instanceof TickablePacketListener listener)listener.tick();
         });
     }
 
@@ -141,7 +150,7 @@ public final class ReplayScene implements AutoCloseable {
         if (frame.kind == ReplayFrame.Kind.SELF) {
             if (ready()) try {
                 var previousCamera=camera;
-                ReplayScope.run(this, () -> ru.he3hauka.toolvisuals.client.replay.capture.ReplaySelf.apply(frame,
+                ReplayScope.run(this, () -> ReplaySelf.apply(frame,
                         state.level.registryAccess(), state.level.dimension().identifier().toString(), this::actor));
                 if(previousCamera!=camera)follow();
             } catch (RuntimeException error) { throw new IOException("Cannot apply recorded player pose", error); }
@@ -156,10 +165,10 @@ public final class ReplayScene implements AutoCloseable {
                 Packet packet = (Packet)connection.inbound().codec().decode(bytes);
                 if (bytes.isReadable()) throw new IllegalArgumentException("Replay packet has trailing bytes");
                 var id = packet.type().id();
-                if(packet instanceof net.minecraft.network.protocol.game.ClientboundGameEventPacket event
-                        &&event.getEvent()==net.minecraft.network.protocol.game.ClientboundGameEventPacket.WIN_GAME)return;
-                if(packet instanceof net.minecraft.network.protocol.game.ClientboundLoginPacket login&&(login.chunkRadius()<0||login.chunkRadius()>64)
-                        ||packet instanceof net.minecraft.network.protocol.game.ClientboundSetChunkCacheRadiusPacket radius&&(radius.getRadius()<0||radius.getRadius()>64))
+                if(packet instanceof ClientboundGameEventPacket event
+                        &&event.getEvent()==ClientboundGameEventPacket.WIN_GAME)return;
+                if(packet instanceof ClientboundLoginPacket login&&(login.chunkRadius()<0||login.chunkRadius()>64)
+                        ||packet instanceof ClientboundSetChunkCacheRadiusPacket radius&&(radius.getRadius()<0||radius.getRadius()>64))
                     throw new IllegalArgumentException("Recorded chunk radius exceeds the viewer budget");
                 if (ReplayPacketPolicy.allow(expected == ConnectionProtocol.CONFIGURATION, id.getNamespace(), id.getPath(), true))
                     packet.handle(connection.getPacketListener());

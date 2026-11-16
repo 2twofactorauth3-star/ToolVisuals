@@ -1,3 +1,5 @@
+using System.IO;
+using System.Security;
 using Microsoft.Win32;
 using ToolLauncher.Accounts.Profiles;
 using ToolLauncher.Diagnostics;
@@ -47,9 +49,9 @@ public static class LauncherLocations
 
     public static IReadOnlyList<LauncherAccountFile> Folder(string folder)
     {
-        if (!System.IO.Path.IsPathFullyQualified(folder) || folder.StartsWith(@"\\", StringComparison.Ordinal)) throw new InvalidDataException("Choose a local launcher folder");
+        if (!Path.IsPathFullyQualified(folder) || folder.StartsWith(@"\\", StringComparison.Ordinal)) throw new InvalidDataException("Choose a local launcher folder");
         var files = new List<LauncherAccountFile>();
-        var known = Launchers.FirstOrDefault(launcher => launcher.Folders.Any(name => name.Equals(System.IO.Path.GetFileName(folder), StringComparison.OrdinalIgnoreCase)));
+        var known = Launchers.FirstOrDefault(launcher => launcher.Folders.Any(name => name.Equals(Path.GetFileName(folder), StringComparison.OrdinalIgnoreCase)));
         AddFolder(files, folder, known.Name ?? "Other launcher", known.Name == null ? AccountKind.Local : known.Kind);
         return files;
     }
@@ -62,7 +64,7 @@ public static class LauncherLocations
 
     private static void AddFile(List<LauncherAccountFile> files, string launcher, string path, AccountKind kind, bool sqlite = false)
     {
-        if (File.Exists(path) && !path.StartsWith(@"\\", StringComparison.Ordinal)) files.Add(new(launcher, System.IO.Path.GetFullPath(path), kind, sqlite));
+        if (File.Exists(path) && !path.StartsWith(@"\\", StringComparison.Ordinal)) files.Add(new(launcher, Path.GetFullPath(path), kind, sqlite));
     }
 
     private static void FindInstalled(RegistryKey hive, string registryPath, List<LauncherAccountFile> files, LauncherLog log)
@@ -76,10 +78,10 @@ public static class LauncherLocations
                 using var application = uninstall.OpenSubKey(key);
                 if (application?.GetValue("DisplayName") is not string name || application.GetValue("InstallLocation") is not string folder) continue;
                 var launcher = Launchers.FirstOrDefault(launcher => name.Contains(launcher.Name, StringComparison.OrdinalIgnoreCase) || launcher.Folders.Any(part => name.Contains(part.TrimStart('.'), StringComparison.OrdinalIgnoreCase)));
-                if (launcher.Name != null && System.IO.Path.IsPathFullyQualified(folder) && !folder.StartsWith(@"\\", StringComparison.Ordinal)) AddFolder(files, folder, launcher.Name, launcher.Kind);
+                if (launcher.Name != null && Path.IsPathFullyQualified(folder) && !folder.StartsWith(@"\\", StringComparison.Ordinal)) AddFolder(files, folder, launcher.Name, launcher.Kind);
             }
         }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or SecurityException)
         {
             log.Error("Discover installed launcher locations", error);
         }

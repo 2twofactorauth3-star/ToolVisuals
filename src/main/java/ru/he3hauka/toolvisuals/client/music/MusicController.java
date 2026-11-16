@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.LongSupplier;
 import ru.he3hauka.toolvisuals.client.music.backend.MediaBridge;
 import ru.he3hauka.toolvisuals.client.music.backend.MediaProtocol;
 import ru.he3hauka.toolvisuals.client.music.model.MediaAction;
@@ -18,7 +19,7 @@ public final class MusicController implements AutoCloseable, MediaBridge.Listene
     private record Pending(long generation,long until) {}
     private final MediaBridge bridge;
     private final BiConsumer<String,Throwable> errors;
-    private final java.util.function.LongSupplier clock;
+    private final LongSupplier clock;
     private final Map<Long,Pending> pending=new LinkedHashMap<>();
     private final AtomicReference<Artwork> artwork=new AtomicReference<>();
     private volatile MediaSnapshot snapshot=MediaSnapshot.EMPTY;
@@ -30,7 +31,7 @@ public final class MusicController implements AutoCloseable, MediaBridge.Listene
     public MusicController(MediaBridge.Launcher launcher,BiConsumer<String,Throwable> errors) {
         this(launcher,errors,System::nanoTime);
     }
-    public MusicController(MediaBridge.Launcher launcher,BiConsumer<String,Throwable> errors,java.util.function.LongSupplier clock) {
+    public MusicController(MediaBridge.Launcher launcher,BiConsumer<String,Throwable> errors,LongSupplier clock) {
         this.errors=errors;this.clock=clock;bridge=new MediaBridge(launcher,this,errors);
     }
     public void start() { bridge.start(); }

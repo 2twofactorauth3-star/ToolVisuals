@@ -4,7 +4,6 @@ import de.maxhenkel.voicechat.voice.client.ClientManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.voice.VoiceChat;
 
 @Mixin(value=ClientManager.class,remap=false)

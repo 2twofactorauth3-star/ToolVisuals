@@ -8,8 +8,8 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.ELYTRA_SWAP;
@@ -45,7 +45,7 @@ public final class ElytraSwap {
         boolean inHotbar = InventoryMenu.isHotbarSlot(candidate);
         if (inHotbar) hotbar = menu.getSlot(candidate).getContainerSlot();
         steps = inHotbar ? new int[]{chest} : new int[]{candidate,chest,candidate}; step = 0;
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(ELYTRA_SWAP,"started","steps="+steps.length+" candidate_slot="+candidate);
+        if(ModuleLog.active())ModuleLog.action(ELYTRA_SWAP,"started","steps="+steps.length+" candidate_slot="+candidate);
         connection = client.getConnection(); opened = client.gui.screen() == null;
         screen = client.gui.screen() instanceof InventoryScreen inventory ? inventory : new InventoryScreen(player);
         if (opened) { client.gui.setScreen(screen); screen = client.gui.screen(); }
@@ -62,7 +62,7 @@ public final class ElytraSwap {
             finally { internal = false; }
         } else {
             boolean success = ItemStack.matches(expectedChest,menu.getSlot(chest).getItem()) && ItemStack.matches(expectedOther,menu.getSlot(candidate).getItem());
-            if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(ELYTRA_SWAP,"finished","matched_prediction="+success);
+            if(ModuleLog.active())ModuleLog.action(ELYTRA_SWAP,"finished","matched_prediction="+success);
             cancel();
             if (!success) notice("rejected");
             else if (opened && ToolVisualsClient.CONFIG.flag(ELYTRA_SWAP_CLOSE) && client.gui.screen() == screen) client.player.closeContainer();

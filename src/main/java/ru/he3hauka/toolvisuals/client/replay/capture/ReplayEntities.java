@@ -1,10 +1,10 @@
 package ru.he3hauka.toolvisuals.client.replay.capture;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.Packet;
@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -74,7 +75,7 @@ public final class ReplayEntities {
         }
         for (var entity : entities) {
             if (!entity.getPassengers().isEmpty()) output.accept(new ClientboundSetPassengersPacket(entity));
-            if (entity instanceof net.minecraft.world.entity.Mob mob && mob.getLeashHolder() != null)
+            if (entity instanceof Mob mob && mob.getLeashHolder() != null)
                 output.accept(new ClientboundSetEntityLinkPacket(mob, mob.getLeashHolder()));
         }
     }

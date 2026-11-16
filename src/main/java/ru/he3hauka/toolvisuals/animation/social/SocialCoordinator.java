@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.animation.network.RelayLimits;
 

@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.relay.paper.presence;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import ru.he3hauka.toolvisuals.animation.network.*;
 import ru.he3hauka.toolvisuals.network.presence.*;
 
@@ -8,8 +9,8 @@ public final class PresenceRelay {
     public static final class Endpoint {
         public final RelayMailbox<PresenceWire.Subscription> incoming=new RelayMailbox<>(1);
         public final PresenceOutbox outgoing;
-        public final java.util.concurrent.atomic.AtomicBoolean requested=new java.util.concurrent.atomic.AtomicBoolean();
-        public final java.util.concurrent.atomic.AtomicBoolean scheduled=new java.util.concurrent.atomic.AtomicBoolean();
+        public final AtomicBoolean requested=new AtomicBoolean();
+        public final AtomicBoolean scheduled=new AtomicBoolean();
         public volatile long lastRequest;
         private final PacketBudget input;
         public Map<UUID,Long> observed;

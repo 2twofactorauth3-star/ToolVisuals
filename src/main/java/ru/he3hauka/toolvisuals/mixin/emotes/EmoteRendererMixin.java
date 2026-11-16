@@ -5,13 +5,14 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.animation.*;
+import ru.he3hauka.toolvisuals.client.animation.movement.ExtraAnimations;
 
 @Mixin(AvatarRenderer.class)
 public abstract class EmoteRendererMixin {
@@ -20,7 +21,7 @@ public abstract class EmoteRendererMixin {
         var visual=(EmoteVisualState)state;
         var frame=Emotes.pose(player.getUUID());
         visual.toolvisuals$emote(frame);visual.toolvisuals$offset(Vec3.ZERO);
-        ru.he3hauka.toolvisuals.client.animation.movement.ExtraAnimations.extract((net.minecraft.world.entity.Entity)(Object)player,state,partial,frame!=null);
+        ExtraAnimations.extract((Entity)(Object)player,state,partial,frame!=null);
         if(frame==null)return;
         state.walkAnimationSpeed*=1-frame.weight;
         var stage=Emotes.staging(player.getUUID(),new Vec3(state.x,state.y,state.z),state.bodyRot);

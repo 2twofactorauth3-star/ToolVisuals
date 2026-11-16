@@ -1,11 +1,13 @@
 package ru.he3hauka.toolvisuals.client.friends;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-
+import net.minecraft.world.entity.Entity;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
+import ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
 
 public final class Friends {
@@ -14,9 +16,9 @@ public final class Friends {
     private static Set<String> onlineNames = Set.of();
     private static int ticks;
     private Friends() {}
-    public static boolean available() { return ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.FRIENDS); }
-    public static boolean renderAllowed(net.minecraft.world.entity.Entity entity) {
-        return available() && (!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.protectedServer() || !entity.isInvisible());
+    public static boolean available() { return ToolVisualsClient.CONFIG.available(ClientFeature.FRIENDS); }
+    public static boolean renderAllowed(Entity entity) {
+        return available() && (!HolyWorldClient.protectedServer() || !entity.isInvisible());
     }
     public static boolean online(String name) { return name!=null&&onlineNames.contains(name.toLowerCase(Locale.ROOT)); }
     public static Set<String> onlineNames() { return onlineNames; }
@@ -26,7 +28,7 @@ public final class Friends {
         if(current!=connection) { connection=current;online=Map.of();onlineNames=Set.of();ticks=0; }
         if(current==null||client.level==null) { online=Map.of();onlineNames=Set.of();return; }
         if(++ticks%10!=0)return;
-        var next=ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster.online(client);
+        var next=PlayerRoster.online(client);
         if(ticks>60) {
             for(var entry:next.entrySet())if(!online.containsKey(entry.getKey()))notice(entry.getValue(),true);
             for(var entry:online.entrySet())if(!next.containsKey(entry.getKey()))notice(entry.getValue(),false);

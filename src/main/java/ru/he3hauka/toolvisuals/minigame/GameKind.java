@@ -1,5 +1,8 @@
 package ru.he3hauka.toolvisuals.minigame;
 
+import java.util.Locale;
+
+
 public enum GameKind {
     ANGRY_BIRDS(0, 6), TIC_TAC_TOE(1, 9), CONNECT_FOUR(2, 42);
 
@@ -7,7 +10,7 @@ public enum GameKind {
     public final String key;
 
     GameKind(int id, int maximumMoves) {
-        this.id = id; this.maximumMoves = maximumMoves; this.key = name().toLowerCase(java.util.Locale.ROOT);
+        this.id = id; this.maximumMoves = maximumMoves; this.key = name().toLowerCase(Locale.ROOT);
     }
 
     public static GameKind byId(int id) {

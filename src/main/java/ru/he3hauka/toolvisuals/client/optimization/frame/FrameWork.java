@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.client.optimization.frame;
 
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_CHUNK_BUDGET;
 
 public final class FrameWork {

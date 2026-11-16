@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.chunkanimator;
 
 import java.nio.ByteBuffer;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CHUNK_ANIMATOR;

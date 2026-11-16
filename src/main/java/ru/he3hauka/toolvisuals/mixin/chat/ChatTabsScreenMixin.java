@@ -1,5 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -11,7 +14,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
@@ -24,7 +26,7 @@ import ru.he3hauka.toolvisuals.client.utility.chat.ui.ChatToolsScreen;
 public abstract class ChatTabsScreenMixin extends Screen {
     @Shadow protected EditBox input;
     @Shadow protected String initial;
-    @Unique private final java.util.List<Button> toolvisuals$tabs=new java.util.ArrayList<>();
+    @Unique private final List<Button> toolvisuals$tabs=new ArrayList<>();
     protected ChatTabsScreenMixin(){super(Component.empty());}
     @Unique private void toolvisuals$openChatTools(){initial=input.getValue();minecraft.gui.setScreen(new ChatToolsScreen(this,false));}
     @Inject(method="init",at=@At("TAIL"))
@@ -33,7 +35,7 @@ public abstract class ChatTabsScreenMixin extends Screen {
         toolvisuals$tabs.clear();
         int full=Math.min(540,width-8),unit=(full-72)/4,index=0;
         for(var tab:ChatRules.Tab.values()) {
-            var button=addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.utility.chat_tab_"+tab.name().toLowerCase(java.util.Locale.ROOT)),pressed->{ChatTabs.select(tab);for(int i=0;i<toolvisuals$tabs.size();i++)toolvisuals$tabs.get(i).active=i!=tab.ordinal();setFocused(input);}).bounds(4+index++*unit,4,unit-4,18).build());
+            var button=addRenderableWidget(Button.builder(UiI18n.tr("toolvisuals.utility.chat_tab_"+tab.name().toLowerCase(Locale.ROOT)),pressed->{ChatTabs.select(tab);for(int i=0;i<toolvisuals$tabs.size();i++)toolvisuals$tabs.get(i).active=i!=tab.ordinal();setFocused(input);}).bounds(4+index++*unit,4,unit-4,18).build());
             toolvisuals$tabs.add(button);
             button.active=ChatTabs.selected()!=tab;
         }

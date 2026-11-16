@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.friends.network;
 
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -17,6 +18,6 @@ public final class FriendPayload {
         public static final StreamCodec<FriendlyByteBuf,State> CODEC=StreamCodec.of((out,value)->out.writeBytes(FriendWire.encode(value.value)),in->new State(FriendWire.state(read(in,FriendWire.MAX_STATE))));
         @Override public Type<State> type(){return TYPE;}
     }
-    private static byte[] read(FriendlyByteBuf in,int maximum){int size=in.readableBytes();if(size<1||size>maximum)throw new io.netty.handler.codec.DecoderException("Invalid friend HUD packet size");byte[] bytes=new byte[size];in.readBytes(bytes);return bytes;}
+    private static byte[] read(FriendlyByteBuf in,int maximum){int size=in.readableBytes();if(size<1||size>maximum)throw new DecoderException("Invalid friend HUD packet size");byte[] bytes=new byte[size];in.readBytes(bytes);return bytes;}
     private FriendPayload(){}
 }

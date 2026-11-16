@@ -1,23 +1,21 @@
 package ru.he3hauka.toolvisuals.client.utility.preview;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
-
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.client.optimization.texture.TextureUploads;
 import ru.he3hauka.toolvisuals.client.storage.BoundedInputStream;
 
 public final class PreviewImages implements AutoCloseable {
@@ -29,7 +27,7 @@ public final class PreviewImages implements AutoCloseable {
     }
     private final Map<String,Image> images=new LinkedHashMap<>();
     private final Set<String> requested=new LinkedHashSet<>();
-    private final ru.he3hauka.toolvisuals.client.utility.preview.LatestWorkQueue<String,Input> waiting=new ru.he3hauka.toolvisuals.client.utility.preview.LatestWorkQueue<>(16);
+    private final LatestWorkQueue<String,Input> waiting=new LatestWorkQueue<>(16);
     private String active;
     private final ExecutorService worker=Executors.newSingleThreadExecutor(r->{var thread=new Thread(r,"ToolVisuals previews");thread.setDaemon(true);return thread;});
     private boolean closed;
@@ -56,7 +54,7 @@ public final class PreviewImages implements AutoCloseable {
                 Minecraft.getInstance().execute(()->{
                     if(closed){if(result!=null)result.flush();active=null;return;}
                     if(result==null){markRequested(next.getKey());finish(next.getKey());return;}
-                    boolean accepted=ru.he3hauka.toolvisuals.client.optimization.texture.TextureUploads.offer(this,(long)result.getWidth()*result.getHeight()*4,true,()->{
+                    boolean accepted=TextureUploads.offer(this,(long)result.getWidth()*result.getHeight()*4,true,()->{
                         try{if(!closed){upload(next.getKey(),result);markRequested(next.getKey());}}
                         finally{result.flush();finish(next.getKey());}
                     },()->{result.flush();finish(next.getKey());});
@@ -96,5 +94,5 @@ public final class PreviewImages implements AutoCloseable {
         g.pose().pushMatrix();g.pose().translate(x+(width-w)/2,y+(height-h)/2);g.pose().scale(factor,factor);
         g.blit(RenderPipelines.GUI_TEXTURED,image.texture,0,0,0,0,image.width,image.height,image.width,image.height);g.pose().popMatrix();
     }
-    @Override public void close(){closed=true;waiting.clear();ru.he3hauka.toolvisuals.client.optimization.texture.TextureUploads.cancel(this);worker.shutdownNow();images.values().forEach(image->Minecraft.getInstance().getTextureManager().release(image.texture));images.clear();requested.clear();}
+    @Override public void close(){closed=true;waiting.clear();TextureUploads.cancel(this);worker.shutdownNow();images.values().forEach(image->Minecraft.getInstance().getTextureManager().release(image.texture));images.clear();requested.clear();}
 }

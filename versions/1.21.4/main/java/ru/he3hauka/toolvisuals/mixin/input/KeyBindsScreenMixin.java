@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.keybinds.BindingConflicts;
 
 @Mixin(KeyBindsScreen.class)

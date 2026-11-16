@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.animation.ui;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-
 import ru.he3hauka.toolvisuals.animation.Emote;
 import ru.he3hauka.toolvisuals.client.animation.EmotePose;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;

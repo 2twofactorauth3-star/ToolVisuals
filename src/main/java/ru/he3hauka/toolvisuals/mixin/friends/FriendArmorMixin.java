@@ -8,10 +8,10 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.friends.FriendStore.ArmorStyle;
+import ru.he3hauka.toolvisuals.client.friends.Friends;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class FriendArmorMixin {
@@ -19,7 +19,7 @@ public abstract class FriendArmorMixin {
     private void toolvisuals$friendArmor(LivingEntity entity,LivingEntityRenderState state,float partial,CallbackInfo ci) {
         if(state instanceof FriendRenderState colored) {
             int armor=0,body=0;
-            if(entity instanceof Player player && ru.he3hauka.toolvisuals.client.friends.Friends.renderAllowed(entity)) {
+            if(entity instanceof Player player && Friends.renderAllowed(entity)) {
                 String name=player.getGameProfile().name();
                 armor=ToolVisualsClient.FRIENDS.armorTint(name);
                 boolean equipped=!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()||!player.getItemBySlot(EquipmentSlot.CHEST).isEmpty()

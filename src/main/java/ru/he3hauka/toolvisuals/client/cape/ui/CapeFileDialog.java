@@ -2,8 +2,8 @@ package ru.he3hauka.toolvisuals.client.cape.ui;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import ru.he3hauka.toolvisuals.client.gui.dialog.FileDialogs;
 import ru.he3hauka.toolvisuals.client.cape.image.CapeImages;
+import ru.he3hauka.toolvisuals.client.gui.dialog.FileDialogs;
 
 final class CapeFileDialog {
     private CapeFileDialog() {}

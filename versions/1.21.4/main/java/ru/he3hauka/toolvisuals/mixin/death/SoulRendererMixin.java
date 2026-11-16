@@ -1,12 +1,11 @@
 package ru.he3hauka.toolvisuals.mixin.death;
 
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.animation.death.SoulRenderState;
 
 @Mixin(LivingEntityRenderer.class)

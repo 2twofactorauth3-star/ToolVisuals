@@ -1,9 +1,10 @@
 package ru.he3hauka.toolvisuals.client.connection;
 
-import java.util.Comparator;
-import java.util.List;
 import com.viaversion.viafabricplus.ViaFabricPlus;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import java.util.Comparator;
+import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 
 public final class ConnectionVersions {
@@ -27,7 +28,7 @@ public final class ConnectionVersions {
     public static boolean selected(Choice choice){return ViaFabricPlus.getImpl().getTargetVersion().equals(choice.protocol);}
     public static void select(Choice choice) {
         if(!ProtocolPolicy.supported(choice.protocol,ProtocolVersion.getClosest("@MINECRAFT@")))throw new IllegalArgumentException("Unsupported Java protocol");
-        var client=net.minecraft.client.Minecraft.getInstance();
+        var client=Minecraft.getInstance();
         if(client.level!=null||client.getConnection()!=null)throw new IllegalStateException("Disconnect before changing protocol");
         ViaFabricPlus.getImpl().setTargetVersion(choice.protocol);
     }

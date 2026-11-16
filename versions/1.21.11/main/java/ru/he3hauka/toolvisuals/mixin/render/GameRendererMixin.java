@@ -20,6 +20,7 @@ import ru.he3hauka.toolvisuals.client.compatibility.render.VersionCamera;
 import ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor;
 import ru.he3hauka.toolvisuals.client.optimization.frame.FrameWork;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
 @Mixin(GameRenderer.class)

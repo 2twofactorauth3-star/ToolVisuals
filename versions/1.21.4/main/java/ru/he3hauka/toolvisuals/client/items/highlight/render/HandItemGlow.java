@@ -1,16 +1,15 @@
 package ru.he3hauka.toolvisuals.client.items.highlight.render;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.resource.ResourceHandle;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,15 +23,19 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.compatibility.render.LegacyRenderType;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlights;
+import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 import ru.he3hauka.toolvisuals.mixin.itemhighlights.ItemGlowGameAccessor;
 import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurChainAccessor;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.ITEM_HIGHLIGHTS;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class HandItemGlow {
     private static final ResourceLocation EFFECT = ResourceLocation.parse("toolvisuals:item_glow");
     private static final ResourceLocation MASK = ResourceLocation.parse("toolvisuals:item_glow_mask");
-    private static final ResourceLocation BLUR = ResourceLocation.parse("toolvisuals:item_glow_blur");
+    private static final ResourceLocation BLOOM = ResourceLocation.parse("toolvisuals:item_glow_bloom");
+    private static final ResourceLocation SCRATCH = ResourceLocation.parse("toolvisuals:item_glow_scratch");
     private static final ThreadLocal<Integer> HAND = ThreadLocal.withInitial(() -> 0);
     private static final class DiscardSource extends MultiBufferSource.BufferSource {
         DiscardSource() { super(new ByteBufferBuilder(1), new LinkedHashMap<>()); }
@@ -40,14 +43,14 @@ public final class HandItemGlow {
     }
     private static final OutlineBufferSource OUTLINES = new OutlineBufferSource(new DiscardSource());
     private static final LinkedHashMap<RenderType, RenderType> TYPES = new LinkedHashMap<>(64, .75f, true);
-    private static TextureTarget mask, blur;
+    private static TextureTarget mask, bloom, scratch;
     private static boolean collecting, ready;
     private static long retry;
     private HandItemGlow() {}
 
     public static int hand(ItemStack item) {
         int previous = HAND.get(); var config = ToolVisualsClient.CONFIG;
-        HAND.set(config.active(ITEM_HIGHLIGHTS) && config.flag(ITEM_HIGHLIGHT_HANDS) && !ru.he3hauka.toolvisuals.client.render.filter.NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.POST_EFFECTS) && System.nanoTime() >= retry ? ItemHighlights.color(item) : 0);
+        HAND.set(config.active(ITEM_HIGHLIGHTS) && config.flag(ITEM_HIGHLIGHT_HANDS) && !NoRender.hides(RenderOption.POST_EFFECTS) && System.nanoTime() >= retry ? ItemHighlights.color(item) : 0);
         return previous;
     }
     public static void restoreHand(int color) { HAND.set(color); }
@@ -60,8 +63,9 @@ public final class HandItemGlow {
             var target = Minecraft.getInstance().getMainRenderTarget(); if (target.width < 1 || target.height < 1) return;
             float factor = Math.min(.5f, 1024f / Math.max(target.width, target.height));
             int width = Math.max(1, Math.round(target.width * factor)), height = Math.max(1, Math.round(target.height * factor));
-            if (mask == null || mask.width != width || mask.height != height) {
-                close(); mask = LegacyItemTargets.create(width, height, true); blur = LegacyItemTargets.create(width, height, false);
+            if (mask == null || bloom == null || scratch == null || mask.width != width || mask.height != height) {
+                int bloomWidth = Math.max(1, (width + 3) / 4), bloomHeight = Math.max(1, (height + 3) / 4);
+                close(); mask = LegacyItemTargets.create(width, height, true); bloom = LegacyItemTargets.create(bloomWidth, bloomHeight, false); scratch = LegacyItemTargets.create(bloomWidth, bloomHeight, false);
                 mask.setClearColor(0, 0, 0, 0);
             }
             try (var state = LegacyItemTargets.bind(mask)) {
@@ -83,18 +87,19 @@ public final class HandItemGlow {
         if (!ready) return; ready = false;
         try (var state = new LegacyItemTargets()) {
             var client = Minecraft.getInstance();
-            var chain = client.getShaderManager().getPostChain(EFFECT, Set.of(PostChain.MAIN_TARGET_ID, MASK, BLUR));
+            var chain = client.getShaderManager().getPostChain(EFFECT, Set.of(PostChain.MAIN_TARGET_ID, MASK, BLOOM, SCRATCH));
             if (chain == null) { retry = System.nanoTime() + 5_000_000_000L; return; }
-            var config = ToolVisualsClient.CONFIG;
+            var controls = ItemGlowControls.capture(scratch.height);
             for (var pass : ((MotionBlurChainAccessor)chain).toolvisuals$motionPasses()) {
                 var uniform = pass.getShader().getUniform("GlowControl");
-                if (uniform != null) uniform.set(config.number(ITEM_HIGHLIGHT_HAND_RADIUS) * 6 * mask.height / 1080f, config.number(ITEM_HIGHLIGHT_HAND_STRENGTH), 0, 0);
+                if (uniform != null) uniform.set(controls.radius, controls.strength, controls.shimmer, controls.phase);
             }
             var graph = new FrameGraphBuilder(); var main = client.getMainRenderTarget();
             var targets = new HashMap<ResourceLocation, ResourceHandle<RenderTarget>>();
             targets.put(PostChain.MAIN_TARGET_ID, graph.importExternal("ToolVisuals main", main));
             targets.put(MASK, graph.importExternal("ToolVisuals item mask", mask));
-            targets.put(BLUR, graph.importExternal("ToolVisuals item blur", blur));
+            targets.put(BLOOM, graph.importExternal("ToolVisuals bloom item glow", bloom));
+            targets.put(SCRATCH, graph.importExternal("ToolVisuals item scratch", scratch));
             chain.addToFrame(graph, main.width, main.height, new PostChain.TargetBundle() {
                 @Override public ResourceHandle<RenderTarget> get(ResourceLocation id) { return targets.get(id); }
                 @Override public void replace(ResourceLocation id, ResourceHandle<RenderTarget> target) { targets.put(id, target); }
@@ -106,7 +111,8 @@ public final class HandItemGlow {
     public static void close() {
         ready = false;
         if (mask != null) { LegacyItemTargets.destroy(mask); mask = null; }
-        if (blur != null) { LegacyItemTargets.destroy(blur); blur = null; }
+        if (bloom != null) { LegacyItemTargets.destroy(bloom); bloom = null; }
+        if (scratch != null) { LegacyItemTargets.destroy(scratch); scratch = null; }
         TYPES.clear();
     }
 }

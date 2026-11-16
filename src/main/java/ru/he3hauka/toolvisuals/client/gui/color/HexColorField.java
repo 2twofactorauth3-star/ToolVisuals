@@ -2,21 +2,21 @@ package ru.he3hauka.toolvisuals.client.gui.color;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import java.time.Duration;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.config.color.HexColor;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
-public final class HexColorField extends EditBox {
+public final class HexColorField extends CenteredEditBox {
     private static final int LEFT=8,RIGHT=32;
     private final Runnable picker;
     private final Motion focus=new Motion(0);
@@ -34,7 +34,7 @@ public final class HexColorField extends EditBox {
         setBordered(false);setTextShadow(false);setMaxLength(7);
         var initial=HexColor.parse(value);setValue(initial==null?value:HexColor.format(initial,true));
         setHint(Component.literal("#RRGGBB"));
-        setTooltipDelay(java.time.Duration.ofMillis(450));
+        setTooltipDelay(Duration.ofMillis(450));
         setTooltip(Tooltip.create(UiI18n.tr(picker==null?"toolvisuals.color.hex_hint":"toolvisuals.color.hex_picker_hint")));
     }
 
@@ -96,9 +96,7 @@ public final class HexColorField extends EditBox {
         if(!valid)UiPaint.icon(g,UiPaint.Icon.CLOSE,sx+3,sy+3,size-6,0xffff778b,opacity);
         setTextColor(UiPaint.alpha(textColor(rgb,fill),opacity));
         setTextColorUneditable(UiPaint.alpha(palette.muted,opacity));
-        g.pose().pushMatrix();
-        try{g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));super.extractWidgetRenderState(g,mouseX,mouseY,partial);}
-        finally{g.pose().popMatrix();}
+        super.extractWidgetRenderState(g,mouseX,mouseY,partial);
         if(active&&overSwatch&&picker!=null)g.requestCursor(CursorTypes.POINTING_HAND);
     }
 }

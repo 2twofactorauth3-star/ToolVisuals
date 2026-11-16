@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.animation.protocol.social;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 

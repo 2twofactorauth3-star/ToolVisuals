@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.compatibility.render.VersionState;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.label.NameTagRows;
+import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.social.badge.BadgeLabels;
 import ru.he3hauka.toolvisuals.client.social.badge.BadgeRenderState;
 
@@ -36,7 +36,7 @@ public abstract class ClientBadgeMixin {
         if (!(state instanceof BadgeRenderState badge) || !badge.toolvisuals$badgeAbove()
                 || state.nameTag == null || state.nameTagAttachment == null) return;
         boolean friendLabel = state instanceof FriendRenderState friend && friend.toolvisuals$friendLabel() != null;
-        double height = NameTagRows.above(ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.hasScore(state), friendLabel ? 2 : 1);
+        double height = NameTagRows.above(VersionState.hasScore(state), friendLabel ? 2 : 1);
         collector.submitNameTag(pose, state.nameTagAttachment.add(0, height, 0), offset, BadgeLabels.ICON,
                 !state.isDiscrete, state.lightCoords, state.distanceToCameraSq,camera);
     }

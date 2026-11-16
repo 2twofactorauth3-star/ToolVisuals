@@ -2,11 +2,10 @@ package ru.he3hauka.toolvisuals.animation.protocol.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import ru.he3hauka.toolvisuals.animation.Emote;
 import ru.he3hauka.toolvisuals.animation.network.RelayLimits;
 import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
 import ru.he3hauka.toolvisuals.animation.protocol.social.SocialCommandWire;
@@ -142,7 +141,7 @@ public final class PlaybackLedger {
         return List.copyOf(effects);
     }
     private void collectSocial(List<SocialCoordinator.Delivery> deliveries,long now,List<Effect> effects){
-        var starts=new java.util.HashSet<UUID>();var stops=new java.util.HashSet<UUID>();
+        var starts=new HashSet<UUID>();var stops=new HashSet<UUID>();
         for(var delivery:deliveries){
             if(delivery.state() instanceof SocialProtocol.Started started){if(starts.add(started.id()))pair(started,now,effects);effects.add(new Social(delivery));}
             else if(delivery.state() instanceof SocialProtocol.Stopped stopped){if(stops.add(stopped.id())){var actor=actors.get(delivery.source());if(actor!=null&&actor.current.state.mode()==Mode.PAIR&&actor.current.state.pair().id().equals(stopped.id())){var other=actors.get(actor.current.state.pair().partner());terminate(actor,effects);if(other!=null&&other.current.state.mode()==Mode.PAIR&&other.current.state.pair().id().equals(stopped.id()))terminate(other,effects);}}effects.add(new Social(delivery));}

@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.optimization.diagnostics.capture;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.profile.RuntimeProbe;
 

@@ -1,17 +1,18 @@
 package ru.he3hauka.toolvisuals.client.replay.capture;
 
+import io.netty.buffer.ByteBuf;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
-import io.netty.buffer.ByteBuf;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
@@ -20,11 +21,13 @@ import net.minecraft.network.protocol.configuration.ConfigurationProtocols;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
 import net.minecraft.network.protocol.game.GameProtocols;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
+import ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.client.replay.io.*;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.REPLAY;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -61,7 +64,7 @@ public final class ReplayCapture {
     public static synchronized void protocol(Connection connection, ProtocolInfo<?> protocol) {
         if (connection instanceof VirtualReplayConnection || connection.getReceiving() != PacketFlow.CLIENTBOUND
                 || protocol.id() != ConnectionProtocol.CONFIGURATION || directory == null || !ToolVisualsClient.CONFIG.active(REPLAY)) return;
-        if (!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.captureAllowed(Minecraft.getInstance(), connection)) return;
+        if (!HolyWorldClient.captureAllowed(Minecraft.getInstance(), connection)) return;
         if (session != null && session.connection == connection && session.dispatched == null) return;
         stop();
         try {
@@ -158,7 +161,7 @@ public final class ReplayCapture {
     public static CompletableFuture<ReplaySnapshot> snapshot() {
         var current = session;
         if (current != null) return current.writer.snapshot();
-        return last == null ? CompletableFuture.failedFuture(new java.io.IOException("No replay has been recorded")) : last;
+        return last == null ? CompletableFuture.failedFuture(new IOException("No replay has been recorded")) : last;
     }
 
     public static synchronized void stop() {
@@ -168,8 +171,8 @@ public final class ReplayCapture {
 
     public static void shutdown() {
         stop(); var pending = last;
-        if (pending != null) try { pending.get(3, java.util.concurrent.TimeUnit.SECONDS); }
-        catch (Exception error) { org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Replay finalization did not finish before shutdown", error); }
+        if (pending != null) try { pending.get(3, TimeUnit.SECONDS); }
+        catch (Exception error) { LoggerFactory.getLogger("ToolVisuals").warn("Replay finalization did not finish before shutdown", error); }
     }
 
     private static synchronized void fail(Session expected, Throwable error) {
@@ -188,7 +191,7 @@ public final class ReplayCapture {
         var current = session;
         if (current == null && enabled && listener != null && client.player != null && client.level != null
                 && joined != null && joined.listener == listener && listener.getConnection().isConnected()
-                && ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.captureAllowed(client, listener.getConnection())
+                && HolyWorldClient.captureAllowed(client, listener.getConnection())
                 && START.begin(true, listener.getConnection())) {
             startInWorld(client);
             current = session;

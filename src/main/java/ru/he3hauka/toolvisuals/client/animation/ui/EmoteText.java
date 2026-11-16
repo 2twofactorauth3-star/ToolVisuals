@@ -1,8 +1,6 @@
 package ru.he3hauka.toolvisuals.client.animation.ui;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-
 import ru.he3hauka.toolvisuals.animation.EmoteGroup;
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;

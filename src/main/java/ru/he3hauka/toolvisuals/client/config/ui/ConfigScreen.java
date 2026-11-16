@@ -1,15 +1,15 @@
 package ru.he3hauka.toolvisuals.client.config.ui;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.mojang.blaze3d.Blaze3D;
+import com.mojang.blaze3d.platform.InputConstants;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,17 +17,20 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
+import org.lwjgl.sdl.SDLFileSystem;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.ConfigProfiles;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
+import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer;
 
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
 
@@ -41,7 +44,7 @@ public final class ConfigScreen extends Screen {
     private final Motion scroll = new Motion(0);
     private UiViewport viewport;
     private UiPalette palette = new UiPalette(0);
-    private java.nio.file.Path downloadsDirectory;
+    private Path downloadsDirectory;
     private EditBox name;
     private VisualsButton create, load, overwrite, rename, delete, export, download, defaults;
     private String draft = "", selectedId, pending = "";
@@ -55,18 +58,17 @@ public final class ConfigScreen extends Screen {
     private static Component tr(String key, Object... args) { return UiI18n.tr("toolvisuals.configs." + key, args); }
     @Override protected void init() {
         controls.clear(); rows.clear();
-        String downloads = org.lwjgl.sdl.SDLFileSystem.SDL_GetUserFolder(org.lwjgl.sdl.SDLFileSystem.SDL_FOLDER_DOWNLOADS);
-        downloadsDirectory = downloads == null || downloads.isBlank() ? java.nio.file.Path.of(System.getProperty("user.home"), "Downloads") : java.nio.file.Path.of(downloads);
+        String downloads = SDLFileSystem.SDL_GetUserFolder(SDLFileSystem.SDL_FOLDER_DOWNLOADS);
+        downloadsDirectory = downloads == null || downloads.isBlank() ? Path.of(System.getProperty("user.home"), "Downloads") : Path.of(downloads);
         viewport = new UiViewport(width, height, minecraft.getWindow().getGuiScale());
         pw = Math.min(700, viewport.width - 32); ph = Math.min(484, viewport.height - 32);
         px = (viewport.width - pw) / 2; py = (viewport.height - ph) / 2;
-        name = addWidget(new EditBox(UiFont.get(), px + 30, py + 76, pw - 174, 32, tr("name")) {
+        name = addWidget(new CenteredEditBox(UiFont.get(), px + 30, py + 76, pw - 174, 32, tr("name")) {
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g, int mx, int my, float partial) {
                 if (getValue().isEmpty() && !isFocused()) {
                     line(g, tr("name"), getX(), getY(), getWidth(), getHeight(), .9f, palette.muted); return;
                 }
-                g.pose().pushMatrix(); g.pose().translate(0, UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g, mx, my, partial); g.pose().popMatrix();
+                super.extractWidgetRenderState(g, mx, my, partial);
             }
         });
         name.setBordered(false); name.setTextShadow(false); name.setMaxLength(96); name.setValue(draft);
@@ -114,7 +116,7 @@ public final class ConfigScreen extends Screen {
     }
     private void feedback(String key, boolean failed, Object... args) {
         status = tr(key, args); error = failed;
-        if(!key.equals("confirm_hint"))ru.he3hauka.toolvisuals.client.sound.SoundCustomizer.notice();
+        if(!key.equals("confirm_hint"))SoundCustomizer.notice();
     }
     private boolean confirm(String operation) {
         if (pending.equals(operation)) { pending = ""; return true; }
@@ -161,8 +163,8 @@ public final class ConfigScreen extends Screen {
     }
     private void openFolder() {
         perform(() -> {
-            java.nio.file.Files.createDirectories(store.directory);
-            com.mojang.blaze3d.Blaze3D.openPath(store.directory);
+            Files.createDirectories(store.directory);
+            Blaze3D.openPath(store.directory);
             feedback("folder_opened", false);
         });
     }

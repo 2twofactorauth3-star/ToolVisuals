@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public enum HandProperty {

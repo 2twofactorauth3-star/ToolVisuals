@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.discord.ipc.RpcSession;
 import ru.he3hauka.toolvisuals.client.discord.ipc.RpcTransport;
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class DiscordRpc implements AutoCloseable {
-    private static final org.slf4j.Logger LOGGER=org.slf4j.LoggerFactory.getLogger("ToolVisuals/DiscordRPC");
+    private static final Logger LOGGER=LoggerFactory.getLogger("ToolVisuals/DiscordRPC");
     public enum Status { DISABLED,WAITING,CONNECTING,CONNECTED,REJECTED }
     @FunctionalInterface public interface Opener { RpcTransport open() throws IOException; }
 

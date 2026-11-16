@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import org.spongepowered.asm.mixin.Mixin;
-
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 
 @Mixin(EditBox.class)

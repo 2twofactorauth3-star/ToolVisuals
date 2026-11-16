@@ -4,9 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
-
-import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
+import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient;
 import ru.he3hauka.toolvisuals.client.social.SocialClient;

@@ -1,29 +1,28 @@
 package ru.he3hauka.toolvisuals.client.items.highlight.render;
 
-import java.util.LinkedHashMap;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import java.util.LinkedHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import ru.he3hauka.toolvisuals.client.compatibility.render.LegacyRenderType;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
+import org.joml.Matrix4fStack;
+import ru.he3hauka.toolvisuals.client.compatibility.render.LegacyRenderType;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.client.items.highlight.ItemGlowStyle;
 import ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlights;
 import ru.he3hauka.toolvisuals.mixin.itemhighlights.ItemGlowGuiAccessor;
 
@@ -79,10 +78,11 @@ public final class LegacyGuiGlow {
         } catch (RuntimeException error) { retry = System.nanoTime() + 5_000_000_000L; ClientErrors.report("Render inventory item glow", error); }
     }
     private static void vertex(VertexConsumer vertices, Matrix4f pose, int x, int y, float u, float v, ItemHighlights.GuiStyle style) {
-        vertices.addVertex(pose, x, y, 0).setColor(style.color()).setUv(u, v).setUv1(32, Math.round(style.radius() * 256)).setUv2(16, 16).setNormal(0, 0, 1);
+        int color = ItemGlowStyle.glint(style.color(), u, 1 - v, style.phase());
+        vertices.addVertex(pose, x, y, 0).setColor(color).setUv(u, v).setUv1(32, Math.round(style.radius() * 256)).setUv2(16, 16).setNormal(0, 0, 1);
     }
     private static void capture(Icon icon, LivingEntity owner, Level level, ItemStack stack, int seed) {
-        org.joml.Matrix4fStack view = RenderSystem.getModelViewStack(); view.pushMatrix();
+        Matrix4fStack view = RenderSystem.getModelViewStack(); view.pushMatrix();
         capturing = true;
         try (var state = new LegacyItemTargets()) {
             BUFFERS.target = icon.target;

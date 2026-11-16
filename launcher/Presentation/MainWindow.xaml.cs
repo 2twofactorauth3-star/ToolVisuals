@@ -276,7 +276,7 @@ public partial class MainWindow : Window
         updatingAccounts = true;
         try
         {
-            IReadOnlyList<SavedAccountChoice> choices = services.AccountLibrary.Profiles.Select(profile => new SavedAccountChoice(profile, profile.Name + " · " + (profile.Kind == ToolLauncher.Accounts.Profiles.AccountKind.Microsoft ? "Microsoft" : LauncherLanguage.Get("accountLocal")))).ToArray();
+            IReadOnlyList<SavedAccountChoice> choices = services.AccountLibrary.Profiles.Select(profile => new SavedAccountChoice(profile, profile.Name + " · " + (profile.Kind == AccountKind.Microsoft ? "Microsoft" : LauncherLanguage.Get("accountLocal")))).ToArray();
             if (AccountPicker.ItemsSource is IReadOnlyList<SavedAccountChoice> previous && previous.SequenceEqual(choices)) choices = previous;
             else AccountPicker.ItemsSource = HomeAccountPicker.ItemsSource = choices;
             var active = choices.FirstOrDefault(choice => choice.Profile.Identity == services.AccountLibrary.ActiveIdentity);

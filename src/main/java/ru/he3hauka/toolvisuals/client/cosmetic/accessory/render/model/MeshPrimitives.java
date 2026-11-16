@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.model;
 
 import java.util.function.DoubleUnaryOperator;
-
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryMesh;
 
 final class MeshPrimitives {

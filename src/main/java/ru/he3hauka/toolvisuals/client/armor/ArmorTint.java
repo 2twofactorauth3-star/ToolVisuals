@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.armor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.item.ItemStack;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.hud.armor.ArmorHud;

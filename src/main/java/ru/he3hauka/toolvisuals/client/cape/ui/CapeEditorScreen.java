@@ -1,12 +1,10 @@
 package ru.he3hauka.toolvisuals.client.cape.ui;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-
-import com.mojang.blaze3d.platform.InputConstants;
+import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.*;
@@ -16,21 +14,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.cape.*;
 import ru.he3hauka.toolvisuals.client.cape.animation.CapeAnimationDraft;
-import ru.he3hauka.toolvisuals.client.cape.image.CapeImages;
 import ru.he3hauka.toolvisuals.client.cape.image.CapeImageIo;
-import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
-import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
+import ru.he3hauka.toolvisuals.client.cape.image.CapeImages;
 import ru.he3hauka.toolvisuals.client.config.*;
+import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CAPES;
@@ -135,7 +133,7 @@ public final class CapeEditorScreen extends VisualEditorScreen {
         finishStroke();imageBusy=true;status=text("processing").getString();
         CapeImageIo.submit(()->CapeImages.read(path),image->{
             imageBusy=false;if(minecraft.gui.screen()!=this)return;
-            java.util.function.Consumer<CapeDesign> apply=design->{
+            Consumer<CapeDesign> apply=design->{
                 finishStroke();
                 if(image.sourceFrames>1){animation.replace(design);canvas=animation.canvas();}
                 else{animation.begin();canvas.replace(design);animation.end();}
@@ -197,7 +195,7 @@ public final class CapeEditorScreen extends VisualEditorScreen {
         for(int i=0;i<SWATCHES.length;i++)UiPaint.rounded(g,px+224+i*20,py+430,16,16,4,SWATCHES[i]);
         label(g,text("frame",animation.selected()+1,animation.size(),Math.max(animation.size(),CapeAnimationPolicy.MAX_FRAMES)).getString(),20,477,358,12,.64f,palette.muted);
         UiPaint.rounded(g,px+224,py+92,74,3,1.5f,primary);UiPaint.rounded(g,px+306,py+92,72,3,1.5f,secondary);
-        String saveState=ToolVisualsClient.CAPES.status()==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED?text("io_error").getString():id==null||changed()?text("unsaved").getString():text("saved").getString();
+        String saveState=ToolVisualsClient.CAPES.status()==JsonFile.Status.LOAD_FAILED?text("io_error").getString():id==null||changed()?text("unsaved").getString():text("saved").getString();
         String sync=text(CapeClient.shared()?"shared":CapeClient.available()?"syncing":"local").getString();
         label(g,status.isEmpty()?saveState+"  ·  "+sync:status,20,568,630,26,.72f,palette.muted);
     }

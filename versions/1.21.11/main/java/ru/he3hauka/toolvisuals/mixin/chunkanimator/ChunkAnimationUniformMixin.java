@@ -1,10 +1,10 @@
 package ru.he3hauka.toolvisuals.mixin.chunkanimator;
 
-import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformFloat;
 import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformFloat4v;
+import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformFloat;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
-import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

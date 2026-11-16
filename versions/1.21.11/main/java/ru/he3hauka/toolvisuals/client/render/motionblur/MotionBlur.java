@@ -1,24 +1,25 @@
 package ru.he3hauka.toolvisuals.client.render.motionblur;
 
-import java.util.Set;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL45;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.compatibility.render.VersionCamera;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
-import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurGameAccessor;
 import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurChainAccessor;
+import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurGameAccessor;
 import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurPassAccessor;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MOTION_BLUR;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.MOTION_BLUR_STRENGTH;
 

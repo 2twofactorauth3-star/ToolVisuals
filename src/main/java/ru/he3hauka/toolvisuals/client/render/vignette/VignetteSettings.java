@@ -3,6 +3,7 @@ package ru.he3hauka.toolvisuals.client.render.vignette;
 import java.util.List;
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class VignetteSettings {

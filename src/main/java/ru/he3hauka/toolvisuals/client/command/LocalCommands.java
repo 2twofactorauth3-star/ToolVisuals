@@ -1,7 +1,16 @@
 package ru.he3hauka.toolvisuals.client.command;
 
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.auction.AuctionHelper;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
+import ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
+import ru.he3hauka.toolvisuals.client.discord.DiscordPresence;
+import ru.he3hauka.toolvisuals.client.keybinds.Keybinds;
+import ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient;
+import ru.he3hauka.toolvisuals.client.music.MusicClient;
+import ru.he3hauka.toolvisuals.client.navigation.gps.Gps;
+import ru.he3hauka.toolvisuals.client.presents.ToolPresents;
 
 public final class LocalCommands {
     private LocalCommands() {}
@@ -17,17 +26,17 @@ public final class LocalCommands {
         }
         String arguments = invocation.arguments();
         switch (command) {
-            case HOLYWORLD -> ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.status();
-            case RPC -> ru.he3hauka.toolvisuals.client.discord.DiscordPresence.diagnostic();
-            case GPS -> ru.he3hauka.toolvisuals.client.navigation.gps.Gps.command(arguments);
-            case LOG -> ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.command(arguments);
-            case KEYBINDS -> ru.he3hauka.toolvisuals.client.keybinds.Keybinds.requestOpen();
-            case MINIGAMES -> ru.he3hauka.toolvisuals.client.minigame.MiniGamesClient.requestOpen();
-            case MUSIC -> ru.he3hauka.toolvisuals.client.music.MusicClient.requestOpen();
-            case AUCTION -> ru.he3hauka.toolvisuals.client.auction.AuctionHelper.command(arguments);
+            case HOLYWORLD -> HolyWorldClient.status();
+            case RPC -> DiscordPresence.diagnostic();
+            case GPS -> Gps.command(arguments);
+            case LOG -> ModuleLog.command(arguments);
+            case KEYBINDS -> Keybinds.requestOpen();
+            case MINIGAMES -> MiniGamesClient.requestOpen();
+            case MUSIC -> MusicClient.requestOpen();
+            case AUCTION -> AuctionHelper.command(arguments);
             case PRESENTS -> {
-                if (arguments.equalsIgnoreCase("reset")) ru.he3hauka.toolvisuals.client.presents.ToolPresents.reset();
-                else { ru.he3hauka.toolvisuals.client.presents.ToolPresents.recalculate(); ChatMessages.notice("presents.usage"); }
+                if (arguments.equalsIgnoreCase("reset")) ToolPresents.reset();
+                else { ToolPresents.recalculate(); ChatMessages.notice("presents.usage"); }
             }
         }
         return true;

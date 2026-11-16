@@ -1,20 +1,20 @@
 package ru.he3hauka.toolvisuals.mixin.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.render.state.GlyphRenderState;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiPipelines;
+import ru.he3hauka.toolvisuals.client.hud.tab.font.TabFontRaster;
 
 @Mixin(GlyphRenderState.class)
 public abstract class UiGlyphRenderStateMixin {
@@ -38,6 +38,6 @@ public abstract class UiGlyphRenderStateMixin {
     private boolean toolvisuals$isUiFont() {
         String label = renderable.textureView().texture().getLabel();
         return label != null && (label.startsWith("toolvisuals:ui/")
-                || ru.he3hauka.toolvisuals.client.hud.tab.font.TabFontRaster.ownsAtlas(label));
+                || TabFontRaster.ownsAtlas(label));
     }
 }

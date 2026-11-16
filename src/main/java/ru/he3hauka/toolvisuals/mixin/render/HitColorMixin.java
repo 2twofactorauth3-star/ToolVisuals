@@ -3,11 +3,11 @@ package ru.he3hauka.toolvisuals.mixin.render;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.ARGB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
@@ -20,11 +20,11 @@ public abstract class HitColorMixin {
         int color=cir.getReturnValue();
         if(state instanceof FriendRenderState friend&&friend.toolvisuals$friendBodyTint()!=0) {
             int tint=UiPalette.mix(0xffffffff,friend.toolvisuals$friendBodyTint(),.75f);
-            color=net.minecraft.util.ARGB.multiply(color,tint);
+            color=ARGB.multiply(color,tint);
         }
         if (HitColors.active(ToolVisualsClient.CONFIG, state)) {
             int tint = HitColors.modelTint(ToolVisualsClient.CONFIG);
-            color=net.minecraft.util.ARGB.multiply(color,tint);
+            color=ARGB.multiply(color,tint);
         }
         if(color!=cir.getReturnValue())cir.setReturnValue(color);
     }

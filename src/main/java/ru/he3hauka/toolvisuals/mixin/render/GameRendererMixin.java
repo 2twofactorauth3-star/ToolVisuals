@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor;
+import ru.he3hauka.toolvisuals.client.optimization.frame.FrameWork;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
@@ -18,12 +19,12 @@ public abstract class GameRendererMixin {
     @Shadow @Final private GameRenderState gameRenderState;
 
     @Inject(method = "extract", at = @At("HEAD"))
-    private void toolvisuals$beginWorkFrame(CallbackInfo ci) { ru.he3hauka.toolvisuals.client.optimization.frame.FrameWork.begin(); }
+    private void toolvisuals$beginWorkFrame(CallbackInfo ci) { FrameWork.begin(); }
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void toolvisuals$beginFrame(CallbackInfo ci) { ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor.begin(); }
+    private void toolvisuals$beginFrame(CallbackInfo ci) { FrameMonitor.begin(); }
     @Inject(method = "render", at = @At("RETURN"))
-    private void toolvisuals$endFrame(CallbackInfo ci) { ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor.end(); }
+    private void toolvisuals$endFrame(CallbackInfo ci) { FrameMonitor.end(); }
 
     @Inject(method = "extract", at = @At("TAIL"))
     private void toolvisuals$hidePostEffects(CallbackInfo ci) {

@@ -4,7 +4,6 @@ import com.mojang.renderpearl.api.pipeline.*;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.mixin.render.RenderPipelinesAccessor;
 import ru.he3hauka.toolvisuals.mixin.render.RenderTypeAccessor;
 

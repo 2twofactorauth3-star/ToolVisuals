@@ -1,7 +1,5 @@
 package ru.he3hauka.toolvisuals.client.replay.io;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -9,6 +7,7 @@ import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.Deflater;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class ReplayWriter implements AutoCloseable {
     private sealed interface Work permits Frame, Snapshot, Finish {}

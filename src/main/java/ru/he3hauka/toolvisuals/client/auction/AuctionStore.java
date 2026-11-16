@@ -1,22 +1,23 @@
 package ru.he3hauka.toolvisuals.client.auction;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class AuctionStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final int LIMIT = 64;
-    public static final ru.he3hauka.toolvisuals.client.storage.BoundedJson.Limits JSON_LIMITS = new ru.he3hauka.toolvisuals.client.storage.BoundedJson.Limits(16 * 1024 * 1024, 131_072);
-    private final ru.he3hauka.toolvisuals.client.storage.JsonFile file;
+    public static final BoundedJson.Limits JSON_LIMITS = new BoundedJson.Limits(16 * 1024 * 1024, 131_072);
+    private final JsonFile file;
     private Map<String,AuctionPlan> plans = Map.of();
     private Map<String,String> selected = Map.of();
     private long revision;
     
-    public AuctionStore(Path path) { file = new ru.he3hauka.toolvisuals.client.storage.JsonFile(path, JSON_LIMITS); }
+    public AuctionStore(Path path) { file = new JsonFile(path, JSON_LIMITS); }
     public long revision() { return revision; }
     public List<AuctionPlan> plans() { return plans.values().stream().sorted(Comparator.comparing(p -> p.id,String.CASE_INSENSITIVE_ORDER)).toList(); }
     public AuctionPlan get(String id) { return id == null ? null : plans.get(id.toLowerCase(Locale.ROOT)); }

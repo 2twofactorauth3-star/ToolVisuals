@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.effects;
 
 import net.minecraft.world.phys.Vec3;
-
 import ru.he3hauka.toolvisuals.client.optimization.geometry.UnitCircle;
 
 public final class EffectGeometry {

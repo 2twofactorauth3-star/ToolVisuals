@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import ru.he3hauka.toolvisuals.client.items.highlight.ItemGlowStyle;
 import ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlights;
 import ru.he3hauka.toolvisuals.client.items.highlight.render.LegacyGuiGlow;
 
@@ -17,8 +18,7 @@ public abstract class ItemGlowExtractionMixin {
         if (!LegacyGuiGlow.capturing()) {
             var previous = ItemHighlights.capture(stack);
             try {
-                int color = ItemHighlights.slotColor();
-                if (color >>> 24 != 0) ((GuiGraphics)(Object)this).fill(x - 1, y - 1, x + 17, y + 17, color);
+                ItemGlowStyle.slot((GuiGraphics)(Object)this, x, y);
                 LegacyGuiGlow.draw((GuiGraphics)(Object)this, owner, level, stack, x, y, seed, ItemHighlights.extracting());
             }
             finally { ItemHighlights.restore(previous); }

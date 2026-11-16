@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.hand.editor;
 
+import java.util.ArrayList;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -35,7 +36,7 @@ public final class HandProjection {
         Vector4f visible=null;
         for(int index=0;index<8;index++)corners[index]=new Vector4f((float)((index&1)==0?box.minX:box.maxX),
                 (float)((index&2)==0?box.minY:box.maxY),(float)((index&4)==0?box.minZ:box.maxZ),1).mul(transform);
-        var points=new java.util.ArrayList<Vector4f>(20);
+        var points=new ArrayList<Vector4f>(20);
         for(int index=0;index<8;index++) {
             var point=corners[index];if(point.w>=NEAR)points.add(point);
             for(int bit=1;bit<=4;bit<<=1)if((index&bit)==0) {

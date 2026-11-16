@@ -2,24 +2,29 @@ package ru.he3hauka.toolvisuals.client.hud.tab;
 
 import java.util.List;
 import java.util.function.Supplier;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.StyledFormat;
+import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
-import ru.he3hauka.toolvisuals.client.localization.UiI18n;
-import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.hud.tab.font.TabFontRaster;
 import ru.he3hauka.toolvisuals.client.hud.tab.font.TabFonts;
+import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+import ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster;
+import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.EXTRA_TAB;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -29,7 +34,7 @@ public final class ExtraTab {
     private static Object connection;
     private static long rosterRevision=Long.MIN_VALUE,revision=-1,measuredRevision=Long.MIN_VALUE;
     private static Object measuredLanguage;
-    private static net.minecraft.client.gui.Font measuredFont;
+    private static Font measuredFont;
     private static int listedCount;
     private static Context context;
     private static TabViewport viewport;
@@ -59,34 +64,34 @@ public final class ExtraTab {
     private static boolean canInteract(Minecraft client) {
         return enabled() && client.player != null && client.level != null && client.gui.screen() == null
                 && client.gui.overlay() == null && !client.gui.hud.isHidden() && client.options.keyPlayerList.isDown()
-                && !NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.PLAYER_LIST)
-                && !NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.ALL_HUD);
+                && !NoRender.hides(RenderOption.PLAYER_LIST)
+                && !NoRender.hides(RenderOption.ALL_HUD);
     }
     public static boolean showing() {
         var client = Minecraft.getInstance();
         return canInteract(client) && (!client.isLocalServer() || client.getConnection().getListedOnlinePlayers().size() > 1
-                || client.level.getScoreboard().getDisplayObjective(net.minecraft.world.scores.DisplaySlot.LIST) != null);
+                || client.level.getScoreboard().getDisplayObjective(DisplaySlot.LIST) != null);
     }
     public static TabViewport begin(PlayerTabOverlay overlay, int width, int height, Component header, Component footer,
                                     Scoreboard scoreboard, Objective objective, List<PlayerInfo> players) {
         var config = ToolVisualsClient.CONFIG;
         context = new Context(overlay, width, height, config.flag(TAB_HEADER) ? header : null,
                 config.flag(TAB_FOOTER) ? footer : null, scoreboard, objective);
-        long started=ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.start(ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Section.TAB);
-        try{measure(players);}finally{ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.end(ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Section.TAB,started);}
+        long started=Diagnostics.start(Diagnostics.Section.TAB);
+        try{measure(players);}finally{Diagnostics.end(Diagnostics.Section.TAB,started);}
         return viewport;
     }
     public static void end() { context = null; }
-    public static net.minecraft.client.gui.Font font(net.minecraft.client.gui.Font original) {
+    public static Font font(Font original) {
         if(context==null||viewport==null)return original;
         double pixelsPerUnit=viewport.scale*Minecraft.getInstance().getWindow().getWidth()/(double)Math.max(1,context.width);
-        return TabFonts.get(original,ru.he3hauka.toolvisuals.client.hud.tab.font.TabFontRaster.select(pixelsPerUnit));
+        return TabFonts.get(original,TabFontRaster.select(pixelsPerUnit));
     }
     public static List<PlayerInfo> players(Supplier<List<PlayerInfo>> original) {
         if (!enabled()) return original.get();
         var client = Minecraft.getInstance(); var config = ToolVisualsClient.CONFIG;
         int count = client.getConnection().getListedOnlinePlayers().size();
-        long now=ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster.presentation();
+        long now=PlayerRoster.presentation();
         if (connection != client.getConnection() || rosterRevision != now || listedCount != count || revision != config.revision()) {
             cached = original.get(); connection = client.getConnection(); rosterRevision = now; listedCount = count; revision = config.revision();
         }
@@ -97,7 +102,7 @@ public final class ExtraTab {
         var font = TabFonts.get(client.font);
         if (players == measured && measuredWidth == context.width && measuredHeight == context.height
                 && measuredHeader == context.header && measuredFooter == context.footer && measuredObjective == context.objective
-                && measuredFont == font && measuredRevision==ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster.presentation()&&measuredLanguage==net.minecraft.locale.Language.getInstance()) {
+                && measuredFont == font && measuredRevision==PlayerRoster.presentation()&&measuredLanguage==Language.getInstance()) {
             viewport = measuredViewport; context.headerHeight = headerHeight; context.footerHeight = footerHeight;
             return;
         }
@@ -123,7 +128,7 @@ public final class ExtraTab {
          
         context.headerHeight = textHeight(context.header, viewport.width);
         context.footerHeight = textHeight(context.footer, viewport.width);
-        measuredRevision=ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster.presentation();measuredLanguage=net.minecraft.locale.Language.getInstance();
+        measuredRevision=PlayerRoster.presentation();measuredLanguage=Language.getInstance();
         measuredFont = font;
         measured = players; measuredWidth = context.width; measuredHeight = context.height;
         measuredHeader = context.header; measuredFooter = context.footer; measuredObjective = context.objective;

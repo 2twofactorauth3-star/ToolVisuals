@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.cosmetic.accessory;
 
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticSessions;
 
 public final class AccessorySessions extends CosmeticSessions<AccessoryLook,AccessoryWire.State> {

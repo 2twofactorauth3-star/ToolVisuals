@@ -4,18 +4,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.*;
 import net.minecraft.world.phys.AABB;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.animation.EffectTime;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.DEATH_ASCENSION;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class DeathAscension {
-    private record Appearance(PlayerSkin skin,net.minecraft.world.entity.EntityType<?> type,float yaw,int light){}
+    private record Appearance(PlayerSkin skin,EntityType<?> type,float yaw,int light){}
     private static final AscensionTimeline<Appearance> TIMELINE=new AscensionTimeline<>();
     private static Object connection,world;
     private DeathAscension(){}
@@ -37,7 +38,7 @@ public final class DeathAscension {
     }
     public static void extract(LevelRenderState level){
         var client=Minecraft.getInstance();scope(client);var config=ToolVisualsClient.CONFIG;
-        if(client.player==null||client.level==null||!config.active(DEATH_ASCENSION)||NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.PLAYERS))return;
+        if(client.player==null||client.level==null||!config.active(DEATH_ASCENSION)||NoRender.hides(RenderOption.PLAYERS))return;
         double now=EffectTime.at(level.gameTime,level.worldPartialTicks)/20,range=config.value(DEATH_DISTANCE);var souls=TIMELINE.active(now);
         if(config.flag(DEATH_HIDE_BODY))level.entityRenderStates.removeIf(state->state instanceof AvatarRenderState avatar&&avatar.deathTime>0&&TIMELINE.containsEntity(avatar.id));
         for(var soul:souls){

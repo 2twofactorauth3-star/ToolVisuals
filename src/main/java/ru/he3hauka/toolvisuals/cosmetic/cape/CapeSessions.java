@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.cosmetic.cape;
 
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticSessions;
 
 public final class CapeSessions extends CosmeticSessions<CapeDesign,CapeWire.State> {

@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.localization;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 

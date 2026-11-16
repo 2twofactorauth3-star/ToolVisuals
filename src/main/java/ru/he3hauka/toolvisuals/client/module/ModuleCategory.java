@@ -1,9 +1,7 @@
 package ru.he3hauka.toolvisuals.client.module;
 
 import java.util.Locale;
-
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 public enum ModuleCategory {

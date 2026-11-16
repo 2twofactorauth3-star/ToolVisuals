@@ -5,15 +5,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL45;
+import org.lwjgl.opengl.GL;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.compatibility.render.VersionCamera;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 import ru.he3hauka.toolvisuals.mixin.motionblur.*;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MOTION_BLUR;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.MOTION_BLUR_STRENGTH;
 

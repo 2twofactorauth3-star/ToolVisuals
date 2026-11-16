@@ -1,23 +1,21 @@
 package ru.he3hauka.toolvisuals.client.auction;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.random.RandomGenerator;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.ContainerInput;
-
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
-import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 public final class AuctionHelper {
     private static final AuctionRunner RUNNER = new AuctionRunner(new MinecraftEnvironment(),RandomGenerator.getDefault());
@@ -27,7 +25,7 @@ public final class AuctionHelper {
     private AuctionHelper() {}
     public static void initialize() {
         try { ToolVisualsClient.AUCTIONS.load(); }
-        catch(IOException error) { org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot read auction bindings; original file preserved",error); }
+        catch(IOException error) { LoggerFactory.getLogger("ToolVisuals").warn("Cannot read auction bindings; original file preserved",error); }
         ClientTickEvents.END_CLIENT_TICK.register(AuctionHelper::tick);
         ClientReceiveMessageEvents.GAME.register((message,overlay) -> { if(!overlay)RUNNER.message(message.getString()); });
     }
@@ -108,7 +106,7 @@ public final class AuctionHelper {
         catch(IllegalStateException error){notice("record_need_command");}
         catch(RuntimeException error){ClientErrors.report("Record auction menu click",error);cancelRecording("record_bad_action");}
     }
-    public static void serverMenuResponse(int container, boolean opened) { if(!ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())RUNNER.serverMenuResponse(container,opened); }
+    public static void serverMenuResponse(int container, boolean opened) { if(!ReplayScope.active())RUNNER.serverMenuResponse(container,opened); }
     public static AuctionRunner.MenuView snapshot(Minecraft client) {
         try { return readSnapshot(client); } catch(RuntimeException unsupportedMenu) { ClientErrors.report("Read auction menu snapshot",unsupportedMenu);return null; }
     }
@@ -126,7 +124,7 @@ public final class AuctionHelper {
     }
     private static long now() { return System.nanoTime()/1_000_000L; }
     public static void notice(String key,Object... args) {
-        ru.he3hauka.toolvisuals.client.chat.message.ChatMessages.notice("auction."+key,args);
+        ChatMessages.notice("auction."+key,args);
     }
     private static final class MinecraftEnvironment implements AuctionRunner.Environment {
         public long now() { return AuctionHelper.now(); }

@@ -10,6 +10,7 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.NoFluid;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
 @Mixin(ScreenEffectRenderer.class)

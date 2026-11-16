@@ -2,7 +2,7 @@ package ru.he3hauka.toolvisuals.client.hud.animation;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
-
+import net.minecraft.client.input.MouseButtonEvent;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 
@@ -13,7 +13,7 @@ public final class BetterHud {
     private static final Motion TAB=new Motion(0), HOTBAR=new Motion(0);
     private static long lastTab,lastHotbar,message;
     private static Object level;
-    private static final ru.he3hauka.toolvisuals.client.hud.animation.OpeningTransition CHAT=new ru.he3hauka.toolvisuals.client.hud.animation.OpeningTransition();
+    private static final OpeningTransition CHAT=new OpeningTransition();
     private static final ThreadLocal<Float> CHAT_INPUT=ThreadLocal.withInitial(()->0f),CHAT_RENDER=ThreadLocal.withInitial(()->0f);
     private BetterHud() {}
     public static void tick(Minecraft client) { if(level!=client.level) { level=client.level;TAB.snap(0);CHAT.clear();lastTab=lastHotbar=message=0; } }
@@ -36,14 +36,14 @@ public final class BetterHud {
     public static void chatInputOffset(float value){CHAT_INPUT.set(value);}
     public static float chatRenderOffset(){return CHAT_RENDER.get();}
     public static void chatRenderOffset(float value){CHAT_RENDER.set(value);}
-    public static net.minecraft.client.input.MouseButtonEvent animatedChatInput(net.minecraft.client.input.MouseButtonEvent event){
+    public static MouseButtonEvent animatedChatInput(MouseButtonEvent event){
         return offsetChatInput(event,-chatOpeningOffset());
     }
-    public static net.minecraft.client.input.MouseButtonEvent originalChatInput(net.minecraft.client.input.MouseButtonEvent event){
+    public static MouseButtonEvent originalChatInput(MouseButtonEvent event){
         return offsetChatInput(event,chatInputOffset());
     }
-    private static net.minecraft.client.input.MouseButtonEvent offsetChatInput(net.minecraft.client.input.MouseButtonEvent event,float offset){
-        return offset==0?event:new net.minecraft.client.input.MouseButtonEvent(event.x(),event.y()+offset,event.buttonInfo());
+    private static MouseButtonEvent offsetChatInput(MouseButtonEvent event,float offset){
+        return offset==0?event:new MouseButtonEvent(event.x(),event.y()+offset,event.buttonInfo());
     }
     public static int chatOffset() {
         if(!ToolVisualsClient.CONFIG.active(BETTER_HUD)||!ToolVisualsClient.CONFIG.flag(BETTER_HUD_CHAT)||message==0

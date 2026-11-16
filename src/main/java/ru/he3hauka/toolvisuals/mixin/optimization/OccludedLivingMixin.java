@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 import ru.he3hauka.toolvisuals.client.optimization.occlusion.OccludedState;
 
 @Mixin(LivingEntityRenderer.class)

@@ -1,19 +1,18 @@
 package ru.he3hauka.toolvisuals.client.gui.render;
 
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.renderpearl.api.textures.FilterMode;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.client.gui.surface.RoundedGlow;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiSurface;
 import ru.he3hauka.toolvisuals.client.gui.text.TextRasterSizing;
@@ -65,14 +64,14 @@ public final class UiSprites {
 
     static void icon(GuiGraphicsExtractor graphics, UiPaint.Icon icon, float x, float y, float size, int color) {
         int pixels = UiRasterSizes.icon(Math.round(size * pixelsPerUnit(graphics)));
-        Identifier texture = texture("icon_" + icon.name().toLowerCase(java.util.Locale.ROOT) + "_" + pixels,
+        Identifier texture = texture("icon_" + icon.name().toLowerCase(Locale.ROOT) + "_" + pixels,
                 () -> UiRasterizer.icon(icon, pixels));
         blit(graphics, texture, x, y, size, size, 0, 0, pixels, pixels, pixels, color);
     }
 
     static void material(GuiGraphicsExtractor g,UiSurface surface,boolean light,float x,float y,float width,float height,float scale,float opacity) {
         if(width<=0||height<=0||scale<=0||opacity<.005f)return;
-        var id=texture("surface_"+surface.name().toLowerCase(java.util.Locale.ROOT)+(light?"_light":"_dark"),()->surface.rasterize(light),true);
+        var id=texture("surface_"+surface.name().toLowerCase(Locale.ROOT)+(light?"_light":"_dark"),()->surface.rasterize(light),true);
         float padding=surface.padding*scale;
         float[] xs={x-padding,x+surface.radius*scale,x+width-surface.radius*scale,x+width+padding};
         float[] ys={y-padding,y+surface.radius*scale,y+height-surface.radius*scale,y+height+padding};

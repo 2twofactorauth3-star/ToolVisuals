@@ -2,6 +2,7 @@ package ru.he3hauka.toolvisuals.client.sound.ui;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -15,6 +16,7 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer.Channel;
 import ru.he3hauka.toolvisuals.client.sound.SoundPreset;
@@ -43,7 +45,7 @@ public final class SoundLibraryScreen extends VisualEditorScreen {
             button(214, top, 70, 32, text("preview"), null, () -> preview(entry.id()), null);
             int column = 0;
             for (var channel : Channel.values()) {
-                button(294 + column++ * 102, top, 92, 32, text(channel.name().toLowerCase(java.util.Locale.ROOT)), null,
+                button(294 + column++ * 102, top, 92, 32, text(channel.name().toLowerCase(Locale.ROOT)), null,
                         () -> assign(channel, entry.id()), () -> entry.id().equals(ToolVisualsClient.SOUNDS.selected(channel))
                                 && (int)ToolVisualsClient.CONFIG.value(kind(channel)) == SoundPreset.CUSTOM);
             }
@@ -77,7 +79,7 @@ public final class SoundLibraryScreen extends VisualEditorScreen {
         }));
     }
     private void preview(String id) {
-        if (!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.SOUND_CUSTOMIZER)) return;
+        if (!ToolVisualsClient.CONFIG.available(VisualModule.SOUND_CUSTOMIZER)) return;
         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(CustomSounds.event(id), ToolVisualsClient.CONFIG.number(VisualSetting.SOUND_PITCH), .8f));
     }
     private void assign(Channel channel, String id) {

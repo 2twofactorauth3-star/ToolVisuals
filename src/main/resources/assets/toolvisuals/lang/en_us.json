@@ -1925,5 +1925,6 @@
   "toolvisuals.setting.item_highlight_slot_fill": "Fill the whole slot",
   "toolvisuals.setting.item_highlight_slot_opacity": "Slot opacity",
   "toolvisuals.setting.item_highlight_hand_strength": "Hand brightness",
-  "toolvisuals.setting.item_highlight_hand_radius": "Hand glow size"
+  "toolvisuals.setting.item_highlight_hand_radius": "Hand glow size",
+  "toolvisuals.setting.item_highlight_shimmer": "Subtle shimmer"
 }

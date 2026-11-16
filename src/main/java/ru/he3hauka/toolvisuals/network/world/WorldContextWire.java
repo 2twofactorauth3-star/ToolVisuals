@@ -1,9 +1,10 @@
 package ru.he3hauka.toolvisuals.network.world;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class WorldContextWire {
@@ -39,8 +40,8 @@ public final class WorldContextWire {
 
     public record State(UUID world, Area area, String name) {
         public State {
-            java.util.Objects.requireNonNull(world);
-            java.util.Objects.requireNonNull(area);
+            Objects.requireNonNull(world);
+            Objects.requireNonNull(area);
             if (!validName(name))
                 throw new IllegalArgumentException("Invalid world name");
         }

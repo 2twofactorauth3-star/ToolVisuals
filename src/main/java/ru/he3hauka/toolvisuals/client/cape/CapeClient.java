@@ -1,27 +1,33 @@
 package ru.he3hauka.toolvisuals.client.cape;
 
+import java.nio.BufferUnderflowException;
 import java.util.*;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.*;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.PlayerSkin;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.PlaybackClient;
 import ru.he3hauka.toolvisuals.client.cape.network.CapePayload;
+import ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview;
+import ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.cosmetic.cape.*;
+import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica;
+import ru.he3hauka.toolvisuals.network.fragment.PacketFragments;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CAPES;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class CapeClient {
     private record Publication(boolean receive,CapeDesign design){}
-    private static final ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica<CapeWire.State> REMOTE=new ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticReplica<>(256);
+    private static final CosmeticReplica<CapeWire.State> REMOTE=new CosmeticReplica<>(256);
     private static final Map<UUID,CapeTexture> TEXTURES=new HashMap<>();
-    private static final ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<UUID> TRANSFERS=new ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<>(64);
+    private static final PacketFragments.Assembler<UUID> TRANSFERS=new PacketFragments.Assembler<>(64);
     private static Object connection,player,world;
     private static UUID server;
     private static long epoch,sequence,lastSent;
@@ -45,7 +51,7 @@ public final class CapeClient {
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->client.execute(()->{
             if(connection==handler||connection==null&&client.getConnection()==null)reset(true);
         }));
-        ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity,level)->{release(entity.getUUID());REMOTE.unload(entity.getUUID());});
+        ReplayLifecycle.unload((entity,level)->{release(entity.getUUID());REMOTE.unload(entity.getUUID());});
         ClientLifecycleEvents.CLIENT_STOPPING.register(client->reset(true));
     }
     private static void reset(boolean reconnect){
@@ -80,7 +86,7 @@ public final class CapeClient {
         if(!available()||!Objects.equals(PlaybackClient.server(),part.server()))return;
         final CapeWire.State state;
         try{var bytes=TRANSFERS.accept(part.actor(),part.epoch(),part.revision(),part.fragment(),System.nanoTime());if(bytes==null)return;state=CapeTransferWire.assembled(part,bytes);}
-        catch(IllegalArgumentException|java.nio.BufferUnderflowException error){TRANSFERS.remove(part.actor(),part.epoch());return;}
+        catch(IllegalArgumentException|BufferUnderflowException error){TRANSFERS.remove(part.actor(),part.epoch());return;}
         receive(state);
     }
     private static void receive(CapeWire.State state){
@@ -97,8 +103,8 @@ public final class CapeClient {
         var remote=REMOTE.state(actor);return remote==null?null:remote.design();
     }
     public static void apply(UUID actor,AvatarRenderState state){
-        if(ru.he3hauka.toolvisuals.client.cosmetic.preview.PlayerPreview.preparing())return;
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;
+        if(PlayerPreview.preparing())return;
+        if(ReplayScope.active())return;
         var client=Minecraft.getInstance();
         if(client.player==null||!ToolVisualsClient.CONFIG.active(CAPES))return;
         boolean own=actor.equals(client.player.getUUID());
@@ -111,9 +117,9 @@ public final class CapeClient {
         var texture=TEXTURES.computeIfAbsent(actor,id->new CapeTexture());
         texture.apply(state,design);
     }
-    public static void skin(AvatarRenderState state,net.minecraft.core.ClientAsset.Texture cape){
+    public static void skin(AvatarRenderState state,ClientAsset.Texture cape){
         if(state.skin==null||cape==null)return;
         var old=state.skin;var elytra=old.elytra()!=null?old.elytra():old.cape()!=null&&!custom(old.cape().texturePath())?old.cape():null;state.skin=new PlayerSkin(old.body(),cape,elytra,old.model(),old.secure());state.showCape=true;
     }
-    public static boolean custom(net.minecraft.resources.Identifier id){return id.getNamespace().equals("toolvisuals")&&id.getPath().startsWith("capes/");}
+    public static boolean custom(Identifier id){return id.getNamespace().equals("toolvisuals")&&id.getPath().startsWith("capes/");}
 }

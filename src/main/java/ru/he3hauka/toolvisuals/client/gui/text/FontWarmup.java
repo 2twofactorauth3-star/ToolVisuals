@@ -1,9 +1,7 @@
 package ru.he3hauka.toolvisuals.client.gui.text;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.gui.render.UiTextRasterizer;
 
 public final class FontWarmup {

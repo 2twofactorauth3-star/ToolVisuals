@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.effects;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
-
 import net.minecraft.world.phys.Vec3;
 
 public final class EffectTimeline {

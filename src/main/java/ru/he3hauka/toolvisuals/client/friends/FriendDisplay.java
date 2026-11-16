@@ -2,6 +2,7 @@ package ru.he3hauka.toolvisuals.client.friends;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.Objects;
 
 public final class FriendDisplay {
     public enum Field { HEALTH,ARMOR,INVENTORY }
@@ -10,7 +11,7 @@ public final class FriendDisplay {
     public final boolean health,armor,inventory;
     public final InventoryMode mode;
     public FriendDisplay(boolean health,boolean armor,boolean inventory){this(health,armor,inventory,InventoryMode.DEFAULT);}
-    public FriendDisplay(boolean health,boolean armor,boolean inventory,InventoryMode mode){this.health=health;this.armor=armor;this.inventory=inventory;this.mode=java.util.Objects.requireNonNull(mode);}
+    public FriendDisplay(boolean health,boolean armor,boolean inventory,InventoryMode mode){this.health=health;this.armor=armor;this.inventory=inventory;this.mode=Objects.requireNonNull(mode);}
     public FriendDisplay toggle(Field field){return new FriendDisplay(field==Field.HEALTH?!health:health,field==Field.ARMOR?!armor:armor,field==Field.INVENTORY?!inventory:inventory,mode);}
     public FriendDisplay nextMode(){return new FriendDisplay(health,armor,inventory,InventoryMode.values()[(mode.ordinal()+1)%InventoryMode.values().length]);}
     public int mode(int fallback){return mode==InventoryMode.DEFAULT?fallback:mode==InventoryMode.GRID?0:1;}

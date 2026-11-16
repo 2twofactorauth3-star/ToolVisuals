@@ -1,11 +1,11 @@
 package ru.he3hauka.toolvisuals.client.discord.ipc;
 
+import com.google.gson.JsonObject;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import com.google.gson.JsonObject;
 import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
 
 public final class RpcFrame {

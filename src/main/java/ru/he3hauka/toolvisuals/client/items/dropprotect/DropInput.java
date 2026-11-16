@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.items.dropprotect;
 
 import java.util.ArrayDeque;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;

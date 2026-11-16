@@ -1,3 +1,4 @@
+using System.Text;
 using ToolLauncher.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -11,6 +12,7 @@ public sealed record RemoteFile(Uri Url, string? Hash = null, string Algorithm =
 
 public sealed class RemoteClient : IDisposable
 {
+    private static readonly string[] TrustedHosts = ["minecraft.net", "mojang.com", "fabricmc.net", "modrinth.com", "github.com", "githubusercontent.com", "adoptium.net", "maven.apache.org", "minecraftservices.com", "microsoftonline.com", "live.com", "xboxlive.com"];
     private readonly HttpClient client;
     private readonly SemaphoreSlim transfers = new(8);
     private readonly LauncherLog log;
@@ -23,8 +25,7 @@ public sealed class RemoteClient : IDisposable
     public static Uri Trusted(string url)
     {
         var uri = new Uri(url, UriKind.Absolute);
-        string[] roots = ["minecraft.net", "mojang.com", "fabricmc.net", "modrinth.com", "github.com", "githubusercontent.com", "adoptium.net", "maven.apache.org", "minecraftservices.com", "microsoftonline.com", "live.com", "xboxlive.com"];
-        if (uri.Scheme != "https" || !uri.IsDefaultPort || uri.UserInfo.Length > 0 || !roots.Any(host => uri.Host == host || uri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase)))
+        if (uri.Scheme != "https" || !uri.IsDefaultPort || uri.UserInfo.Length > 0 || !TrustedHosts.Any(host => uri.Host == host || uri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidDataException("Download source is not trusted: " + uri.Host);
         return uri;
     }
@@ -46,7 +47,7 @@ public sealed class RemoteClient : IDisposable
         await using var stream = await response.Content.ReadAsStreamAsync(timeout.Token);
         using var memory = new MemoryStream();
         await CopyBoundedAsync(stream, memory, 1024 * 1024, timeout.Token);
-        return System.Text.Encoding.UTF8.GetString(memory.ToArray()).Trim();
+        return Encoding.UTF8.GetString(memory.ToArray()).Trim();
     }
     public async Task DownloadAsync(RemoteFile file, string destination, CancellationToken token)
     {

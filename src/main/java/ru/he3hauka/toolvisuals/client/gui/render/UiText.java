@@ -1,14 +1,12 @@
 package ru.he3hauka.toolvisuals.client.gui.render;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import java.util.LinkedHashMap;
 import java.util.function.DoubleToIntFunction;
-
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import org.joml.Vector2f;
-
 import ru.he3hauka.toolvisuals.client.gui.text.TextRasterSizing;
 import ru.he3hauka.toolvisuals.client.gui.text.UiTextStyle;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;

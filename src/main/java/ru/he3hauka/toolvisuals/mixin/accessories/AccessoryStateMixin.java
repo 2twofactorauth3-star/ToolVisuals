@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.mixin.accessories;
 
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import org.spongepowered.asm.mixin.*;
-
 import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.*;
 
 @Mixin(AvatarRenderState.class)

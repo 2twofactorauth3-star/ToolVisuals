@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.animation.protocol.server;
 
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.animation.network.PacketBudget;
 
 public final class ObserverAdmissions {

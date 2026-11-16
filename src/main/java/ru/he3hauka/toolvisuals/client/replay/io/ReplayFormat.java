@@ -2,6 +2,7 @@ package ru.he3hauka.toolvisuals.client.replay.io;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
@@ -42,7 +43,7 @@ public final class ReplayFormat {
             var buffer = new byte[raw.length];
             deflater.reset(); deflater.setInput(raw); deflater.finish();
             int length = deflater.deflate(buffer);
-            if (deflater.finished() && length + 16 < raw.length) stored = java.util.Arrays.copyOf(buffer, length);
+            if (deflater.finished() && length + 16 < raw.length) stored = Arrays.copyOf(buffer, length);
         }
         var crc = new CRC32(); crc.update(raw);
         output.writeByte(frame.kind.id | (stored == raw ? 0 : 128));

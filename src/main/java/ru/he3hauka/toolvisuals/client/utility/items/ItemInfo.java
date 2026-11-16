@@ -1,14 +1,13 @@
 package ru.he3hauka.toolvisuals.client.utility.items;
 
 import java.util.List;
-
+import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
@@ -23,6 +22,6 @@ public final class ItemInfo {
         var container=item.get(DataComponents.CONTAINER);
         if(config.flag(ITEM_INFO_CONTAINER)&&container!=null)lines.add(UiI18n.tr("toolvisuals.utility.item_container",container.nonEmptyItemCopyStream().count(),Math.max(27,container.size())).withStyle(ChatFormatting.GRAY));
         var food=item.get(DataComponents.FOOD);
-        if(config.flag(ITEM_INFO_FOOD)&&food!=null)lines.add(UiI18n.tr("toolvisuals.utility.item_food",food.nutrition(),String.format(java.util.Locale.ROOT,"%.1f",food.saturation())).withStyle(ChatFormatting.GRAY));
+        if(config.flag(ITEM_INFO_FOOD)&&food!=null)lines.add(UiI18n.tr("toolvisuals.utility.item_food",food.nutrition(),String.format(Locale.ROOT,"%.1f",food.saturation())).withStyle(ChatFormatting.GRAY));
     }
 }

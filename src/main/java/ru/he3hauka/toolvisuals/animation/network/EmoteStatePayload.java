@@ -1,9 +1,8 @@
 package ru.he3hauka.toolvisuals.animation.network;
 
+import io.netty.handler.codec.DecoderException;
 import java.util.Objects;
 import java.util.UUID;
-
-import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

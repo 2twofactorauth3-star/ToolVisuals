@@ -1,12 +1,13 @@
 package ru.he3hauka.toolvisuals.client.navigation.gps;
 
 import java.util.UUID;
+import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
 
 public record GpsTarget(double x, double y, double z, String world) {
     public GpsTarget {
         if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)
                 || Math.abs(x) > 30_000_000 || Math.abs(z) > 30_000_000 || Math.abs(y) > 4096
-                || !ru.he3hauka.toolvisuals.network.world.WorldContextWire.validName(world)) throw new IllegalArgumentException("Invalid GPS target");
+                || !WorldContextWire.validName(world)) throw new IllegalArgumentException("Invalid GPS target");
     }
 
     public static GpsTarget parse(String arguments) {

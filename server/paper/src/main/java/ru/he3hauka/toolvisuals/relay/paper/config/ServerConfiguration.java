@@ -2,14 +2,14 @@ package ru.he3hauka.toolvisuals.relay.paper.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.he3hauka.toolvisuals.relay.paper.reward.RewardSettings;
 import ru.he3hauka.toolvisuals.relay.paper.storage.StorageSettings;
+import ru.he3hauka.toolvisuals.storage.AtomicFiles;
 
 public final class ServerConfiguration {
     public final RewardSettings reward;
@@ -33,6 +33,6 @@ public final class ServerConfiguration {
                 config.getLong("reward.required-playtime-seconds", 1800), config.getStringList("reward.commands"),
                 config.getInt("storage-flush-seconds", 30), config.getString("placeholders.using", "Да"), config.getString("placeholders.not-using", "Нет"), messages);
         storage = new StorageSettings(database, plugin.getDataFolder().toPath());
-        if (migrated) ru.he3hauka.toolvisuals.storage.AtomicFiles.write(configFile.toPath(), config.saveToString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        if (migrated) AtomicFiles.write(configFile.toPath(), config.saveToString().getBytes(StandardCharsets.UTF_8));
     }
 }

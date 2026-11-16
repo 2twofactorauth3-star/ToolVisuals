@@ -1,14 +1,13 @@
 package ru.he3hauka.toolvisuals.client.minigame;
 
+import com.mojang.brigadier.CommandDispatcher;
 import java.util.UUID;
-
+import java.util.function.BooleanSupplier;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
-import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.commands.arguments.UuidArgument;
-
 import ru.he3hauka.toolvisuals.client.chat.message.ChatColors;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
@@ -20,7 +19,7 @@ public final class MiniGameInvitation {
     private static final String COMMAND = "toolvisuals_minigame";
     private MiniGameInvitation() {}
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, java.util.function.BooleanSupplier available) {
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, BooleanSupplier available) {
         var root = literal(COMMAND).requires(source -> available.getAsBoolean());
         for (boolean accept : new boolean[]{true, false}) root.then(literal(action(accept)).then(argument("invitation", UuidArgument.uuid())
                 .executes(context -> MiniGamesClient.answer(context.getArgument("invitation", UUID.class), accept) ? 1 : 0)));

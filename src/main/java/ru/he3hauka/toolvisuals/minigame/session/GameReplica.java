@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.minigame.session;
 
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.minigame.GameKind;
 import ru.he3hauka.toolvisuals.minigame.GameRound;
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -29,8 +30,8 @@ public sealed class LauncherLog
         {
             string line = DateTimeOffset.Now.ToString("O") + " " + Redact(value) + Environment.NewLine;
             try { File.AppendAllText(FilePath, line, Encoding.UTF8); }
-            catch (IOException error) { System.Diagnostics.Trace.WriteLine(error); }
-            catch (UnauthorizedAccessException error) { System.Diagnostics.Trace.WriteLine(error); }
+            catch (IOException error) { Trace.WriteLine(error); }
+            catch (UnauthorizedAccessException error) { Trace.WriteLine(error); }
         }
     }
 }

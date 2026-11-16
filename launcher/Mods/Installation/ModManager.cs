@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ToolLauncher.Diagnostics;
 using ToolLauncher.Storage;
 using ToolLauncher.Mods.Catalog;
@@ -20,7 +21,7 @@ public sealed class ModManager(LauncherPaths paths, RemoteClient remote, Launche
         {
             token.ThrowIfCancellationRequested();
             try { result.Add(ModArchive.Read(path)); }
-            catch (Exception error) when (error is IOException or InvalidOperationException or System.Text.Json.JsonException) { log.Error("Read installed mod: " + path, error); }
+            catch (Exception error) when (error is IOException or InvalidOperationException or JsonException) { log.Error("Read installed mod: " + path, error); }
         }
         return result.OrderBy(mod => mod.Id == "toolvisuals" ? 0 : 1).ThenBy(mod => mod.Name).ToArray();
     }
@@ -31,7 +32,7 @@ public sealed class ModManager(LauncherPaths paths, RemoteClient remote, Launche
         {
             token.ThrowIfCancellationRequested();
             try { identities.AddRange(ModArchive.ReadIdentities(mod.File)); }
-            catch (Exception error) when (error is IOException or InvalidOperationException or System.Text.Json.JsonException)
+            catch (Exception error) when (error is IOException or InvalidOperationException or JsonException)
             {
                 log.Error("Read installed mod catalog identities: " + mod.File, error);
             }
@@ -42,40 +43,14 @@ public sealed class ModManager(LauncherPaths paths, RemoteClient remote, Launche
     {
         string profile = paths.Profile(target.Minecraft); Directory.CreateDirectory(profile);
         using var lease = ProfileLease.Acquire(profile);
-        var plan = new List<(ModRelease Release, ModInfo Metadata, string Staged)>();
-        var visited = new HashSet<string>();
         var existing = Installed(target).ToDictionary(mod => mod.Id);
         var provided = new HashSet<string>(existing.Values.Where(mod => mod.Enabled).Select(mod => mod.Id));
         foreach (var mod in existing.Values.Where(mod => mod.Id == "toolvisuals" && mod.Enabled)) provided.UnionWith(ModArchive.ProvidedIds(mod.File));
         string stage = Path.Combine(profile, ".toollauncher", "staging", Guid.NewGuid().ToString("N")); Directory.CreateDirectory(stage);
-        async Task Resolve(ModProject entry, string? version, bool root)
-        {
-            token.ThrowIfCancellationRequested();
-            string key = entry.Id + "@" + version;
-            if (!visited.Add(key)) return;
-            if (visited.Count > 64) throw new InvalidDataException("Mod dependency graph exceeds 64 entries");
-            progress.Report(new("mods", plan.Count, visited.Count));
-            ModRelease release = await source.ResolveAsync(entry, target, version, token);
-            if (release.File == null) throw new ManualDownloadRequired(release.Project.Website, "The author requires downloading this file on the project's website. Download its JAR and use Import.");
-            if (Path.GetFileName(release.Filename) != release.Filename || !release.Filename.EndsWith(".jar") || release.Filename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) throw new InvalidDataException("Invalid mod filename");
-            string staged = LauncherPaths.SafeChild(stage, release.Project.Id.Replace('/', '_') + "-" + release.Filename);
-            await remote.DownloadAsync(release.File, staged, token);
-            ModInfo info = ModArchive.Read(staged); ModArchive.Validate(info, target);
-            if (provided.Contains(info.Id) && !existing.ContainsKey(info.Id))
-            {
-                if (root) throw new InvalidOperationException(info.Name + " is already included in ToolVisuals. Use its in-game settings.");
-                return;
-            }
-            if (info.Id == "toolvisuals") throw new InvalidOperationException("ToolVisuals is managed by the launcher");
-            if (provided.Contains(info.Id) && !root) return;
-            if (plan.Any(item => item.Metadata.Id == info.Id)) return;
-            plan.Add((release, info, staged)); provided.Add(info.Id);
-            foreach (var dependency in release.Dependencies)
-                await Resolve(new(source.Name, dependency.ProjectId, dependency.ProjectId, "", "", 0, release.Project.Website), dependency.VersionId, false);
-        }
         try
         {
-            await Resolve(project, null, true);
+            var resolver = new ModDependencyResolver(remote, source, target, stage, existing, provided, progress);
+            var plan = await resolver.PrepareAsync(project, token);
             token.ThrowIfCancellationRequested();
             Commit(profile, plan.Select(item => (item.Metadata.Id, item.Staged, item.Release.Filename)).ToArray(), existing);
             log.Info("Installed " + project.Title + " with " + Math.Max(0, plan.Count - 1) + " required dependencies for " + target.Minecraft);

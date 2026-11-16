@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.client.potion.ui;
 
 import java.util.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
@@ -10,6 +11,7 @@ import ru.he3hauka.toolvisuals.client.hud.layout.*;
 import ru.he3hauka.toolvisuals.client.hud.players.PlayerListPanel;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.potion.tracker.*;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class BuffTrackerHud {
@@ -21,7 +23,7 @@ public final class BuffTrackerHud {
         if(revision!=BuffTracker.revision()||configRevision!=config.revision()){
             var next=new ArrayList<PlayerListPanel.Row>();
             for(var entry:BuffTracker.entries()){
-                if(!config.flag(entry.player().equals(net.minecraft.client.Minecraft.getInstance().player.getUUID())?BUFF_SELF:BUFF_OTHERS))continue;
+                if(!config.flag(entry.player().equals(Minecraft.getInstance().player.getUUID())?BUFF_SELF:BUFF_OTHERS))continue;
                 if(next.size()>=(int)config.value(BUFF_LIMIT))break;
                 StringJoiner text=new StringJoiner(" · ");int i=0;
                 for(var effect:entry.effects()){

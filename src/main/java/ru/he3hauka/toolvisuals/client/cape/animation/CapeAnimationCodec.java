@@ -1,10 +1,10 @@
 package ru.he3hauka.toolvisuals.client.cape.animation;
 
-import java.util.Base64;
-import java.util.ArrayList;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Base64;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 public final class CapeAnimationCodec {

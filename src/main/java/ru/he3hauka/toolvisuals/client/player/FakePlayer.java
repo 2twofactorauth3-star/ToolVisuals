@@ -1,8 +1,7 @@
 package ru.he3hauka.toolvisuals.client.player;
 
-import java.util.UUID;
-
 import com.mojang.authlib.GameProfile;
+import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.RemotePlayer;
@@ -11,8 +10,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.entity.player.PlayerSkin;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer;
 
@@ -45,7 +44,7 @@ public final class FakePlayer {
         entity = new RemotePlayer(level,new GameProfile(UUID.randomUUID(),source.getGameProfile().name())) {
             @Override public PlayerSkin getSkin() { return skin; }
             @Override public HumanoidArm getMainArm() { return arm; }
-            @Override public boolean isModelPartShown(net.minecraft.world.entity.player.PlayerModelPart part) { return source.isModelPartShown(part); }
+            @Override public boolean isModelPartShown(PlayerModelPart part) { return source.isModelPartShown(part); }
             @Override public boolean isPushable() { return false; }
         };
         while (level.getEntity(nextId) != null) nextId--;

@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.motionblur;
 
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import java.util.Map;
 import net.minecraft.client.renderer.PostPass;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

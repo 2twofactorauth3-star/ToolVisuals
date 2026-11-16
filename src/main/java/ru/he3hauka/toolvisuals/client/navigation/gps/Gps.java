@@ -11,6 +11,8 @@ import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.navigation.gps.ui.GpsScreen;
 import ru.he3hauka.toolvisuals.client.presents.network.PresentWorld;
 import ru.he3hauka.toolvisuals.client.waypoint.Waypoints;
+import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.GPS;
 
 public final class Gps {
@@ -58,7 +60,7 @@ public final class Gps {
         String world = identity == null ? "" : identity.name();
         if (world.isEmpty() && client.getSingleplayerServer() != null)
             world = client.getSingleplayerServer().getWorldPath(LevelResource.ROOT).normalize().getFileName().toString();
-        if (world.isEmpty() && identity != null && identity.area() != ru.he3hauka.toolvisuals.network.world.WorldContextWire.Area.OTHER)
+        if (world.isEmpty() && identity != null && identity.area() != WorldContextWire.Area.OTHER)
             world = identity.area().name();
         String name = world;
         visible = ToolVisualsClient.GPS_POINTS.entries(Waypoints.context()).stream().filter(GpsMark::active)

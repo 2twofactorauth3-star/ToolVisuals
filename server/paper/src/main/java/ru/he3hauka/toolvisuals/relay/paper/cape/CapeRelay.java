@@ -1,11 +1,12 @@
 package ru.he3hauka.toolvisuals.relay.paper.cape;
 
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import ru.he3hauka.toolvisuals.animation.network.*;
-import ru.he3hauka.toolvisuals.network.RevisionOutbox;
 import ru.he3hauka.toolvisuals.cosmetic.cape.*;
+import ru.he3hauka.toolvisuals.network.RevisionOutbox;
+import ru.he3hauka.toolvisuals.network.fragment.PacketFragments;
 
 public final class CapeRelay {
     public static final class Endpoint {
@@ -22,7 +23,7 @@ public final class CapeRelay {
     }
     private final CapeSessions sessions;
     private final UUID server;
-    private final ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<UUID> uploads=new ru.he3hauka.toolvisuals.network.fragment.PacketFragments.Assembler<>(64);
+    private final PacketFragments.Assembler<UUID> uploads=new PacketFragments.Assembler<>(64);
     public record Fragment(boolean accepted,byte[] bytes){}
     private final PacketBudget inputBudget=new PacketBudget(16,64,System.nanoTime());
     private final PacketBudget animationBudget=new PacketBudget(4,8,System.nanoTime());
@@ -32,8 +33,7 @@ public final class CapeRelay {
     private final RelayLimits sends=new RelayLimits(System.nanoTime(),32,128,8,16);
     public CapeRelay(UUID server){this.server=server;sessions=new CapeSessions(server,RelayLimits.MAX_PLAYERS);}
     public synchronized boolean accept(Endpoint endpoint,long now){
-        if(!endpoint.inputBudget.available(now)||!inputBudget.available(now))return false;
-        endpoint.inputBudget.allow(now);inputBudget.allow(now);return true;
+        return endpoint.inputBudget.allowTogether(inputBudget, now);
     }
     public synchronized Fragment fragment(Endpoint endpoint,UUID actor,long epoch,CapeTransferWire.RequestPart part,long now){
         if(part.epoch()!=epoch)return new Fragment(false,null);
@@ -66,7 +66,7 @@ public final class CapeRelay {
     }
     public static int deliveryBytes(CapeWire.State state){
         int bytes=49+(state.design()==null?0:2+state.design().frameCount*CapeDesign.BYTES);
-        return bytes+Math.ceilDiv(bytes,ru.he3hauka.toolvisuals.network.fragment.PacketFragments.DATA_BYTES)*(48+ru.he3hauka.toolvisuals.network.fragment.PacketFragments.HEADER_BYTES);
+        return bytes+Math.ceilDiv(bytes,PacketFragments.DATA_BYTES)*(48+PacketFragments.HEADER_BYTES);
     }
     public void idle(UUID recipient){sends.idle(recipient);}
 }

@@ -6,9 +6,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.player.Player;
-import squeek.appleskin.api.event.HUDOverlayEvent;
-import squeek.appleskin.client.HUDOverlayHandler;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
@@ -16,6 +13,8 @@ import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 import ru.he3hauka.toolvisuals.mixin.appleskin.AppleSkinOffsetsInvoker;
+import squeek.appleskin.api.event.HUDOverlayEvent;
+import squeek.appleskin.client.HUDOverlayHandler;
 
 public final class FoodVisuals {
     private static final Identifier EMPTY_FOOD = Identifier.withDefaultNamespace("hud/food_empty");

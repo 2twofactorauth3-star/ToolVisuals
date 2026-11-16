@@ -2,17 +2,26 @@ package ru.he3hauka.toolvisuals.client.armor.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.network.chat.Component;
-
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.item.ItemStack;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.animation.EmoteVisualState;
 import ru.he3hauka.toolvisuals.client.armor.ArmorColors;
+import ru.he3hauka.toolvisuals.client.armor.ArmorTint;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.config.color.HexColor;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
+import ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryVisualState;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
@@ -20,6 +29,7 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.hud.armor.ArmorHud;
 import ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudEditorScreen;
@@ -39,7 +49,7 @@ public final class ArmorSettingsScreen extends Screen {
     private UiPalette palette;
     private int previewIndex;
     private long previewRevision = -1;
-    private net.minecraft.client.renderer.entity.state.AvatarRenderState armorPreview;
+    private AvatarRenderState armorPreview;
     public ArmorSettingsScreen(Screen parent, boolean status) {
         super(Component.literal(status ? "ArmorColor" : "ArmorHUD")); this.parent = parent; this.status = status;
     }
@@ -52,7 +62,7 @@ public final class ArmorSettingsScreen extends Screen {
         button(596, 12, 38, 28, Component.empty(), this::onClose, null);
         var module = status ? ARMOR_COLOR : ARMOR_HUD;
         button(466, 12, 120, 28, tr("enabled"), () -> config.setActive(module, !config.active(module)), () -> config.active(module));
-        if (!status&&config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR)) button(20, 380, 296, 30, tr("move"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null);
+        if (!status&&config.available(ClientFeature.HUD_EDITOR)) button(20, 380, 296, 30, tr("move"), () -> minecraft.gui.setScreen(new HudEditorScreen(this)), null);
         button(status ? 20 : 332, 380, status ? 608 : 296, 30, UiI18n.tr("toolvisuals.reset"), () -> { config.reset(module); rebuildWidgets(); }, null);
         if (status) {
             for (int i = 0; i < 5; i++) {
@@ -92,7 +102,7 @@ public final class ArmorSettingsScreen extends Screen {
             button(332, 340, 296, 28, tr("full_bars"), () -> config.setValue(ARMOR_FULL_BAR, config.flag(ARMOR_FULL_BAR) ? 0 : 1), () -> config.flag(ARMOR_FULL_BAR));
         }
     }
-    private VisualsButton button(int x, int y, int w, int h, Component label, Runnable action, java.util.function.BooleanSupplier selected) {
+    private VisualsButton button(int x, int y, int w, int h, Component label, Runnable action, BooleanSupplier selected) {
         boolean icon = label.getString().isEmpty();
         var b = addWidget(new VisualsButton(px + x, py + y, w, h, label,
                 icon ? VisualsButton.Kind.ICON : VisualsButton.Kind.CHIP,
@@ -106,12 +116,7 @@ public final class ArmorSettingsScreen extends Screen {
         }));
     }
     private EditBox field(int x, int y, int w, String value) {
-        var field = addWidget(new EditBox(UiFont.get(), px + x, py + y, w, 30, title) {
-            @Override public void extractWidgetRenderState(GuiGraphicsExtractor g, int mx, int my, float partial) {
-                g.pose().pushMatrix(); g.pose().translate(0, UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g, mx, my, partial); g.pose().popMatrix();
-            }
-        });
+        var field = addWidget(new CenteredEditBox(UiFont.get(), px + x, py + y, w, 30, title));
         field.setBordered(false); field.setTextShadow(false); field.setValue(value); fields.add(field); return field;
     }
     @Override public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float partial) { g.fill(0, 0, width, height, 0xa00a0b14); }
@@ -160,16 +165,16 @@ public final class ArmorSettingsScreen extends Screen {
     private void drawArmorPreview(GuiGraphicsExtractor g) {
         if (minecraft.player == null) return;
         if (armorPreview == null || previewRevision != config.revision() || (int)armorPreview.ageInTicks != previewIndex) {
-            armorPreview = (net.minecraft.client.renderer.entity.state.AvatarRenderState)minecraft.getEntityRenderDispatcher()
+            armorPreview = (AvatarRenderState)minecraft.getEntityRenderDispatcher()
                     .getRenderer(minecraft.player).createRenderState(minecraft.player, 1);
-            ru.he3hauka.toolvisuals.client.animation.EmoteVisualState.clearPreview(armorPreview);ru.he3hauka.toolvisuals.client.cosmetic.accessory.render.AccessoryVisualState.clear(armorPreview);
+            EmoteVisualState.clearPreview(armorPreview);AccessoryVisualState.clear(armorPreview);
             armorPreview.ageInTicks = previewIndex;
             armorPreview.nameTag = null; armorPreview.scoreText = null; armorPreview.shadowPieces.clear();
             armorPreview.leashStates = null; armorPreview.displayFireAnimation = false; armorPreview.isInvisible = false;
             armorPreview.outlineColor = 0; armorPreview.bodyRot = 180; armorPreview.yRot = 0; armorPreview.xRot = 0;
             armorPreview.walkAnimationSpeed = 0; armorPreview.walkAnimationPos = 0; armorPreview.hasRedOverlay = false;
-            armorPreview.pose = net.minecraft.world.entity.Pose.STANDING;
-            var items = new net.minecraft.world.item.ItemStack[4];
+            armorPreview.pose = Pose.STANDING;
+            var items = new ItemStack[4];
             double percent = config.value(ArmorColors.LEVELS[previewIndex]);
             for (int i = 0; i < 4; i++) {
                 items[i] = ArmorHud.preview(i).copy();
@@ -177,14 +182,14 @@ public final class ArmorSettingsScreen extends Screen {
             }
             armorPreview.headEquipment = items[0]; armorPreview.chestEquipment = items[1];
             armorPreview.legsEquipment = items[2]; armorPreview.feetEquipment = items[3];
-            ((ru.he3hauka.toolvisuals.client.armor.ArmorTint.Preview)armorPreview).toolvisuals$armorPreview(true);
+            ((ArmorTint.Preview)armorPreview).toolvisuals$armorPreview(true);
             previewRevision = config.revision();
         }
-        var first = g.pose().transformPosition(px + 356, py + 84, new org.joml.Vector2f());
-        var last = g.pose().transformPosition(px + 624, py + 308, new org.joml.Vector2f());
+        var first = g.pose().transformPosition(px + 356, py + 84, new Vector2f());
+        var last = g.pose().transformPosition(px + 624, py + 308, new Vector2f());
         float units = (float)Math.hypot(g.pose().m00(), g.pose().m01());
-        g.entity(armorPreview, 106 * units, new org.joml.Vector3f(0, .9f, 0),
-                new org.joml.Quaternionf().rotationZ((float)Math.PI), new org.joml.Quaternionf(),
+        g.entity(armorPreview, 106 * units, new Vector3f(0, .9f, 0),
+                new Quaternionf().rotationZ((float)Math.PI), new Quaternionf(),
                 Math.round(first.x), Math.round(first.y), Math.round(last.x), Math.round(last.y));
     }
     @Override public boolean mouseReleased(MouseButtonEvent e) { return super.mouseReleased(adjusted(e)); }

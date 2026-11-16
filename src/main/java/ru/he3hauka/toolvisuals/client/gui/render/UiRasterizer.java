@@ -18,7 +18,7 @@ final class UiRasterizer {
         for(int py=0;py<pixels;py++)for(int px=0;px<pixels;px++){
             double dx=(px+.5-pixels/2d)/(pixels/2d-1),dy=(py+.5-pixels/2d)/(pixels/2d-1),radius=Math.hypot(dx,dy);
             int alpha=(int)Math.round(Math.clamp((1-radius)*(pixels/2d-1)+.5,0,1)*255);
-            image.setRGB(px,py,alpha<<24|(java.awt.Color.HSBtoRGB((float)((Math.atan2(dy,dx)/Math.TAU+1)%1),(float)Math.min(1,radius),1)&0xffffff));
+            image.setRGB(px,py,alpha<<24|(Color.HSBtoRGB((float)((Math.atan2(dy,dx)/Math.TAU+1)%1),(float)Math.min(1,radius),1)&0xffffff));
         }
         return image;
     }

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using ToolLauncher.Diagnostics;
 using System.Diagnostics;
 using System.Text.Json;
@@ -30,7 +31,7 @@ public sealed class JavaRuntime(LauncherPaths paths, RemoteClient remote, Launch
         {
             if (!File.Exists(candidate)) continue;
             try { if (await MajorAsync(candidate, token) == target.Java) return candidate; }
-            catch (Exception error) when (error is IOException or System.ComponentModel.Win32Exception or InvalidOperationException) { log.Error("Inspect Java installation: " + candidate, error); }
+            catch (Exception error) when (error is IOException or Win32Exception or InvalidOperationException) { log.Error("Inspect Java installation: " + candidate, error); }
         }
         if (!settings.AutomaticJava) throw new InvalidOperationException("Java " + target.Java + " was not found. Select java.exe in settings or enable automatic installation.");
         progress.Report(new("java"));

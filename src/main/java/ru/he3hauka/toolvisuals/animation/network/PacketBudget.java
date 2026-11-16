@@ -26,6 +26,13 @@ public final class PacketBudget {
     public boolean allow(long now) {
         return allow(now,1);
     }
+    public boolean allowTogether(PacketBudget other, long now) {
+        if (other == this) return allow(now, 2);
+        if (!available(now) || !other.available(now)) return false;
+        available--;
+        other.available--;
+        return true;
+    }
     public boolean allow(long now,int cost) {
         if(!available(now,cost))return false;
         available-=cost;

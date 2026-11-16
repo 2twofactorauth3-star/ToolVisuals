@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.optimization;
 
-import java.util.List;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.List;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import org.spongepowered.asm.mixin.Mixin;

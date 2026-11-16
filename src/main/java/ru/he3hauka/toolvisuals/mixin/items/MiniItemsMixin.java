@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MINI_ITEMS;

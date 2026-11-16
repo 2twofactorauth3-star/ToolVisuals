@@ -2,14 +2,15 @@ package ru.he3hauka.toolvisuals.client.render.motionblur;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.system.MemoryStack;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurChainAccessor;
 import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurGameAccessor;
 import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurPassAccessor;
-import ru.he3hauka.toolvisuals.mixin.motionblur.MotionBlurChainAccessor;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MOTION_BLUR;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.MOTION_BLUR_STRENGTH;
@@ -25,7 +26,7 @@ public final class MotionBlur {
                 && client.gui.screen() == null && client.gui.overlay() == null && !client.getWindow().isIconified();
     }
 
-    public static void requested(java.util.List<Identifier> effects) {
+    public static void requested(List<Identifier> effects) {
         if (active() && !effects.contains(EFFECT)) effects.add(EFFECT);
         else if (!active()) HISTORY.clear();
     }

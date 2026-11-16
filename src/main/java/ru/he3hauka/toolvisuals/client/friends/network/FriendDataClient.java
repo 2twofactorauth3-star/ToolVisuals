@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +15,7 @@ import ru.he3hauka.toolvisuals.client.animation.PlaybackClient;
 import ru.he3hauka.toolvisuals.client.friends.*;
 import ru.he3hauka.toolvisuals.network.friends.FriendOutbox;
 import ru.he3hauka.toolvisuals.network.friends.FriendWire;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -56,7 +58,7 @@ public final class FriendDataClient {
     }
     private static void sample(Minecraft client){
         var config=ToolVisualsClient.CONFIG;var requested=new LinkedHashMap<UUID,Integer>();var rows=new LinkedHashMap<String,FriendData>();
-        boolean cursor=client.gui.screen() instanceof net.minecraft.client.gui.screens.ChatScreen;
+        boolean cursor=client.gui.screen() instanceof ChatScreen;
         for(var online:Friends.onlinePlayers().entrySet()){
             var friend=ToolVisualsClient.FRIENDS.get(online.getValue());if(friend==null)continue;
             if(rows.containsKey(friend.name.toLowerCase(Locale.ROOT)))continue;

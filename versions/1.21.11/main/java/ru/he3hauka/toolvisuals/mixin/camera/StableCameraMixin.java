@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.NO_HURT_CAM;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.CAM_FOV;
 

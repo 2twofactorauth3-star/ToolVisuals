@@ -2,7 +2,7 @@ package ru.he3hauka.toolvisuals.relay.paper.storage;
 
 import java.nio.file.Path;
 import java.util.Locale;
-
+import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
 
 public final class StorageSettings {
@@ -26,7 +26,7 @@ public final class StorageSettings {
         port = source.getInt("mysql.port", 3306);
         if (!host.matches("[a-zA-Z0-9.\\[\\]:_-]{1,253}") || !database.matches("[a-zA-Z0-9_-]{1,64}") || port < 1 || port > 65535)
             throw new IllegalArgumentException("Invalid MySQL host, database or port");
-        if (!java.util.Set.of("DISABLED", "REQUIRED", "VERIFY_CA", "VERIFY_IDENTITY").contains(sslMode))
+        if (!Set.of("DISABLED", "REQUIRED", "VERIFY_CA", "VERIFY_IDENTITY").contains(sslMode))
             throw new IllegalArgumentException("Invalid mysql.ssl-mode");
         maximumPoolSize = backend == Backend.SQLITE ? 1 : Math.clamp(source.getInt("pool.maximum-size", 4), 1, 16);
         busyTimeoutMillis = Math.clamp(source.getInt("sqlite.busy-timeout-millis", 5000), 1000, 30000);

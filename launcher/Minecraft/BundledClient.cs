@@ -28,7 +28,7 @@ public static class BundledClient
     private static IReadOnlyList<ClientBuild> ReadBuilds()
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ToolLauncher.Clients.clients.json");
-        return stream == null ? [] : Array.AsReadOnly(JsonSerializer.Deserialize<ClientBuild[]>(stream, Storage.AtomicJson.Options) ?? []);
+        return stream == null ? [] : Array.AsReadOnly(JsonSerializer.Deserialize<ClientBuild[]>(stream, AtomicJson.Options) ?? []);
     }
     public static async Task InstallAsync(string profile, GameTarget target, CancellationToken token)
     {
@@ -47,7 +47,7 @@ public static class BundledClient
                 foreach (string old in Directory.EnumerateFiles(mods, "*.jar"))
                 {
                     if (old.Equals(destination, StringComparison.OrdinalIgnoreCase)) continue;
-                    if (ToolLauncher.Mods.Installation.ModArchive.Read(old).Id == "toolvisuals")
+                    if (ModArchive.Read(old).Id == "toolvisuals")
                     {
                         string backup = Path.Combine(profile, ".toollauncher", "backups", DateTime.UtcNow.Ticks + "-" + Path.GetFileName(old));
                         Directory.CreateDirectory(Path.GetDirectoryName(backup)!); File.Move(old, backup);

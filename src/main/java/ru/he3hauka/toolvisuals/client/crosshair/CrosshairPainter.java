@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.crosshair;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;

@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+import ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 
 @Mixin(BlockEntityRenderDispatcher.class)
@@ -17,8 +18,8 @@ public abstract class BlockEntityRenderDispatcherMixin {
     private void toolvisuals$hideBlockEntity(BlockEntity entity, float partialTick,
             ModelFeatureRenderer.CrumblingOverlay breaking,
             CallbackInfoReturnable<BlockEntityRenderState> cir) {
-        ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.count(ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics.Counter.BLOCK_ENTITY_CANDIDATES,1);
-        if (NoRender.hidesBlockEntity(entity)||ru.he3hauka.toolvisuals.client.optimization.occlusion.OcclusionService.hidden(entity,false)) cir.setReturnValue(null);
+        Diagnostics.count(Diagnostics.Counter.BLOCK_ENTITY_CANDIDATES,1);
+        if (NoRender.hidesBlockEntity(entity)||OcclusionService.hidden(entity,false)) cir.setReturnValue(null);
     }
 }
 

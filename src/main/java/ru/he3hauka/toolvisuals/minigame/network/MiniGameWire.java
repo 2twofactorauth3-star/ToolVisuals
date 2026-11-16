@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.minigame.network;
 import java.io.*;
 import java.util.Objects;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.minigame.GameKind;
 
 public final class MiniGameWire {

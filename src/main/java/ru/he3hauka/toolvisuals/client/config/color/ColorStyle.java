@@ -1,11 +1,11 @@
 package ru.he3hauka.toolvisuals.client.config.color;
 
 import java.util.*;
-
+import java.util.concurrent.ConcurrentHashMap;
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
 
 public final class ColorStyle extends ColorPalette {
-    private static final java.util.concurrent.ConcurrentHashMap<Integer,ColorStyle> SOLID=new java.util.concurrent.ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer,ColorStyle> SOLID=new ConcurrentHashMap<>();
     public ColorStyle(Collection<Integer> colors,Mode mode,Space space,double duration,double hold,double phase,double spread,boolean smooth,boolean reverse){super(colors,mode,space,duration,hold,phase,spread,smooth,reverse);}
     public static ColorStyle solid(int rgb){
         rgb&=0xffffff;var old=SOLID.get(rgb);if(old!=null)return old;

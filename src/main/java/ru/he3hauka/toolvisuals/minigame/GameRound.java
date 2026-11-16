@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.minigame;
 
 import java.util.Arrays;
-
 import ru.he3hauka.toolvisuals.minigame.board.GridBoard;
 import ru.he3hauka.toolvisuals.minigame.sling.SlingGame;
 

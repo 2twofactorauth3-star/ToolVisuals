@@ -1,34 +1,39 @@
 package ru.he3hauka.toolvisuals.mixin.customhand;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
-import net.minecraft.client.renderer.state.level.PlayerRenderState;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
 import ru.he3hauka.toolvisuals.client.hand.render.HandRendering;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.render.NoSwing;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CUSTOM_HAND;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 @Mixin(FirstPersonHandsAndItemsRenderer.class)
 public abstract class CustomHandMixin {
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(method = "submitHandsWithItems",
+    @ModifyExpressionValue(method = "submitHandsWithItems",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;swingAnimation:F"))
     private float toolvisuals$firstPersonSwing(float original) {
-        return ru.he3hauka.toolvisuals.client.render.NoSwing.firstPerson() ? 0 : original;
+        return NoSwing.firstPerson() ? 0 : original;
     }
 
     @WrapMethod(method="submitHandsWithItems")
@@ -54,15 +59,15 @@ public abstract class CustomHandMixin {
         } finally { HandRendering.end(capture);pose.popPose(); }
     }
 
-    @com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation(method = "submitArmWithItem",
+    @WrapOperation(method = "submitArmWithItem",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
-    private void toolvisuals$heldItem(net.minecraft.client.renderer.item.ItemStackRenderState item, PoseStack pose,
+    private void toolvisuals$heldItem(ItemStackRenderState item, PoseStack pose,
             SubmitNodeCollector nodes, int light, int overlay, int outline,
             Operation<Void> original, @Local(argsOnly=true) PlayerRenderState player,
             @Local(argsOnly=true) InteractionHand hand) {
         var config = ToolVisualsClient.CONFIG;
         boolean custom = config.active(CUSTOM_HAND) && player.avatarRenderState != null;
-        boolean mini = config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.MINI_ITEMS) && config.flag(MINI_HAND);
+        boolean mini = config.active(VisualModule.MINI_ITEMS) && config.flag(MINI_HAND);
         if (!custom && !mini) {
             original.call(item, pose, nodes, light, overlay, outline);
             return;
@@ -119,7 +124,7 @@ public abstract class CustomHandMixin {
     private void toolvisuals$heldMap(PoseStack pose,SubmitNodeCollector nodes,int light,ItemStack item,
             boolean mainHand,FirstPersonHandsAndItemsRenderState hands,Operation<Void> original) {
         var config=ToolVisualsClient.CONFIG;
-        var player=net.minecraft.client.Minecraft.getInstance().player;
+        var player=Minecraft.getInstance().player;
         if(!config.active(CUSTOM_HAND)||player==null) {
             original.call(pose,nodes,light,item,mainHand,hands);
             return;

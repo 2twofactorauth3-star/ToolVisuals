@@ -1,5 +1,8 @@
 package ru.he3hauka.toolvisuals.client.menu.multiplayer;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.Minecraft;
@@ -10,10 +13,6 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
 import ru.he3hauka.toolvisuals.client.connection.ui.ProtocolUi;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 public final class MultiplayerVersionsButton {
     private static final Set<Button> BUTTONS = Collections.newSetFromMap(new WeakHashMap<>());

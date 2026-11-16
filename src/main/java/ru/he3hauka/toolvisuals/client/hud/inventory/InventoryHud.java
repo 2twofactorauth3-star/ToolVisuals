@@ -2,7 +2,8 @@ package ru.he3hauka.toolvisuals.client.hud.inventory;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -13,13 +14,13 @@ import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudPlacement;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
-import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.INVENTORY_HUD;
+import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class InventoryHud {
     private static final class Samples {
-        static final net.minecraft.world.item.ItemStack PEARLS=new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_PEARL,16);
-        static final net.minecraft.world.item.ItemStack APPLES=new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLDEN_APPLE,4);
+        static final ItemStack PEARLS=new ItemStack(Items.ENDER_PEARL,16);
+        static final ItemStack APPLES=new ItemStack(Items.GOLDEN_APPLE,4);
     }
     private InventoryHud() {}
     public static int slot(int row, int column) { return row < 3 ? 9 + row * 9 + column : column; }
@@ -49,7 +50,7 @@ public final class InventoryHud {
             int slot = slot(row, col);
             int sx = Math.round(x + 3 + col * 18), sy = Math.round(y + header + row * 18 + (row == 3 ? 2 : 0));
             UiPaint.rounded(g, sx, sy, 17, 17, 2, row == 3 && col == inventory.getSelectedSlot() ? palette.hover : UiPaint.alpha(palette.raised, .6f));
-            var item = HudPlacement.samples()?(slot%5==0?slot%2==0?Samples.PEARLS:Samples.APPLES:net.minecraft.world.item.ItemStack.EMPTY):inventory.getItem(slot);
+            var item = HudPlacement.samples()?(slot%5==0?slot%2==0?Samples.PEARLS:Samples.APPLES:ItemStack.EMPTY):inventory.getItem(slot);
             if (!item.isEmpty()) { SmoothHudItems.item(g, item, sx + 1, sy + 1); SmoothHudItems.decorations(g, item, sx + 1, sy + 1, palette); }
         }
         g.pose().popMatrix(); g.pose().popMatrix();

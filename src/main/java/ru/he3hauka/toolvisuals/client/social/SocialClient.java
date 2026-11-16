@@ -1,15 +1,17 @@
 package ru.he3hauka.toolvisuals.client.social;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
-
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.animation.network.SocialCommandPayload;
 import ru.he3hauka.toolvisuals.animation.network.SocialPayload;
@@ -18,7 +20,10 @@ import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.Emotes;
 import ru.he3hauka.toolvisuals.client.animation.PlaybackClient;
+import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
+import ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle;
+import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -26,7 +31,7 @@ import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 public final class SocialClient {
     private static final Set<UUID> BADGES = new HashSet<>();
     private static Set<UUID> badgeSnapshot=Set.of();
-    private static final java.util.Map<UUID, Long> STOPPED = new java.util.LinkedHashMap<>();
+    private static final Map<UUID, Long> STOPPED = new LinkedHashMap<>();
     private static Object connection;
     private static Object life;
 
@@ -53,12 +58,12 @@ public final class SocialClient {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> PairInvitationChat.register(dispatcher, SocialClient::answerFromChat,
                 () -> ToolVisualsClient.CONFIG.available(ANIMATIONS)));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> reset());
-        ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity, world) -> badge(entity.getUUID(),false));
+        ReplayLifecycle.unload((entity, world) -> badge(entity.getUUID(),false));
     }
     private static void reset() { BADGES.clear();badgeSnapshot=Set.of(); STOPPED.clear(); connection = null; life = null; invitation = null; COMMANDS.clear();epoch=0;server=null; }
     private static void scope(Minecraft client){
         if(connection!=client.getConnection()){reset();connection=client.getConnection();}
-        if(life!=client.player||epoch!=PlaybackClient.epoch()||!java.util.Objects.equals(server,PlaybackClient.server())){
+        if(life!=client.player||epoch!=PlaybackClient.epoch()||!Objects.equals(server,PlaybackClient.server())){
             life=client.player;epoch=PlaybackClient.epoch();server=PlaybackClient.server();invitation=null;STOPPED.clear();COMMANDS.clear();
         }
     }
@@ -78,7 +83,7 @@ public final class SocialClient {
     public static void started(UUID partner,UUID pair){
         if(COMMANDS.confirmPair(partner,pair)&&invitation!=null&&invitation.id().equals(pair))invitation=null;
     }
-    public static void cancel() { ru.he3hauka.toolvisuals.client.animation.PlaybackClient.stop(); }
+    public static void cancel() { PlaybackClient.stop(); }
     public static void invite(UUID target, PairEmote emote) {
         if (ToolVisualsClient.CONFIG.active(ANIMATIONS) && ToolVisualsClient.CONFIG.flag(EMOTE_SYNC)&&submit(new SocialProtocol.Invite(target,emote))) PlaybackClient.consent(target);
     }
@@ -129,22 +134,22 @@ public final class SocialClient {
             }
             if (client.level.getPlayerByUUID(next.sender()) == null) { if(!COMMANDS.busy())submit(new SocialProtocol.Answer(next.id(),false));return; }
             invitation = next; invitationExpires = System.nanoTime() + 10_000_000_000L;
-            ru.he3hauka.toolvisuals.client.sound.SoundCustomizer.notice();
-            ru.he3hauka.toolvisuals.client.chat.message.ChatMessages.send(PairInvitationChat.message(next, name(next.sender())));
+            SoundCustomizer.notice();
+            ChatMessages.send(PairInvitationChat.message(next, name(next.sender())));
         } else if (state instanceof SocialProtocol.Started started) {
-            if (ru.he3hauka.toolvisuals.client.animation.PlaybackClient.supported()) return;
+            if (PlaybackClient.supported()) return;
             if (STOPPED.containsKey(started.id())) return;
             if (invitation != null && invitation.id().equals(started.id())) invitation = null;
             Emotes.startPair(started);
         } else if (state instanceof SocialProtocol.Stopped stopped) {
-            if (ru.he3hauka.toolvisuals.client.animation.PlaybackClient.supported()) return;
+            if (PlaybackClient.supported()) return;
             if (STOPPED.size() >= 256) STOPPED.remove(STOPPED.keySet().iterator().next());
             STOPPED.put(stopped.id(), System.nanoTime());
             Emotes.stopPair(stopped.id());
         }
         else if (state instanceof SocialProtocol.Result result) {
             if (invitation != null && invitation.id().equals(result.id()) && result.outcome() != SocialProtocol.Outcome.SENT) invitation = null;
-            ClientActions.notice("pairs.result." + result.outcome().name().toLowerCase(java.util.Locale.ROOT));
+            ClientActions.notice("pairs.result." + result.outcome().name().toLowerCase(Locale.ROOT));
         }
     }
 }

@@ -1,17 +1,17 @@
 package ru.he3hauka.toolvisuals.client.social.presence;
 
 import java.util.*;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.*;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.PlaybackClient;
 import ru.he3hauka.toolvisuals.client.optimization.hud.PlayerRoster;
 import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.social.presence.network.PresencePayload;
+import ru.he3hauka.toolvisuals.client.social.presence.ui.ClientBrowserScreen;
+import ru.he3hauka.toolvisuals.client.social.profile.PlayerCardScreen;
 import ru.he3hauka.toolvisuals.network.presence.*;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CLIENT_LIST;
@@ -58,7 +58,7 @@ public final class ClientListClient {
     }
 
     private static boolean supported(){return Minecraft.getInstance().getConnection()!=null&&ClientPlayNetworking.canSend(PresencePayload.Request.TYPE);}
-    private static boolean wanted(Minecraft client){return ToolVisualsClient.CONFIG.active(CLIENT_LIST)||client.gui.screen() instanceof ru.he3hauka.toolvisuals.client.social.presence.ui.ClientBrowserScreen||client.gui.screen() instanceof ru.he3hauka.toolvisuals.client.social.profile.PlayerCardScreen;}
+    private static boolean wanted(Minecraft client){return ToolVisualsClient.CONFIG.active(CLIENT_LIST)||client.gui.screen() instanceof ClientBrowserScreen||client.gui.screen() instanceof PlayerCardScreen;}
     public static Source source(){return supported()?(REPLICA.ready()&&PlaybackClient.available()?Source.SERVER:Source.SYNCING):Source.NEARBY;}
 
     private static void tick(Minecraft client){

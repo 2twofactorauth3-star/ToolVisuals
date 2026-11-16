@@ -18,6 +18,7 @@ import ru.he3hauka.toolvisuals.client.music.model.MediaSession;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSnapshot;
 import ru.he3hauka.toolvisuals.client.music.ui.MusicScreen;
 import ru.he3hauka.toolvisuals.client.utility.preview.PreviewImages;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.MUSIC_HUD;
 
 public final class MusicClient {

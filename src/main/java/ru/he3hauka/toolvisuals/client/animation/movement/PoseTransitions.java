@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.animation.movement;
 
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.client.animation.pose.PlayerPose;
 
 public final class PoseTransitions {

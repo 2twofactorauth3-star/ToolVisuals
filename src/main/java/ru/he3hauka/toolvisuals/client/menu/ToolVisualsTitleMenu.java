@@ -2,14 +2,12 @@ package ru.he3hauka.toolvisuals.client.menu;
 
 import java.util.*;
 import java.util.function.Supplier;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
 import ru.he3hauka.toolvisuals.client.connection.ui.AccountScreen;

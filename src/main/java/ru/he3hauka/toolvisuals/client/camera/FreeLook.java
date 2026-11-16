@@ -2,11 +2,15 @@ package ru.he3hauka.toolvisuals.client.camera;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Team;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.FREE_LOOK;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.FREE_LOOK_MODE;
@@ -18,20 +22,20 @@ public final class FreeLook {
     private static boolean keyWasDown;
     private static float yaw, pitch;
     private FreeLook() {}
-    public static boolean active() { return owner != null && !ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active(); }
+    public static boolean active() { return owner != null && !ReplayScope.active(); }
     public static float yaw() { return yaw; }
     public static float pitch() { return pitch; }
     public static boolean owns(Entity entity) { return owner != null && entity == owner; }
     public static boolean showsOwnLabels(Entity entity) {
-        if (!owns(entity) || !ToolVisualsClient.CONFIG.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.FREE_LOOK_SELF_LABELS)
-                || NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.NAME_TAGS)) return false;
+        if (!owns(entity) || !ToolVisualsClient.CONFIG.flag(VisualSetting.FREE_LOOK_SELF_LABELS)
+                || NoRender.hides(RenderOption.NAME_TAGS)) return false;
         var team = owner.getTeam();
         return team == null || team.getNameTagVisibility() != Team.Visibility.NEVER
                 && team.getNameTagVisibility() != Team.Visibility.HIDE_FOR_OWN_TEAM;
     }
     public static void update(Minecraft client) {
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return;
-        ru.he3hauka.toolvisuals.client.camera.ClientCamera.update(client);
+        if(ReplayScope.active())return;
+        ClientCamera.update(client);
         int nextMode = (int)ToolVisualsClient.CONFIG.value(FREE_LOOK_MODE);
         if (owner != client.player || mode != nextMode) { release(client); toggled = false; }
         mode = nextMode;
@@ -52,21 +56,21 @@ public final class FreeLook {
         if (active() && !allowed) release(client);
         if (allowed && !active()) {
             owner = client.player;
-            ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(FREE_LOOK,"acquired","camera_control");
+            ModuleLog.action(FREE_LOOK,"acquired","camera_control");
             yaw = owner.getYRot(); pitch = owner.getXRot();
-            if (mode != 0) ru.he3hauka.toolvisuals.client.camera.ClientCamera.acquire(client, ru.he3hauka.toolvisuals.client.camera.CameraLeases.Owner.FREE_LOOK);
+            if (mode != 0) ClientCamera.acquire(client, CameraLeases.Owner.FREE_LOOK);
         }
     }
     public static boolean turn(double dx, double dy) {
         update(Minecraft.getInstance());
         if (!active()) return false;
-        yaw = net.minecraft.util.Mth.wrapDegrees(yaw + (float)dx * .15f);
+        yaw = Mth.wrapDegrees(yaw + (float)dx * .15f);
         pitch = Math.clamp(pitch + (float)dy * .15f, -90, 90);
         return true;
     }
     private static void release(Minecraft client) {
-        if(owner!=null)ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(FREE_LOOK,"released","camera_control");
-        ru.he3hauka.toolvisuals.client.camera.ClientCamera.release(client, ru.he3hauka.toolvisuals.client.camera.CameraLeases.Owner.FREE_LOOK);
+        if(owner!=null)ModuleLog.action(FREE_LOOK,"released","camera_control");
+        ClientCamera.release(client, CameraLeases.Owner.FREE_LOOK);
         owner = null;
     }
 }

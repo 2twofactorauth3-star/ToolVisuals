@@ -3,10 +3,12 @@ package ru.he3hauka.toolvisuals.relay.paper;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
 import io.papermc.paper.event.player.PlayerUntrackEntityEvent;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.nio.BufferUnderflowException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.logging.Level;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
@@ -17,19 +19,28 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import ru.he3hauka.toolvisuals.animation.network.*;
 import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
 import ru.he3hauka.toolvisuals.animation.protocol.server.*;
+import ru.he3hauka.toolvisuals.animation.protocol.server.ObserverAdmissions;
 import ru.he3hauka.toolvisuals.animation.protocol.social.SocialCommandWire;
 import ru.he3hauka.toolvisuals.animation.social.*;
-import ru.he3hauka.toolvisuals.cosmetic.cape.*;
-import ru.he3hauka.toolvisuals.relay.paper.cape.CapeRelay;
-import ru.he3hauka.toolvisuals.relay.paper.accessory.AccessoryRelay;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.*;
-import ru.he3hauka.toolvisuals.relay.paper.presence.PresenceRelay;
-import ru.he3hauka.toolvisuals.network.presence.PresenceWire;
+import ru.he3hauka.toolvisuals.cosmetic.cape.*;
+import ru.he3hauka.toolvisuals.minigame.network.MiniGameWire;
+import ru.he3hauka.toolvisuals.network.friends.FriendWire;
 import ru.he3hauka.toolvisuals.network.ingress.RequestAdmission;
-import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
-import ru.he3hauka.toolvisuals.relay.paper.reward.RewardService;
-import ru.he3hauka.toolvisuals.relay.paper.reward.RewardCommand;
+import ru.he3hauka.toolvisuals.network.presence.PresenceWire;
+import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
+import ru.he3hauka.toolvisuals.relay.paper.accessory.AccessoryRelay;
+import ru.he3hauka.toolvisuals.relay.paper.cape.CapeRelay;
 import ru.he3hauka.toolvisuals.relay.paper.config.ServerConfiguration;
+import ru.he3hauka.toolvisuals.relay.paper.friends.FriendRelay;
+import ru.he3hauka.toolvisuals.relay.paper.minigame.MiniGameRelay;
+import ru.he3hauka.toolvisuals.relay.paper.placeholder.PlaceholderHook;
+import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
+import ru.he3hauka.toolvisuals.relay.paper.presence.PresenceRelay;
+import ru.he3hauka.toolvisuals.relay.paper.reward.RewardCommand;
+import ru.he3hauka.toolvisuals.relay.paper.reward.RewardService;
+import ru.he3hauka.toolvisuals.relay.paper.world.WorldContextDelivery;
+
 import static ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.*;
 
 public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listener, PluginMessageListener {
@@ -57,7 +68,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         volatile Set<String> channels=Set.of();
         volatile Set<UUID> viewers=Set.of();
         volatile UUID world;
-        final ru.he3hauka.toolvisuals.relay.paper.world.WorldContextDelivery worldContext = new ru.he3hauka.toolvisuals.relay.paper.world.WorldContextDelivery();
+        final WorldContextDelivery worldContext = new WorldContextDelivery();
         volatile ScheduledTask watch;
         long legacySequence,legacyPlayback,ticks;
         Peer(Player player,PlaybackLedger.Handle handle,Peer previous,UUID server){
@@ -97,27 +108,27 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
     private final PresenceRelay presence=new PresenceRelay();
     private final RelayLimits limits=new RelayLimits(System.nanoTime());
     private final RequestAdmission ingress=new RequestAdmission(System.nanoTime());
-    private final ru.he3hauka.toolvisuals.animation.protocol.server.ObserverAdmissions observers=new ru.he3hauka.toolvisuals.animation.protocol.server.ObserverAdmissions();
+    private final ObserverAdmissions observers=new ObserverAdmissions();
     private final LongAdder malformed=new LongAdder(),throttled=new LongAdder(),deferred=new LongAdder(),sent=new LongAdder();
     private ScheduledTask cleanup;
     private volatile boolean running;
     private final ClientStatus clients = new ClientStatus();
     private RewardService rewards;
     private AutoCloseable placeholders;
-    private ru.he3hauka.toolvisuals.relay.paper.minigame.MiniGameRelay minigames;
-    private ru.he3hauka.toolvisuals.relay.paper.friends.FriendRelay friendRelay;
+    private MiniGameRelay minigames;
+    private FriendRelay friendRelay;
 
     @Override public void onEnable(){
         running=true;
-        minigames=new ru.he3hauka.toolvisuals.relay.paper.minigame.MiniGameRelay(this);
-        friendRelay=new ru.he3hauka.toolvisuals.relay.paper.friends.FriendRelay(this,ledger.server);
+        minigames=new MiniGameRelay(this);
+        friendRelay=new FriendRelay(this,ledger.server);
         ServerConfiguration configuration = null;
         try { configuration = new ServerConfiguration(this); rewards = new RewardService(this, clients, configuration); }
-        catch (Exception | LinkageError error) { getLogger().log(java.util.logging.Level.SEVERE, "Rewards could not start; the visual relay remains available", error); }
+        catch (Exception | LinkageError error) { getLogger().log(Level.SEVERE, "Rewards could not start; the visual relay remains available", error); }
         var command = Objects.requireNonNull(getCommand("toolvisuals"));
         var rewardCommand = new RewardCommand(rewards, configuration == null ? null : configuration.reward); command.setExecutor(rewardCommand); command.setTabCompleter(rewardCommand);
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            placeholders = ru.he3hauka.toolvisuals.relay.paper.placeholder.PlaceholderHook.register(this, clients,
+            placeholders = PlaceholderHook.register(this, clients,
                     configuration == null ? "Да" : configuration.reward.usingText, configuration == null ? "Нет" : configuration.reward.notUsingText);
         }
         var messenger=getServer().getMessenger();
@@ -165,7 +176,7 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(peer.watch!=null)peer.watch.cancel();
     }
     private boolean current(Peer peer){return running&&!peer.closed.get()&&peers.get(peer.id)==peer;}
-    private static final Set<String> OUTPUT_CHANNELS=Set.of(ru.he3hauka.toolvisuals.network.friends.FriendWire.STATE_CHANNEL,ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeTransferWire.STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL,ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
+    private static final Set<String> OUTPUT_CHANNELS=Set.of(FriendWire.STATE_CHANNEL,MiniGameWire.STATE_CHANNEL,STATE_CHANNEL,REPLY_CHANNEL,SocialProtocol.STATE_CHANNEL,EmoteWire.STATE_CHANNEL,EmoteWire.EXTENDED_STATE_CHANNEL,CapeWire.STATE_CHANNEL,CapeWire.ANIMATED_STATE_CHANNEL,CapeTransferWire.STATE_CHANNEL,CapeWire.ACK_CHANNEL,PresenceWire.STATE_CHANNEL,AccessoryWire.STATE_CHANNEL,AccessoryWire.EXPANDED_STATE_CHANNEL,AccessoryWire.ACK_CHANNEL,SocialCommandWire.REPLY_CHANNEL,WorldContextWire.CHANNEL,WorldContextWire.EXTENDED_CHANNEL,WorldContextWire.NAMED_CHANNEL);
     private void capabilities(Peer peer){
         peer.channels=capabilities(peer.player);
     }
@@ -205,9 +216,9 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         if(!current(peer))return;
         var snapshot=ledger.snapshot(peer.handle);if(snapshot==null)return;
         peer.ticks+=2;
-        boolean worldV2=peer.channels.contains(ru.he3hauka.toolvisuals.network.world.WorldContextWire.EXTENDED_CHANNEL);
-        boolean worldV3=peer.channels.contains(ru.he3hauka.toolvisuals.network.world.WorldContextWire.NAMED_CHANNEL);
-        if(worldV3||worldV2||peer.channels.contains(ru.he3hauka.toolvisuals.network.world.WorldContextWire.CHANNEL))peer.worldContext.send(this,peer.player,peer.ticks%20==0,worldV3?3:worldV2?2:1);
+        boolean worldV2=peer.channels.contains(WorldContextWire.EXTENDED_CHANNEL);
+        boolean worldV3=peer.channels.contains(WorldContextWire.NAMED_CHANNEL);
+        if(worldV3||worldV2||peer.channels.contains(WorldContextWire.CHANNEL))peer.worldContext.send(this,peer.player,peer.ticks%20==0,worldV3?3:worldV2?2:1);
         if(snapshot.state().mode()==Mode.PAIR&&!visible(peer,snapshot.state().pair().partner())){
             route(ledger.cancelExpected(peer.handle,snapshot.state(),false,System.nanoTime()));return;
         }
@@ -253,11 +264,11 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
         var admission=ingress.admit(player.getUniqueId(),input,bytes==null?0:bytes.length,System.nanoTime());
         if(admission==RequestAdmission.Decision.THROTTLED){throttled.increment();return;}
         if(admission==RequestAdmission.Decision.MALFORMED){malformed.increment();return;}
-        if(channel.equals(ru.he3hauka.toolvisuals.minigame.network.MiniGameWire.REQUEST_CHANNEL)){minigames.receive(player,bytes);return;}
+        if(channel.equals(MiniGameWire.REQUEST_CHANNEL)){minigames.receive(player,bytes);return;}
         if(channel.equals(SocialCommandWire.REQUEST_CHANNEL)){receiveSocialCommand(player,bytes);return;}
         if(channel.equals(AccessoryWire.REQUEST_CHANNEL)){receiveAccessory(player,bytes);return;}
         if(channel.equals(PresenceWire.REQUEST_CHANNEL)){receivePresence(player,bytes);return;}
-        if(channel.equals(ru.he3hauka.toolvisuals.network.friends.FriendWire.REQUEST_CHANNEL)){friendRelay.receive(player,bytes);return;}
+        if(channel.equals(FriendWire.REQUEST_CHANNEL)){friendRelay.receive(player,bytes);return;}
         if(channel.equals(CapeTransferWire.REQUEST_CHANNEL)){receiveCapeFragment(player,bytes);return;}
         if(channel.equals(CapeWire.REQUEST_CHANNEL)||channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL)){receiveCape(player,bytes,channel.equals(CapeWire.ANIMATED_REQUEST_CHANNEL));return;}
         boolean social=channel.equals(SocialProtocol.REQUEST_CHANNEL);
@@ -434,14 +445,14 @@ public final class ToolVisualsEmotesPlugin extends JavaPlugin implements Listene
     }
     private void receiveCapeFragment(Player player,byte[] bytes){
         final CapeTransferWire.RequestPart part;
-        try{part=CapeTransferWire.request(bytes);}catch(IllegalArgumentException|java.nio.BufferUnderflowException error){malformed.increment();return;}
+        try{part=CapeTransferWire.request(bytes);}catch(IllegalArgumentException|BufferUnderflowException error){malformed.increment();return;}
         var peer=attach(player);if(peer==null)return;
         final CapeRelay.Fragment transfer;
         try{transfer=capes.fragment(peer.cape,peer.id,peer.handle.epoch(),part,System.nanoTime());}catch(IllegalArgumentException error){malformed.increment();return;}
         if(!transfer.accepted()){throttled.increment();return;}
         if(transfer.bytes()==null)return;
         final CapeWire.Request request;
-        try{request=CapeTransferWire.assembled(part,transfer.bytes());}catch(IllegalArgumentException|java.nio.BufferUnderflowException error){malformed.increment();return;}
+        try{request=CapeTransferWire.assembled(part,transfer.bytes());}catch(IllegalArgumentException|BufferUnderflowException error){malformed.increment();return;}
         acceptCape(peer,request);
     }
     private void acceptCape(Peer peer,CapeWire.Request request){

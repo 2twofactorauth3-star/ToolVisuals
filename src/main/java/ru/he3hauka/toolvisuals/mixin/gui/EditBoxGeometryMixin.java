@@ -7,7 +7,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.TextCursorUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 
 @Mixin(EditBox.class)

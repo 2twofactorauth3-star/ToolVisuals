@@ -1,11 +1,10 @@
 package ru.he3hauka.toolvisuals.relay.paper.storage;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
 import java.util.Map;
 import java.util.UUID;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 public final class RewardStorage implements AutoCloseable {
     public enum Claim { RESERVED, ALREADY_CLAIMED, REVIEW_REQUIRED, INCOMPLETE }

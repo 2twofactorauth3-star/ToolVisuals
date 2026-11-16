@@ -1,22 +1,25 @@
 package ru.he3hauka.toolvisuals.client.friends.ui;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
 import java.util.*;
-
+import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
+import ru.he3hauka.toolvisuals.client.config.color.HexColor;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;
-import ru.he3hauka.toolvisuals.client.friends.FriendStore;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
+import ru.he3hauka.toolvisuals.client.friends.FriendDisplay;
 import ru.he3hauka.toolvisuals.client.friends.FriendStore.ArmorStyle;
 import ru.he3hauka.toolvisuals.client.friends.FriendStore.Option;
+import ru.he3hauka.toolvisuals.client.friends.FriendStore;
 import ru.he3hauka.toolvisuals.client.friends.Friends;
-import ru.he3hauka.toolvisuals.client.friends.FriendDisplay;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
@@ -25,7 +28,9 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
 
@@ -79,16 +84,15 @@ public final class FriendsScreen extends Screen {
         refresh();lastFrame=System.nanoTime();setFocused(name);name.setFocused(true);
     }
     private EditBox field(int x,int y,int w,int h,Component hint) {
-        var result=new EditBox(UiFont.get(),x,y,w,h,hint) {
+        var result=new CenteredEditBox(UiFont.get(),x,y,w,h,hint) {
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
                 if(getValue().isEmpty()&&!isFocused()) { line(g,hint,getX(),getY(),getWidth(),getHeight(),palette.muted);return; }
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
+                super.extractWidgetRenderState(g,mx,my,partial);
             }
         };
         result.setBordered(false);result.setTextShadow(false);return result;
     }
-    private VisualsButton control(List<VisualsButton> group,int x,int y,int w,int h,Component text,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,java.util.function.BooleanSupplier on) {
+    private VisualsButton control(List<VisualsButton> group,int x,int y,int w,int h,Component text,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,BooleanSupplier on) {
         var button=addWidget(new VisualsButton(x,y,w,h,text,kind,icon,text,action,on));group.add(button);return button;
     }
     private void refresh() {
@@ -109,7 +113,7 @@ public final class FriendsScreen extends Screen {
         if(hex==null)return;
         var friend=store.get(selected);int color=store.settings().global||friend==null?store.settings().color:friend.color;
         hex.setMessage(tr(store.settings().global?"global_color":"personal_color",selected));
-        hex.setValue(ru.he3hauka.toolvisuals.client.config.color.HexColor.format(color,true));
+        hex.setValue(HexColor.format(color,true));
     }
     private Integer typedColor() {
         return hex==null?null:hex.color();
@@ -120,35 +124,35 @@ public final class FriendsScreen extends Screen {
         apply.active=typedColor()!=null&&(store.settings().global||store.get(selected)!=null);remove.active=store.get(selected)!=null;
         armorMode.setMessage(tr("armor_mode",tr(store.settings().armorStyle==ArmorStyle.FILL?"fill":"overlay")));
         for(var field:FriendDisplay.Field.values()){
-            var button=personal.get(field.ordinal());button.active=store.get(selected)!=null&&ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST);
+            var button=personal.get(field.ordinal());button.active=store.get(selected)!=null&&ToolVisualsClient.CONFIG.available(VisualModule.FRIENDS_LIST);
             button.setMessage(tr("list_"+field.name().toLowerCase(Locale.ROOT),selected));
         }
-        var profile=store.get(selected);inventoryMode.active=profile!=null&&ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST);
+        var profile=store.get(selected);inventoryMode.active=profile!=null&&ToolVisualsClient.CONFIG.available(VisualModule.FRIENDS_LIST);
         inventoryMode.setMessage(tr("list_mode",selected,tr("list_mode_"+(profile==null?FriendDisplay.InventoryMode.DEFAULT:profile.display.mode).name().toLowerCase(Locale.ROOT))));
     }
     private void addFriend() {
         try { if(store.add(name.getValue())) { selected=name.getValue();name.setValue("");refresh(); } }
-        catch(java.io.IOException|RuntimeException error) { status=tr("save_error"); }
+        catch(IOException|RuntimeException error) { status=tr("save_error"); }
     }
     private void removeFriend() {
         if(store.get(selected)==null)return;
-        try { store.remove(selected);refresh(); } catch(java.io.IOException error) { status=tr("save_error"); }
+        try { store.remove(selected);refresh(); } catch(IOException error) { status=tr("save_error"); }
     }
     private void configure(Option option) {
         try { store.configure(store.settings().toggle(option));refreshColor();updateActions(); }
-        catch(java.io.IOException error) { status=tr("save_error"); }
+        catch(IOException error) { status=tr("save_error"); }
     }
     private void configureDisplay(FriendDisplay.Field field){
-        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST))return;
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.FRIENDS_LIST))return;
         var friend=store.get(selected);if(friend==null)return;
         try{store.display(selected,friend.display.toggle(field));updateActions();}
-        catch(java.io.IOException error){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Save friend HUD preferences",error);status=tr("save_error");}
+        catch(IOException error){ClientErrors.report("Save friend HUD preferences",error);status=tr("save_error");}
     }
     private void nextInventoryMode(){
-        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.module.VisualModule.FRIENDS_LIST))return;
+        if(!ToolVisualsClient.CONFIG.available(VisualModule.FRIENDS_LIST))return;
         var friend=store.get(selected);if(friend==null)return;
         try{store.display(selected,friend.display.nextMode());updateActions();}
-        catch(java.io.IOException error){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Save friend inventory display mode",error);status=tr("save_error");}
+        catch(IOException error){ClientErrors.report("Save friend inventory display mode",error);status=tr("save_error");}
     }
     private void applyColor() {
         var color=typedColor();if(color==null)return;
@@ -156,7 +160,7 @@ public final class FriendsScreen extends Screen {
             var s=store.settings();
             if(s.global)store.configure(s.withStyle(ColorStyle.solid(color)));else if(store.get(selected)!=null)store.color(selected,color);
             status=tr("saved");refresh();
-        } catch(java.io.IOException error) { status=tr("save_error"); }
+        } catch(IOException error) { status=tr("save_error"); }
     }
     private void nextColor() {
         var s=store.settings();var friend=store.get(selected);if(!s.global&&friend==null)return;
@@ -164,7 +168,7 @@ public final class FriendsScreen extends Screen {
         if(typed!=null&&typed.intValue()!=initial.colors.getFirst())initial=ColorStyle.solid(typed);
         minecraft.gui.setScreen(new ColorEditorScreen(this,tr(s.global?"global_color":"personal_color",selected),initial,style->{
             try{var current=store.settings();if(current.global)store.configure(current.withStyle(style));else store.color(selected,style);status=tr("saved");}
-            catch(java.io.IOException error){status=tr("save_error");}
+            catch(IOException error){status=tr("save_error");}
         }));
     }
     private float maxScroll() { return maxScroll(rows,46,listY,listBottom); }
@@ -233,7 +237,7 @@ public final class FriendsScreen extends Screen {
         if(x>=right&&x<right+rightWidth&&y>=optionsTop&&y<optionsBottom){optionTarget=Math.clamp(optionTarget-(float)vertical*33,0,maxScroll(options,33,optionsTop,optionsBottom));return true;}
         return super.mouseScrolled(x,y,horizontal,vertical);
     }
-    @Override public boolean keyPressed(KeyEvent event) { if(event.key()==com.mojang.blaze3d.platform.InputConstants.KEY_RETURN&&name.isFocused()&&add.active) { addFriend();return true; }return super.keyPressed(event); }
+    @Override public boolean keyPressed(KeyEvent event) { if(event.key()==InputConstants.KEY_RETURN&&name.isFocused()&&add.active) { addFriend();return true; }return super.keyPressed(event); }
     @Override public boolean isPauseScreen() { return false; }
     @Override public void onClose() { minecraft.gui.setScreen(parent); }
 }

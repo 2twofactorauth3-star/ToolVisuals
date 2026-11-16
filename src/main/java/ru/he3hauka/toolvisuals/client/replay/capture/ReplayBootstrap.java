@@ -17,6 +17,7 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagNetworkSerialization;
+import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import ru.he3hauka.toolvisuals.mixin.replay.ReplayTagsInvoker;
@@ -52,7 +53,7 @@ public final class ReplayBootstrap {
         play.accept(new ClientboundInitializeBorderPacket(level.getWorldBorder()));
         ReplayWorldPackets.capture(client, play);
         play.accept(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
-        play.accept(ClientboundPlayerPositionPacket.of(0, net.minecraft.world.entity.PositionMoveRotation.of(player), Set.of()));
+        play.accept(ClientboundPlayerPositionPacket.of(0, PositionMoveRotation.of(player), Set.of()));
         play.accept(new ClientboundSetHealthPacket(player.getHealth(), player.getFoodData().getFoodLevel(), player.getFoodData().getSaturationLevel()));
         play.accept(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         play.accept(new ClientboundContainerSetContentPacket(player.inventoryMenu.containerId, player.inventoryMenu.getStateId(),

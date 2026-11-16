@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
+import java.util.stream.Collectors;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,8 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
@@ -38,7 +39,7 @@ public final class ItemHighlightsScreen extends VisualEditorScreen {
 
     public ItemHighlightsScreen(Screen parent) { super(parent, text("title")); }
     private static Component text(String key, Object... args) { return UiI18n.tr("toolvisuals.item_highlights." + key, args); }
-    private static ru.he3hauka.toolvisuals.client.config.ClientConfig config() { return ToolVisualsClient.CONFIG; }
+    private static ClientConfig config() { return ToolVisualsClient.CONFIG; }
     @Override protected void init() {
         frame(760, 548);
         registry.clear();
@@ -48,7 +49,7 @@ public final class ItemHighlightsScreen extends VisualEditorScreen {
             var stack = new ItemStack(item); String name = stack.getHoverName().getString();
             registry.add(new Entry(id, stack, name, (name + " " + id).toLowerCase(Locale.ROOT), true));
         }
-        var known = registry.stream().map(Entry::id).collect(java.util.stream.Collectors.toSet());
+        var known = registry.stream().map(Entry::id).collect(Collectors.toSet());
         for (String id : config().itemHighlights().colors.keySet()) if (!known.contains(id))
             registry.add(new Entry(id, new ItemStack(Items.BARRIER), text("unavailable").getString(), id.toLowerCase(Locale.ROOT), false));
         registry.sort(Comparator.comparing(Entry::search));
@@ -78,7 +79,7 @@ public final class ItemHighlightsScreen extends VisualEditorScreen {
                 rebuildRows();
             }, () -> selected.equals(item.id));
             row.active = !adding || config().itemHighlights().colors.containsKey(item.id) || config().itemHighlights().colors.size() < ItemHighlightRules.LIMIT;
-            if (!row.active) row.setTooltip(net.minecraft.client.gui.components.Tooltip.create(text("limit", ItemHighlightRules.LIMIT)));
+            if (!row.active) row.setTooltip(Tooltip.create(text("limit", ItemHighlightRules.LIMIT)));
         }
         button(20, 458, 70, 28, Component.literal("←"), null, () -> { page--; rebuildRows(); }, null).active = page > 0;
         button(394, 458, 70, 28, Component.literal("→"), null, () -> { page++; rebuildRows(); }, null).active = end < matches.size();

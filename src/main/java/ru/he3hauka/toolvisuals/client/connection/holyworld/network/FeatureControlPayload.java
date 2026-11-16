@@ -4,7 +4,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldProtocol;
 
 public record FeatureControlPayload(byte[] bytes) implements CustomPacketPayload {

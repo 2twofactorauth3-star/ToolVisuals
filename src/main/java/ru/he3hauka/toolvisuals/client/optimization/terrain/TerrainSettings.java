@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.optimization.terrain;
 
 import net.minecraft.client.Minecraft;
-
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_HIDDEN_FACES;

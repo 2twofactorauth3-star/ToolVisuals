@@ -1,14 +1,15 @@
 package ru.he3hauka.toolvisuals.client.music.backend;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.Strictness;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.Strictness;
-import com.google.gson.stream.JsonReader;
 import ru.he3hauka.toolvisuals.client.music.model.MediaAction;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSession;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSnapshot;
@@ -61,7 +62,7 @@ public final class MediaProtocol {
                 } else scalar(reader, name.equals("data") ? (MAX_ARTWORK + 2) / 3 * 4 : name.equals("message") ? 8192 : 128);
             }
             reader.endObject();
-            if (reader.peek() != com.google.gson.stream.JsonToken.END_DOCUMENT) throw new IOException("Trailing media response data");
+            if (reader.peek() != JsonToken.END_DOCUMENT) throw new IOException("Trailing media response data");
             var json=JsonParser.parseString(line).getAsJsonObject();
             return switch (text(json,"kind")) {
                 case "ready" -> {

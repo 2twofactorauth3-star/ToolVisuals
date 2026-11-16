@@ -2,9 +2,7 @@ package ru.he3hauka.toolvisuals.client.connection.featured;
 
 import java.util.List;
 import java.util.Locale;
-
 import net.minecraft.client.multiplayer.ServerData;
-
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 public final class FeaturedServer {

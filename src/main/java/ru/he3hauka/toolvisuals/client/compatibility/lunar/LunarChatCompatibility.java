@@ -1,5 +1,8 @@
 package ru.he3hauka.toolvisuals.client.compatibility.lunar;
 
+import java.util.Set;
+
+
 public final class LunarChatCompatibility {
     public static final String VIA_VERSION="5.1.1";
     public static final String VIA_CONFIG="viafabricplus.mixins.json";
@@ -8,7 +11,7 @@ public final class LunarChatCompatibility {
     public static final String COMPATIBILITY_PLUGIN="ru.he3hauka.toolvisuals.client.compatibility.lunar.ViaFabricPlusPlugin";
     public static final String CHAT_TARGET="net.minecraft.network.protocol.game.ServerboundChatPacket";
     public static final String CHAT_MIXIN="com.viaversion.viafabricplus.injection.mixin.features.v1_9_3.network.MixinServerboundChatPacket";
-    private static final java.util.Set<String> VERSIONS=java.util.Set.of("5.1.1","4.4.15","4.0.5-BACKPORT");
+    private static final Set<String> VERSIONS=Set.of("5.1.1","4.4.15","4.0.5-BACKPORT");
 
     private LunarChatCompatibility() {}
 

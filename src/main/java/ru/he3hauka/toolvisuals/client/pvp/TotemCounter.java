@@ -1,11 +1,9 @@
 package ru.he3hauka.toolvisuals.client.pvp;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
 import net.minecraft.world.entity.player.Player;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
 

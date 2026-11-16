@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.cosmetic.accessory;
 
 import java.util.Objects;
-
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
 
 public record AccessoryLook(Back back,Head head,ColorPalette backColors,ColorPalette headColors,float backScale,float headScale,float speed,boolean animated){

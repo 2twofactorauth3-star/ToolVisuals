@@ -1,10 +1,9 @@
 package ru.he3hauka.toolvisuals.client.utility.screenshots;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class ScreenshotFiles {
     private ScreenshotFiles(){}

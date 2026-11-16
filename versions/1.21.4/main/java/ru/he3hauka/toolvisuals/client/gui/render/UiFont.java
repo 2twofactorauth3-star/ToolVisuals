@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.resources.ResourceLocation;
 import ru.he3hauka.toolvisuals.client.gui.text.DisplayRasterState;
+import ru.he3hauka.toolvisuals.mixin.gui.BakedGlyphAccessor;
 import ru.he3hauka.toolvisuals.mixin.gui.FontAccessor;
 
 public final class UiFont {
@@ -21,7 +22,7 @@ public final class UiFont {
         var set=provider.apply(FACE);float top=Float.POSITIVE_INFINITY,bottom=Float.NEGATIVE_INFINITY;
         for(int point:(value.isBlank()?"H":value).codePoints().toArray()){
             if(Character.isWhitespace(point))continue;
-            var glyph=(ru.he3hauka.toolvisuals.mixin.gui.BakedGlyphAccessor)(Object)set.getGlyph(point);
+            var glyph=(BakedGlyphAccessor)(Object)set.getGlyph(point);
             top=Math.min(top,glyph.toolvisuals$top());bottom=Math.max(bottom,glyph.toolvisuals$bottom());
         }
         return Float.isFinite(top)&&Float.isFinite(bottom)?new TextBounds(top,bottom):new TextBounds(0,15);

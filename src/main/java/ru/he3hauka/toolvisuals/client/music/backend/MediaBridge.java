@@ -9,12 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import ru.he3hauka.toolvisuals.client.music.model.MediaAction;
 
 public final class MediaBridge implements AutoCloseable {
-    private static final java.util.concurrent.atomic.AtomicLong EPOCHS=new java.util.concurrent.atomic.AtomicLong();
+    private static final AtomicLong EPOCHS=new AtomicLong();
     @FunctionalInterface public interface Launcher { Process launch() throws IOException; }
     public enum Status { STARTING, READY, UNAVAILABLE, CLOSED }
     public record Timing(long heartbeatMillis,long timeoutMillis,long reconnectMillis) {

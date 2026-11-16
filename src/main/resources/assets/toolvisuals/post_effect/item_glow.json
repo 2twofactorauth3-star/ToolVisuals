@@ -13,7 +13,7 @@
           "bilinear": true
         }
       ],
-      "output": "toolvisuals:item_glow_blur",
+      "output": "toolvisuals:item_glow_bloom",
       "uniforms": {
         "ItemGlowConfig": [
           {
@@ -22,6 +22,94 @@
             "value": [
               9,
               0.65,
+              0,
+              0
+            ]
+          }
+        ],
+        "ItemBlurConfig": [
+          {
+            "name": "BlurDirection",
+            "type": "vec4",
+            "value": [
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "toolvisuals:post/item_glow_blur",
+      "inputs": [
+        {
+          "sampler_name": "Mask",
+          "target": "toolvisuals:item_glow_bloom",
+          "bilinear": true
+        }
+      ],
+      "output": "toolvisuals:item_glow_scratch",
+      "uniforms": {
+        "ItemGlowConfig": [
+          {
+            "name": "GlowControl",
+            "type": "vec4",
+            "value": [
+              9,
+              0.65,
+              0,
+              0
+            ]
+          }
+        ],
+        "ItemBlurConfig": [
+          {
+            "name": "BlurDirection",
+            "type": "vec4",
+            "value": [
+              1,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "toolvisuals:post/item_glow_blur",
+      "inputs": [
+        {
+          "sampler_name": "Mask",
+          "target": "toolvisuals:item_glow_scratch",
+          "bilinear": true
+        }
+      ],
+      "output": "toolvisuals:item_glow_bloom",
+      "uniforms": {
+        "ItemGlowConfig": [
+          {
+            "name": "GlowControl",
+            "type": "vec4",
+            "value": [
+              9,
+              0.65,
+              0,
+              0
+            ]
+          }
+        ],
+        "ItemBlurConfig": [
+          {
+            "name": "BlurDirection",
+            "type": "vec4",
+            "value": [
+              0,
+              1,
               0,
               0
             ]
@@ -45,7 +133,7 @@
         },
         {
           "sampler_name": "Glow",
-          "target": "toolvisuals:item_glow_blur",
+          "target": "toolvisuals:item_glow_bloom",
           "bilinear": true
         }
       ],

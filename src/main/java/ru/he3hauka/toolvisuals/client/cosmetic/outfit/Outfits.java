@@ -1,12 +1,14 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.outfit;
 
 import java.io.IOException;
+import java.util.Objects;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
 
 public final class Outfits {
     private Outfits() {}
     public static void wear(OutfitStore.Entry entry) throws IOException {
-        if(!ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.OUTFITS))return;
+        if(!ToolVisualsClient.CONFIG.available(ClientFeature.OUTFITS))return;
         if(entry.cape()==null)ToolVisualsClient.CAPES.select(null);
         else {
             var matching=ToolVisualsClient.CAPES.entries().stream().filter(cape->cape.design().equals(entry.cape())).findFirst();
@@ -17,6 +19,6 @@ public final class Outfits {
     }
     public static boolean wearing(OutfitStore.Entry entry){
         var selected=ToolVisualsClient.CAPES.selected();return entry.look().equals(ToolVisualsClient.CONFIG.accessories())
-                &&java.util.Objects.equals(entry.cape(),selected==null?null:selected.design());
+                &&Objects.equals(entry.cape(),selected==null?null:selected.design());
     }
 }

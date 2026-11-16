@@ -1,14 +1,12 @@
 package ru.he3hauka.toolvisuals.client.cape;
 
+import com.google.gson.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
-import com.google.gson.*;
-
+import ru.he3hauka.toolvisuals.client.cape.animation.CapeAnimationCodec;
 import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
-import ru.he3hauka.toolvisuals.client.cape.animation.CapeAnimationCodec;
 
 public final class CapeStore {
     public static final int LIMIT=32;

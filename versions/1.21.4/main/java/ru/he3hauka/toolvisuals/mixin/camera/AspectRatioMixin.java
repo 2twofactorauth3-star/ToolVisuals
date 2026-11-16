@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.ASPECT_RATIO;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.RATIO;
 

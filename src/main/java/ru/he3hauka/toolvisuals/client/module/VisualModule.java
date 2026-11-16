@@ -1,7 +1,7 @@
 package ru.he3hauka.toolvisuals.client.module;
 
+import java.util.Locale;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 
 public enum VisualModule {
@@ -94,7 +94,7 @@ public enum VisualModule {
 
     VisualModule(String title, ModuleCategory category) {
         this.title = title;
-        this.id = name().toLowerCase(java.util.Locale.ROOT);
+        this.id = name().toLowerCase(Locale.ROOT);
         this.category = category;
     }
 

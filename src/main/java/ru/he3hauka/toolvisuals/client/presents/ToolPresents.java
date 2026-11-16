@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.presents.network.PresentWorld;
 import ru.he3hauka.toolvisuals.client.pvp.CombatCommands;
 import ru.he3hauka.toolvisuals.client.pvp.PvPSave;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.client.waypoint.Waypoints;
 import ru.he3hauka.toolvisuals.network.world.WorldContextWire.Area;
 
@@ -40,7 +41,7 @@ public final class ToolPresents {
     public static void initialize() {
         PresentWorld.initialize();
         try { PROGRESS.load(); }
-        catch (IOException error) { org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot load presents; original progress preserved", error); }
+        catch (IOException error) { LoggerFactory.getLogger("ToolVisuals").warn("Cannot load presents; original progress preserved", error); }
     }
 
     public static boolean active() {
@@ -63,7 +64,7 @@ public final class ToolPresents {
 
     private static String context(Minecraft client) {
         return ToolVisualsClient.CONFIG.active(TOOL_PRESENTS)
-                && !ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active() ? accountContext(client) : "";
+                && !ReplayScope.active() ? accountContext(client) : "";
     }
 
     public static void tick(Minecraft client) {
@@ -73,12 +74,12 @@ public final class ToolPresents {
             context = current; area = currentArea; level = client.level;
             route = List.of(); origin = null; revision++;
         }
-        if (!ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())
+        if (!ReplayScope.active())
             JOURNEY.scope(client.getConnection(), accountContext(client));
         if (planning != null && planning.isDone()) {
             if (plannedRevision == revision && !context.isEmpty()) {
                 try { route = planning.join(); }
-                catch (RuntimeException error) { org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot calculate present route", error); }
+                catch (RuntimeException error) { LoggerFactory.getLogger("ToolVisuals").warn("Cannot calculate present route", error); }
             }
             planning = null;
         }

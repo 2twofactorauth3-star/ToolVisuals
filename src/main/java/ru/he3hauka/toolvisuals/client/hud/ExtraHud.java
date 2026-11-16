@@ -1,20 +1,22 @@
 package ru.he3hauka.toolvisuals.client.hud;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -42,16 +44,16 @@ public final class ExtraHud {
         public final String title;
         public final boolean beneficial;
         public final Identifier icon;
-        public final net.minecraft.world.effect.MobEffectInstance source;
+        public final MobEffectInstance source;
         private String duration;
         private int second=Integer.MIN_VALUE;
         PotionRow(String title,String duration,boolean beneficial,Identifier icon){this.title=title;this.duration=duration;this.beneficial=beneficial;this.icon=icon;source=null;}
-        PotionRow(net.minecraft.world.effect.MobEffectInstance effect){
+        PotionRow(MobEffectInstance effect){
             source=effect;String name=effect.getEffect().value().getDisplayName().getString();title=name+(effect.getAmplifier()>0?" "+(effect.getAmplifier()+1):"");beneficial=effect.getEffect().value().isBeneficial();icon=Hud.getMobEffectSprite(effect.getEffect());update();
         }
         void update(){if(source==null)return;int next=source.isInfiniteDuration()?-1:Math.max(0,source.getDuration()/20);if(second!=next){second=next;duration=HudFormats.duration(source.getDuration(),source.isInfiniteDuration());}}
     }
-    private static final java.util.IdentityHashMap<net.minecraft.world.effect.MobEffectInstance,Integer> potionEffects=new java.util.IdentityHashMap<>();
+    private static final IdentityHashMap<MobEffectInstance,Integer> potionEffects=new IdentityHashMap<>();
     private static Object potionPlayer,potionLanguage;
     private static List<PotionRow> potionRows = List.of();
     private static final int[] MOVEMENT_KEYS = {InputConstants.KEY_W, InputConstants.KEY_A, InputConstants.KEY_S, InputConstants.KEY_D};
@@ -73,15 +75,15 @@ public final class ExtraHud {
     }
 
     private static void updatePotions(Minecraft client) {
-        var effects=client.player.getActiveEffects();var language=net.minecraft.locale.Language.getInstance();
+        var effects=client.player.getActiveEffects();var language=Language.getInstance();
         boolean changed=potionPlayer!=client.player||potionLanguage!=language||effects.size()!=potionEffects.size()||potionRows.isEmpty()&&!effects.isEmpty();
         if(!changed)for(var effect:effects){var amplifier=potionEffects.get(effect);if(amplifier==null||amplifier!=effect.getAmplifier()){changed=true;break;}}
         if(changed){
             potionPlayer=client.player;potionLanguage=language;potionEffects.clear();
-            var sorted=new java.util.ArrayList<net.minecraft.world.effect.MobEffectInstance>(effects);
+            var sorted=new ArrayList<MobEffectInstance>(effects);
             for(var effect:effects)potionEffects.put(effect,effect.getAmplifier());
             sorted.sort(Comparator.comparing(effect->effect.getEffect().value().getDisplayName().getString()));
-            var rows=new java.util.ArrayList<PotionRow>(Math.min(8,sorted.size()));for(int i=0;i<Math.min(8,sorted.size());i++)rows.add(new PotionRow(sorted.get(i)));potionRows=List.copyOf(rows);
+            var rows=new ArrayList<PotionRow>(Math.min(8,sorted.size()));for(int i=0;i<Math.min(8,sorted.size());i++)rows.add(new PotionRow(sorted.get(i)));potionRows=List.copyOf(rows);
         }
         for(var row:potionRows)row.update();
     }
@@ -170,8 +172,8 @@ public final class ExtraHud {
         if (!Optimizations.enabled(OPT_FAST_HUD)) updatePotions(client);
         var effects = potionRows;
         if (HudPlacement.samples()||effects.isEmpty() && HudPlacement.preview()) effects = List.of(
-                new PotionRow(ru.he3hauka.toolvisuals.client.localization.UiI18n.tr("toolvisuals.hud.preview_speed").getString(), "2:35", true, Hud.getMobEffectSprite(MobEffects.SPEED)),
-                new PotionRow(ru.he3hauka.toolvisuals.client.localization.UiI18n.tr("toolvisuals.hud.preview_strength").getString(), "1:20", true, Hud.getMobEffectSprite(MobEffects.STRENGTH)));
+                new PotionRow(UiI18n.tr("toolvisuals.hud.preview_speed").getString(), "2:35", true, Hud.getMobEffectSprite(MobEffects.SPEED)),
+                new PotionRow(UiI18n.tr("toolvisuals.hud.preview_strength").getString(), "1:20", true, Hud.getMobEffectSprite(MobEffects.STRENGTH)));
         if (effects.isEmpty()) return;
         int count = effects.size();
         float scale = begin(g, POTION_SCALE);

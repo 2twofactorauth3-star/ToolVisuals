@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.optimization.diagnostics.report;
 
+import com.sun.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -20,7 +21,7 @@ public final class RuntimeMetadata {
         text.append("collectors=").append(String.join(",",RuntimeProbe.collectors())).append('\n');
         var flags=ManagementFactory.getRuntimeMXBean().getInputArguments().stream().filter(RuntimeMetadata::safeFlag).toList();
         text.append("jvm_memory_flags=").append(String.join(" ",flags)).append('\n');
-        if(ManagementFactory.getOperatingSystemMXBean() instanceof com.sun.management.OperatingSystemMXBean os)
+        if(ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean os)
             text.append("physical_total_mib=").append(os.getTotalMemorySize()/1048576).append(" physical_free_mib=").append(os.getFreeMemorySize()/1048576).append('\n');
         var loader=FabricLoader.getInstance();
         text.append("toolvisuals_sha256=").append(fingerprint()).append('\n');

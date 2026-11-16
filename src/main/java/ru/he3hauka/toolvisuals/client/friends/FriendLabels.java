@@ -2,10 +2,8 @@ package ru.he3hauka.toolvisuals.client.friends;
 
 import java.util.Locale;
 import java.util.Optional;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.localization.UiLanguage;
 

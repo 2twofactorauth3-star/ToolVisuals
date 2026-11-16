@@ -9,13 +9,14 @@ import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class ItemHighlightAppearanceScreen extends VisualEditorScreen {
     public ItemHighlightAppearanceScreen(Screen parent) { super(parent, text("appearance")); }
     private static Component text(String key) { return UiI18n.tr("toolvisuals.item_highlights." + key); }
     @Override protected void init() {
-        frame(620, 358);
+        frame(620, 398);
         adjustment(20, 94, ITEM_HIGHLIGHT_STRENGTH, true);
         adjustment(326, 94, ITEM_HIGHLIGHT_RADIUS, false);
         button(20, 148, 274, 32, ITEM_HIGHLIGHT_SLOT_FILL.label(), null,
@@ -24,7 +25,10 @@ public final class ItemHighlightAppearanceScreen extends VisualEditorScreen {
         adjustment(326, 148, ITEM_HIGHLIGHT_SLOT_OPACITY, true);
         adjustment(20, 250, ITEM_HIGHLIGHT_HAND_STRENGTH, true);
         adjustment(326, 250, ITEM_HIGHLIGHT_HAND_RADIUS, false);
-        button(440, 310, 160, 28, UiI18n.tr("toolvisuals.ui.back"), UiPaint.Icon.BACK, this::onClose, null);
+        button(20, 310, 274, 28, ITEM_HIGHLIGHT_SHIMMER.label(), null,
+                () -> ToolVisualsClient.CONFIG.setValue(ITEM_HIGHLIGHT_SHIMMER, ToolVisualsClient.CONFIG.flag(ITEM_HIGHLIGHT_SHIMMER) ? 0 : 1),
+                () -> ToolVisualsClient.CONFIG.flag(ITEM_HIGHLIGHT_SHIMMER));
+        button(440, 350, 160, 28, UiI18n.tr("toolvisuals.ui.back"), UiPaint.Icon.BACK, this::onClose, null);
     }
     private void adjustment(int x, int y, VisualSetting setting, boolean percent) {
         slider(x, y, 274, setting.label(), setting.min, setting.max, setting.step,

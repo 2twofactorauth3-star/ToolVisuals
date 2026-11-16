@@ -5,15 +5,14 @@ package ru.he3hauka.toolvisuals.mixin.optimization;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndLightGetter;
-import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.*;
-
+import org.spongepowered.asm.mixin.injection.At;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.particles.ParticleLightCache;
 

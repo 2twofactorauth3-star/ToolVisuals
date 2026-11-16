@@ -2,8 +2,11 @@ package ru.he3hauka.toolvisuals.client.potion.liquid;
 
 import java.util.List;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.state.BlockState;
 
 public final class PotionGeometry {
     private static final LiquidQuadCache<BakedQuad> CACHE=new LiquidQuadCache<>(new LiquidQuadCache.Codec<>(){
@@ -15,9 +18,9 @@ public final class PotionGeometry {
     private static final class DrainingModel extends DelegateBakedModel {
         final float fill;
         DrainingModel(BakedModel source,float fill){super(source);this.fill=fill;}
-        @Override public List<BakedQuad> getQuads(net.minecraft.world.level.block.state.BlockState state,Direction side,net.minecraft.util.RandomSource random){return CACHE.drain(super.getQuads(state,side,random),fill);}
+        @Override public List<BakedQuad> getQuads(BlockState state,Direction side,RandomSource random){return CACHE.drain(super.getQuads(state,side,random),fill);}
     }
     private PotionGeometry(){}
-    public static void mark(net.minecraft.client.renderer.item.ItemStackRenderState state,float fill){}
+    public static void mark(ItemStackRenderState state,float fill){}
     public static BakedModel drain(BakedModel source,float fill){return new DrainingModel(source,fill);}
 }

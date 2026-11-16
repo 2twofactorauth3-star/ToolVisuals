@@ -1,9 +1,8 @@
 package ru.he3hauka.toolvisuals.client.connection.policy;
 
+import java.util.Arrays;
 import java.util.Map;
-
 import net.minecraft.client.KeyMapping;
-
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
@@ -27,6 +26,6 @@ public final class FeatureKeys {
     }
 
     public static KeyMapping[] filter(ClientConfig config, KeyMapping[] mappings) {
-        return java.util.Arrays.stream(mappings).filter(key -> allowed(config, key.getName())).toArray(KeyMapping[]::new);
+        return Arrays.stream(mappings).filter(key -> allowed(config, key.getName())).toArray(KeyMapping[]::new);
     }
 }

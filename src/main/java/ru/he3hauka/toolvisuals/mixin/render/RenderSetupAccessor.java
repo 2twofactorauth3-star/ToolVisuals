@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.mixin.render;
-import java.util.Map;
-
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import java.util.Map;
 import net.minecraft.client.renderer.oit.OitPipelineSet;
 import net.minecraft.client.renderer.rendertype.*;
 import org.spongepowered.asm.mixin.Mixin;

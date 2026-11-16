@@ -9,7 +9,6 @@ import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import ru.he3hauka.toolvisuals.client.gui.text.UiTextStyle;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.cache.BoundedCache;

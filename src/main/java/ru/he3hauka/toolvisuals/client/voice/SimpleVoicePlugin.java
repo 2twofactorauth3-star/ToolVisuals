@@ -4,12 +4,14 @@ import de.maxhenkel.voicechat.api.*;
 import de.maxhenkel.voicechat.api.events.*;
 import de.maxhenkel.voicechat.api.internal.events.HudIconRenderEvent;
 import de.maxhenkel.voicechat.api.internal.events.StartMicEvent;
+import java.util.Arrays;
+import java.util.function.Supplier;
 
 public final class SimpleVoicePlugin implements VoicechatPlugin {
-    private final java.util.function.Supplier<VoicePolicy> policies;
+    private final Supplier<VoicePolicy> policies;
     private volatile VoicechatClientApi client;
     public SimpleVoicePlugin(){this(VoiceChat::policy);}
-    SimpleVoicePlugin(java.util.function.Supplier<VoicePolicy> policies){this.policies=policies;}
+    SimpleVoicePlugin(Supplier<VoicePolicy> policies){this.policies=policies;}
     @Override public String getPluginId(){return "toolvisuals";}
     @Override public void registerEvents(EventRegistration events){
         events.registerEvent(ClientVoicechatInitializationEvent.class,event->{client=event.getVoicechat();VoiceChat.attach(this::state);});
@@ -22,7 +24,7 @@ public final class SimpleVoicePlugin implements VoicechatPlugin {
         events.registerEvent(ClientReceiveSoundEvent.StaticSound.class,this::receive,Integer.MAX_VALUE);
     }
     private void receive(ClientReceiveSoundEvent event){if(!policies.get().receive())silence(event.getRawAudio());}
-    private static void silence(short[] samples){if(samples!=null)java.util.Arrays.fill(samples,(short)0);}
+    private static void silence(short[] samples){if(samples!=null)Arrays.fill(samples,(short)0);}
     private VoiceChat.State state(){
         var api=client;if(api==null)return VoiceChat.State.INITIALIZING;
         if(api.isDisconnected())return VoiceChat.State.DISCONNECTED;if(api.isDisabled())return VoiceChat.State.DISABLED;

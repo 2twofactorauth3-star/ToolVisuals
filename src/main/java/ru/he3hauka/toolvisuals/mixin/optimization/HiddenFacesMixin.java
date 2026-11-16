@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.terrain.BoundaryFaces;

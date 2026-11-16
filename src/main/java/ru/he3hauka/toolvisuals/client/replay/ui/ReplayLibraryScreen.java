@@ -1,12 +1,13 @@
 package ru.he3hauka.toolvisuals.client.replay.ui;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.mojang.blaze3d.Blaze3D;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -15,6 +16,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -46,12 +48,12 @@ public final class ReplayLibraryScreen extends Screen {
         button(px + pw - 42, py + 12, 26, 26, UiI18n.tr("toolvisuals.ui.back"), ICON, UiPaint.Icon.BACK, this::onClose);
         button(px + 20, py + 58, (pw - 48) / 2, 36, tr("watch_current"), CHIP, UiPaint.Icon.CAMERA, this::current);
         button(px + 28 + (pw - 48) / 2, py + 58, (pw - 48) / 2, 36, tr("folder"), GHOST, UiPaint.Icon.WORLD,
-                () -> com.mojang.blaze3d.Blaze3D.openPath(ReplayCapture.directory()));
+                () -> Blaze3D.openPath(ReplayCapture.directory()));
         int rows = Math.max(1, (ph - 180) / 43); int pages = Math.max(1, (recordings.size() + rows - 1) / rows); page = Math.clamp(page, 0, pages - 1);
         for (int row = 0; row < rows && page * rows + row < recordings.size(); row++) {
             var recording = recordings.get(page * rows + row);
             String label = DATE.format(Instant.ofEpochMilli(recording.header.createdMillis)) + "  ·  " + recording.header.playerName
-                    + "  ·  " + time(recording.durationMillis) + "  ·  " + String.format(java.util.Locale.ROOT, "%.1f MiB", recording.length / 1048576d);
+                    + "  ·  " + time(recording.durationMillis) + "  ·  " + String.format(Locale.ROOT, "%.1f MiB", recording.length / 1048576d);
             button(px + 20, py + 110 + row * 43, pw - 40, 36, Component.literal(label), MENU, UiPaint.Icon.CAMERA, () -> open(recording, 0));
         }
         button(px + 20, py + ph - 54, 36, 30, Component.literal("‹"), GHOST, null, () -> { page--; rebuildWidgets(); });
@@ -60,7 +62,7 @@ public final class ReplayLibraryScreen extends Screen {
         if (recordings.isEmpty() && !loading && status.isEmpty()) refresh();
     }
 
-    public static String time(long millis) { long seconds = millis / 1000; return String.format(java.util.Locale.ROOT, "%d:%02d", seconds / 60, seconds % 60); }
+    public static String time(long millis) { long seconds = millis / 1000; return String.format(Locale.ROOT, "%d:%02d", seconds / 60, seconds % 60); }
 
     private void button(int x, int y, int w, int h, Component text, VisualsButton.Kind kind, UiPaint.Icon icon, Runnable action) {
         buttons.add(addWidget(new VisualsButton(x, y, w, h, text, kind, icon, text, action, null)));
@@ -72,7 +74,7 @@ public final class ReplayLibraryScreen extends Screen {
         try {
             CompletableFuture.supplyAsync(() -> {
                 try { return ReplayLibrary.list(ReplayCapture.directory()); }
-                catch (java.io.IOException error) { throw new CompletionException(error); }
+                catch (IOException error) { throw new CompletionException(error); }
             }, FILES).whenComplete((files, error) -> minecraft.execute(() -> {
                 loading = false;
                 if (error != null) { ClientErrors.report("Refresh replay library",error);status = tr("read_error").getString(); return; }

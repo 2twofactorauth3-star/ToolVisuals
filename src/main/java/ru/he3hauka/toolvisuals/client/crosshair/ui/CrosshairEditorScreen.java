@@ -1,12 +1,10 @@
 package ru.he3hauka.toolvisuals.client.crosshair.ui;
 
-import java.util.*;
-
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.*;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.*;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;

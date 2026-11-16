@@ -1,12 +1,12 @@
 package ru.he3hauka.toolvisuals.client.storage;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.slf4j.LoggerFactory;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class DeferredJson {
     private static final long QUIET_NANOS=200_000_000L, MAX_DELAY_NANOS=2_000_000_000L;
@@ -36,7 +36,7 @@ public final class DeferredJson {
             if(remaining>0){task=WORKER.schedule(drainTask,remaining,TimeUnit.NANOSECONDS);return;}
             selected=pending;
         }
-        try{write(selected);}catch(IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Visual changes are not saved; original configuration preserved",error);}
+        try{write(selected);}catch(IOException error){LoggerFactory.getLogger("ToolVisuals").warn("Visual changes are not saved; original configuration preserved",error);}
     }
     private void write(Pending selected) throws IOException {
         synchronized(writeLock){

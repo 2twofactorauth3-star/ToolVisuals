@@ -8,20 +8,24 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient;
 import ru.he3hauka.toolvisuals.client.hud.HudFormats;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.BUFF_TRACKER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class BuffTracker {
     private static final class Drinking {
         final ItemStack item;
-        final net.minecraft.world.InteractionHand hand;
+        final InteractionHand hand;
         int remaining;
         long stopped=-1;
         Drinking(Player player){item=player.getUseItem().copy();hand=player.getUsedItemHand();remaining=player.getUseItemRemainingTicks();}
@@ -37,8 +41,8 @@ public final class BuffTracker {
     private BuffTracker(){}
     public static long revision(){return revision;}
     public static List<BuffTimeline.Entry> entries(){return visible;}
-    private static boolean enabled(){return ToolVisualsClient.CONFIG.active(BUFF_TRACKER)&&!ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active();}
-    private static boolean allowed(Player player){var config=ToolVisualsClient.CONFIG;var client=Minecraft.getInstance();return config.flag(player==client.player?BUFF_SELF:BUFF_OTHERS)&&player.isAlive()&&client.player!=null&&client.player.distanceToSqr(player)<=Math.pow(config.value(BUFF_RANGE),2)&&(!ru.he3hauka.toolvisuals.client.connection.holyworld.HolyWorldClient.protectedServer()||!player.isInvisible());}
+    private static boolean enabled(){return ToolVisualsClient.CONFIG.active(BUFF_TRACKER)&&!ReplayScope.active();}
+    private static boolean allowed(Player player){var config=ToolVisualsClient.CONFIG;var client=Minecraft.getInstance();return config.flag(player==client.player?BUFF_SELF:BUFF_OTHERS)&&player.isAlive()&&client.player!=null&&client.player.distanceToSqr(player)<=Math.pow(config.value(BUFF_RANGE),2)&&(!HolyWorldClient.protectedServer()||!player.isInvisible());}
     private static void reset(Minecraft client){DRINKS.clear();OWN_EFFECTS.clear();PENDING.clear();TIMELINE.reset(client.player==null?null:client.player.getUUID());visible=List.of();ticks=0;revision++;}
     private static void scope(Minecraft client){if(connection!=client.getConnection()||world!=client.level||owner!=client.player){connection=client.getConnection();world=client.level;owner=client.player;reset(client);}}
     public static void tick(Minecraft client){

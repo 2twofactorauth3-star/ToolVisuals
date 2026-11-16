@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.config;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import ru.he3hauka.toolvisuals.client.chat.layout.ChatSize;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudPosition;
@@ -24,10 +24,10 @@ final class ConfigSnapshot {
     public Map<String, HudPosition> hudPositions;
     public Map<String, Double> hudScales;
     public HudPosition hudEditorToolbar;
-    public java.util.List<String> pvpBlockedCommands;
+    public List<String> pvpBlockedCommands;
     public Set<String> favorites;
     public Map<String,ColorStyle> colors;
-    public java.util.List<String> crosshairDesign;
+    public List<String> crosshairDesign;
     public String cosmeticAppearance;
     public Map<String, Integer> itemHighlights;
 }

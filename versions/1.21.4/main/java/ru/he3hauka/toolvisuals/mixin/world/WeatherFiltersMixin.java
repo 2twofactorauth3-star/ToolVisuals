@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.WORLD_CUSTOMIZER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.CLEAR_WEATHER;
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;

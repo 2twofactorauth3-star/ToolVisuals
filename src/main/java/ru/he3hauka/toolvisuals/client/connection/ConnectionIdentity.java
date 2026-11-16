@@ -1,17 +1,18 @@
 package ru.he3hauka.toolvisuals.client.connection;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.services.ProfileResult;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
-
-import com.mojang.authlib.services.ProfileResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.multiplayer.ProfileKeyPairManager;
-
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.mixin.accounts.MinecraftSessionAccessor;
 
@@ -37,15 +38,15 @@ public final class ConnectionIdentity {
         originalKeys = client.getProfileKeyPairManager();
         String saved = ToolVisualsClient.CONFIG.nickname();
         if (valid(saved)) try { apply(client, saved); }
-        catch(java.io.IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot restore saved account; original account file preserved",error);}
+        catch(IOException error){LoggerFactory.getLogger("ToolVisuals").warn("Cannot restore saved account; original account file preserved",error);}
     }
     public static boolean custom(Minecraft client) { return original != null && client.getUser() != original; }
-    public static com.mojang.authlib.GameProfile launcherProfile(Minecraft client) {
+    public static GameProfile launcherProfile(Minecraft client) {
         if (original==null) return client.getGameProfile();
         var result=originalProfile.getNow(null);
-        return result==null?new com.mojang.authlib.GameProfile(original.getProfileId(),original.getName()):result.profile();
+        return result==null?new GameProfile(original.getProfileId(),original.getName()):result.profile();
     }
-    public static void apply(Minecraft client, String name) throws java.io.IOException {
+    public static void apply(Minecraft client, String name) throws IOException {
         if (!valid(name)) throw new IllegalArgumentException("Invalid Minecraft nickname");
         if (client.level != null || client.getConnection() != null) throw new IllegalStateException("Disconnect before changing identity");
         if (original == null) initialize(client);

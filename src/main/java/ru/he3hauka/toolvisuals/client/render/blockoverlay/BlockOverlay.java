@@ -1,13 +1,14 @@
 package ru.he3hauka.toolvisuals.client.render.blockoverlay;
 
-import java.util.List;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
@@ -30,7 +31,7 @@ public final class BlockOverlay {
         return ToolVisualsClient.CONFIG.active(BLOCK_HIGHLIGHT) && !ReplayScope.active() && client.level != null && client.player != null
                 && client.gui.screen() == null && !NoRender.hides(RenderOption.BLOCK_OUTLINE)
                 && client.hitResult instanceof BlockHitResult hit && !hit.isInside()
-                &&hit.getType()==net.minecraft.world.phys.HitResult.Type.BLOCK
+                &&hit.getType()==HitResult.Type.BLOCK
                 && client.player.isWithinBlockInteractionRange(hit.getBlockPos(), 0) && !client.level.getBlockState(hit.getBlockPos()).isAir();
     }
 

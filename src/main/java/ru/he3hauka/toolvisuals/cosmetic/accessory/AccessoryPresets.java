@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.cosmetic.accessory;
 
 import java.util.List;
-
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
 
 public final class AccessoryPresets {

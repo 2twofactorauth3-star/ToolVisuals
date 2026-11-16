@@ -3,14 +3,12 @@ package ru.he3hauka.toolvisuals.client.menu.vanilla;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 

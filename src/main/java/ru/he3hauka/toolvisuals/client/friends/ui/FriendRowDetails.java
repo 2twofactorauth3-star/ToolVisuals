@@ -1,12 +1,14 @@
 package ru.he3hauka.toolvisuals.client.friends.ui;
 
+import java.util.Locale;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import ru.he3hauka.toolvisuals.client.friends.FriendData;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.hud.players.PlayerListPanel;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 
 final class FriendRowDetails implements PlayerListPanel.Details {
     final FriendData data;
@@ -18,7 +20,7 @@ final class FriendRowDetails implements PlayerListPanel.Details {
         String value=data.healthKnown?number(data.health)+(data.absorption>0?" +"+number(data.absorption):""):"—";
         hp=UiI18n.tr("toolvisuals.friends_list.hp",value).getString();
     }
-    private static String number(float value){return value==(int)value?Integer.toString((int)value):String.format(java.util.Locale.ROOT,"%.1f",value);}
+    private static String number(float value){return value==(int)value?Integer.toString((int)value):String.format(Locale.ROOT,"%.1f",value);}
     @Override public float rightWidth(GuiGraphicsExtractor g){return (health?UiPaint.textWidth(g,hp,.7f)+8:0)+(armor?56:0)+(inventory?16:0)+(inventory&&data.inventory.size()==37&&!data.inventory.get(36).isEmpty()?14:0);}
     @Override public float extraHeight(){return inventory&&mode==0?(data.inventory.size()==37?FriendInventoryPaint.HEIGHT+3:18):0;}
     @Override public float minimumWidth(){return inventory&&mode==0?FriendInventoryPaint.WIDTH+16:0;}
@@ -46,7 +48,7 @@ final class FriendRowDetails implements PlayerListPanel.Details {
         float x=(float)Math.clamp(mouseX/scale+10,2,Math.max(2,g.guiWidth()/scale-width-2));
         float y=(float)Math.clamp(mouseY/scale+10,2,Math.max(2,g.guiHeight()/scale-height-2));
         UiPaint.rounded(g,x,y,width,height,6,palette.panel);
-        UiPaint.baseline(g,UiPaint.fit(g,net.minecraft.network.chat.Component.literal(ru.he3hauka.toolvisuals.client.nameprotect.NameProtect.text(name)),width-12,.78f),x+6,UiPaint.textBaseline(g,y+2,20,.78f),.78f,palette.text,1);
+        UiPaint.baseline(g,UiPaint.fit(g,Component.literal(NameProtect.text(name)),width-12,.78f),x+6,UiPaint.textBaseline(g,y+2,20,.78f),.78f,palette.text,1);
         if(data.inventory.size()==37)FriendInventoryPaint.grid(g,palette,data.inventory,x+6,y+24);
         else UiPaint.baseline(g,UiPaint.fit(g,UiI18n.tr("toolvisuals.friends_list.inventory_unavailable"),width-12,.66f),x+6,UiPaint.textBaseline(g,y+22,20,.66f),.66f,palette.muted,1);
         g.pose().popMatrix();

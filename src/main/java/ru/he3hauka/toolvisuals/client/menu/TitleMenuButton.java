@@ -1,11 +1,10 @@
 package ru.he3hauka.toolvisuals.client.menu;
 
 import java.util.function.Supplier;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
@@ -23,7 +22,7 @@ public final class TitleMenuButton extends Button {
     public TitleMenuButton(Component label,UiPaint.Icon icon,Supplier<String> detail,float scale,boolean primary,Runnable action) {
         super(0,0,1,1,label,button->action.run(),DEFAULT_NARRATION);
         this.icon=icon;this.scale=scale;this.primary=primary;
-        if(detail!=null)setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(label.getString()+": "+detail.get())));
+        if(detail!=null)setTooltip(Tooltip.create(Component.literal(label.getString()+": "+detail.get())));
     }
     public void frame(UiPalette palette,boolean light,float opacity,float elapsed) { this.palette=palette;this.light=light;this.opacity=opacity;this.elapsed=elapsed; }
     @Override protected void extractContents(GuiGraphicsExtractor g,int mx,int my,float partial) {

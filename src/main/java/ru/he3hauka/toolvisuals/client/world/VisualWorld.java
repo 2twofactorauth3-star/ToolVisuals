@@ -1,33 +1,40 @@
 package ru.he3hauka.toolvisuals.client.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.animation.EffectTime;
+import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.effects.EffectBudget;
 import ru.he3hauka.toolvisuals.client.effects.WorldEffects;
 import ru.he3hauka.toolvisuals.client.effects.render.EffectRenderer;
 import ru.he3hauka.toolvisuals.client.hud.target.VisualTarget;
+import ru.he3hauka.toolvisuals.client.navigation.gps.Gps;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.geometry.LineMesh;
 import ru.he3hauka.toolvisuals.client.optimization.geometry.UnitCircle;
 import ru.he3hauka.toolvisuals.client.optimization.scene.NearbyEntities;
+import ru.he3hauka.toolvisuals.client.presents.ToolPresents;
 import ru.he3hauka.toolvisuals.client.projectile.ProjectilePrediction;
 import ru.he3hauka.toolvisuals.client.render.CustomHitboxes;
+import ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.waypoint.Waypoints;
+import ru.he3hauka.toolvisuals.client.waypoint.WorldLabels;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -86,26 +93,26 @@ public final class VisualWorld {
         try{extractFrame(state);}finally{Diagnostics.end(Diagnostics.Section.WORLD_EXTRACT,started);}
     }
     private static void extractFrame(LevelRenderState state) {
-        ru.he3hauka.toolvisuals.client.waypoint.WorldLabels.extract(state);
+        WorldLabels.extract(state);
         WorldEffects.extract(state);
         var client = Minecraft.getInstance();
         var config = ToolVisualsClient.CONFIG;
         if (client.player == null || client.level == null || client.level != level) {
-            ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.clear();
+            BlockOverlay.clear();
             frame = new Frame(LineMesh.Snapshot.EMPTY, null); return;
         }
         float partial = state.worldPartialTicks;
-        double time = ru.he3hauka.toolvisuals.client.animation.EffectTime.at(state.gameTime, partial);
+        double time = EffectTime.at(state.gameTime, partial);
         var strokes=STROKES;strokes.clear();
-        ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.extract(strokes);
-        for(var marker:ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visibleMarkers(client)) {
+        BlockOverlay.extract(strokes);
+        for(var marker:Gps.visibleMarkers(client)) {
             var gps=marker.target();
             var position=new Vec3(gps.x(),gps.y(),gps.z());
             line(strokes,position,position.add(0,3,0),0xc0bda5ff,2);
             ring(strokes,position.add(0,.025,0),RIGHT,FORWARD,.4,0xbda5ff,.85f,1.5f);
         }
         if(config.flag(PRESENTS_ROUTE)) {
-            var presents=ru.he3hauka.toolvisuals.client.presents.ToolPresents.route();
+            var presents=ToolPresents.route();
             for(int index=0;index<Math.min(4,presents.size());index++) {
                 var point=presents.get(index);
                 var position=new Vec3(point.x()+.5,point.y()+.05,point.z()+.5);
@@ -122,13 +129,13 @@ public final class VisualWorld {
             for(int i=1;i<path.points.size();i++)line(strokes,path.points.get(i-1),path.points.get(i),color,width);
             if(path.hit!=null&&config.flag(PREDICT_LANDING)) {
                 Vec3 right=RIGHT,up=FORWARD;
-                if(path.hit instanceof net.minecraft.world.phys.BlockHitResult hit) {
+                if(path.hit instanceof BlockHitResult hit) {
                     var axis=hit.getDirection().getAxis();
-                    if(axis==net.minecraft.core.Direction.Axis.X){right=new Vec3(0,1,0);up=FORWARD;}
-                    else if(axis==net.minecraft.core.Direction.Axis.Z){right=RIGHT;up=new Vec3(0,1,0);}
+                    if(axis==Direction.Axis.X){right=new Vec3(0,1,0);up=FORWARD;}
+                    else if(axis==Direction.Axis.Z){right=RIGHT;up=new Vec3(0,1,0);}
                 }
                 var center=path.hit.getLocation();
-                if(path.hit instanceof net.minecraft.world.phys.BlockHitResult hit)center=center.add(Vec3.atLowerCornerOf(hit.getDirection().getUnitVec3i()).scale(.015));
+                if(path.hit instanceof BlockHitResult hit)center=center.add(Vec3.atLowerCornerOf(hit.getDirection().getUnitVec3i()).scale(.015));
                 ring(strokes,center,right,up,.22,color&0xffffff,.9f,width);
             }
         }
@@ -138,14 +145,14 @@ public final class VisualWorld {
                 var pos=new Vec3(point.x,point.y,point.z);
                 if(!point.enabled||!point.dimension.equals(Waypoints.dimension())||point.death&&!config.flag(WAYPOINT_DEATH)
                         ||pos.distanceToSqr(client.player.position())>range*range)continue;
-                int pointColor=point.style.sample(ru.he3hauka.toolvisuals.client.config.color.ColorStyle.clock(),0);
+                int pointColor=point.style.sample(ColorStyle.clock(),0);
                 line(strokes,pos,pos.add(0,3,0),0xb0000000|pointColor,2);
                 ring(strokes,pos.add(0,.025,0),RIGHT,FORWARD,.35,pointColor,.8f,1.5f);
             }
         }
         if (CustomHitboxes.visible(client, config)) {
             var parts=CustomHitboxes.parts(config);
-            var colors=new java.util.EnumMap<CustomHitboxes.Part,Integer>(CustomHitboxes.Part.class);
+            var colors=new EnumMap<CustomHitboxes.Part,Integer>(CustomHitboxes.Part.class);
             for(var part:parts)colors.put(part,Math.round(config.number(HITBOX_OPACITY)*255)<<24|config.color(part.color));
             float width = config.number(HITBOX_LINE_WIDTH);
             int count = 0;
@@ -209,7 +216,7 @@ public final class VisualWorld {
     private static void line(LineMesh strokes,Vec3 from,Vec3 to,int color,float width){strokes.line(from.x,from.y,from.z,to.x,to.y,to.z,color,width);}
 
     public static void submit(LevelRenderState state, SubmitNodeCollector collector) {
-        ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay.submit(state,collector);
+        BlockOverlay.submit(state,collector);
         EffectRenderer.submit(collector);
         Frame current = frame;
         Vec3 camera = state.cameraRenderState.pos;

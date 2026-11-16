@@ -1,12 +1,12 @@
 package ru.he3hauka.toolvisuals.client.localization;
 
+import com.google.gson.JsonParser;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.JsonParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -38,7 +38,7 @@ public final class UiI18n {
                 JsonParser.parseReader(new InputStreamReader(stream,StandardCharsets.UTF_8)).getAsJsonObject()
                         .entrySet().forEach(entry -> values.put(entry.getKey(),entry.getValue().getAsString()));
                 result.put(language,Map.copyOf(values));
-            } catch (java.io.IOException error) { throw new IllegalStateException("Cannot load " + resource,error); }
+            } catch (IOException error) { throw new IllegalStateException("Cannot load " + resource,error); }
         }
         return Map.copyOf(result);
     }

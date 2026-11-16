@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.client.gui.dialog;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.client.KeyMapping;
@@ -35,7 +36,7 @@ public final class FileDialogs {
                 else if(path!=null){lastDirectory=path.getParent();chosen.accept(path);}
             });
         };
-        if(System.getProperty("os.name","").toLowerCase(java.util.Locale.ROOT).contains("mac"))dialog.run();
+        if(System.getProperty("os.name","").toLowerCase(Locale.ROOT).contains("mac"))dialog.run();
         else Thread.ofPlatform().name("ToolVisuals file dialog").daemon(true).start(ClientErrors.task("Native file dialog",dialog));
     }
 }

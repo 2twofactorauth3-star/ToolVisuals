@@ -1,21 +1,24 @@
 package ru.he3hauka.toolvisuals.client.gui.render;
 
 import java.util.function.DoubleToIntFunction;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-
+import org.joml.Vector2f;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.surface.UiSurface;
 import ru.he3hauka.toolvisuals.client.gui.text.UiTextStyle;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
+import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 
 public final class UiPaint {
     public enum Icon { CLOSE, SEARCH, SUN, MOON, KEYBOARD, BACK, ARROW, WORLD, PLAYER, RENDER, HUD, CAMERA, EYE, SETTINGS, RESET, CHECK, STAR, STAR_FILLED, PLUS, PING, CLOCK, FPS, VERSIONS, REALMS, CHEVRON, MUSIC, PLAY, PAUSE, PREVIOUS, NEXT, STOP, SHUFFLE, REPEAT, SPEAKER, SPEAKER_OFF }
 
     private UiPaint() {}
 
-    public static boolean hovered(GuiGraphicsExtractor graphics, net.minecraft.client.gui.components.AbstractWidget widget, int mouseX, int mouseY) {
-        var point = graphics.pose().transformPosition(mouseX, mouseY, new org.joml.Vector2f());
+    public static boolean hovered(GuiGraphicsExtractor graphics, AbstractWidget widget, int mouseX, int mouseY) {
+        var point = graphics.pose().transformPosition(mouseX, mouseY, new Vector2f());
         return widget.visible && mouseX >= widget.getX() && mouseX < widget.getX() + widget.getWidth()
                 && mouseY >= widget.getY() && mouseY < widget.getY() + widget.getHeight()
                 && graphics.containsPointInScissor((int)Math.floor(point.x), (int)Math.floor(point.y));
@@ -26,7 +29,7 @@ public final class UiPaint {
     }
     public static void radialSegment(GuiGraphicsExtractor g,float x,float y,float inner,float outer,int index,int count,int color){UiSprites.radialSegment(g,x,y,inner,outer,index,count,color);}
 
-    public static void material(GuiGraphicsExtractor g,ru.he3hauka.toolvisuals.client.gui.surface.UiSurface surface,boolean light,
+    public static void material(GuiGraphicsExtractor g,UiSurface surface,boolean light,
                                 float x,float y,float width,float height,float scale,float opacity) {
         UiSprites.material(g,surface,light,x,y,width,height,scale,opacity);
     }
@@ -48,8 +51,8 @@ public final class UiPaint {
         if (width <= 0 || height <= 0 || color >>> 24 == 0) return;
         float r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) { rectangle(graphics, x, y, width, height, color); return; }
-        if (ru.he3hauka.toolvisuals.client.optimization.Optimizations.enabled(
-                ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_FAST_HUD)) {
+        if (Optimizations.enabled(
+                VisualSetting.OPT_FAST_HUD)) {
             UiShapeBatch.begin();
             try { UiSprites.rounded(graphics, x, y, width, height, r, color); } finally { UiShapeBatch.end(); }
             return;

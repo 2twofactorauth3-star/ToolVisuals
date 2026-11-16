@@ -1,11 +1,12 @@
 package ru.he3hauka.toolvisuals.relay.paper.world;
 
+import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import ru.he3hauka.toolvisuals.network.world.WorldContextWire;
 
 public final class WorldContextDelivery {
-    private java.util.UUID previous;
+    private UUID previous;
     private String previousChannel;
 
     public void send(Plugin plugin, Player player, boolean refresh, boolean extended) {

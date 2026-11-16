@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.armor.render;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;

@@ -1,16 +1,22 @@
 package ru.he3hauka.toolvisuals.client.replay.capture;
 
-import java.util.List;
 import io.netty.buffer.Unpooled;
+import java.util.List;
+import java.util.function.IntFunction;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import ru.he3hauka.toolvisuals.client.replay.io.ReplayFrame;
+import net.minecraft.world.item.component.SwingAnimation;
 import ru.he3hauka.toolvisuals.client.replay.io.ReplayFormat;
+import ru.he3hauka.toolvisuals.client.replay.io.ReplayFrame;
+import ru.he3hauka.toolvisuals.mixin.replay.ReplayLivingAccessor;
+import ru.he3hauka.toolvisuals.mixin.replay.ReplaySwingAccessor;
 
 public final class ReplaySelf {
     private static final List<EquipmentSlot> SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
@@ -30,8 +36,8 @@ public final class ReplaySelf {
             buffer.writeInt(player.hurtTime); buffer.writeInt(player.deathTime);
             buffer.writeFloat(player.getSwingAnimation(0));buffer.writeFloat(player.getSwingAnimation(1));
             var swing=player.getCurrentSwing();buffer.writeBoolean(swing!=null);
-            if(swing!=null){buffer.writeBoolean(swing.hand()==net.minecraft.world.InteractionHand.OFF_HAND);
-                net.minecraft.world.item.component.SwingAnimation.STREAM_CODEC.encode(buffer,swing.animation());buffer.writeInt(swing.durationTicks());}
+            if(swing!=null){buffer.writeBoolean(swing.hand()==InteractionHand.OFF_HAND);
+                SwingAnimation.STREAM_CODEC.encode(buffer,swing.animation());buffer.writeInt(swing.durationTicks());}
             boolean changed = equipment == null;
             if (!changed) for (int slot = 0; slot < SLOTS.size(); slot++)
                 if (!ItemStack.matches(equipment[slot], player.getItemBySlot(SLOTS.get(slot)))) { changed = true; break; }
@@ -51,7 +57,7 @@ public final class ReplaySelf {
     }
 
     public static void apply(ReplayFrame frame, RegistryAccess registry, String dimension,
-                             java.util.function.IntFunction<RemotePlayer> owner) {
+                             IntFunction<RemotePlayer> owner) {
         var bytes = Unpooled.wrappedBuffer(frame.payload.duplicate().clear());
         var buffer = new RegistryFriendlyByteBuf(bytes, registry);
         try {
@@ -62,12 +68,12 @@ public final class ReplaySelf {
             boolean sprint = buffer.readBoolean(), crouch = buffer.readBoolean(), swim = buffer.readBoolean(), ground = buffer.readBoolean();
             float health = buffer.readFloat(), absorption = buffer.readFloat();
             int hurt = buffer.readInt(), death = buffer.readInt();float oldAttack=buffer.readFloat(),attack = buffer.readFloat();
-            net.minecraft.world.entity.LivingEntity.SwingDescription swing=null;
+            LivingEntity.SwingDescription swing=null;
             if(buffer.readBoolean()){
-                var hand=buffer.readBoolean()?net.minecraft.world.InteractionHand.OFF_HAND:net.minecraft.world.InteractionHand.MAIN_HAND;
-                var animation=net.minecraft.world.item.component.SwingAnimation.STREAM_CODEC.decode(buffer);int duration=buffer.readInt();
+                var hand=buffer.readBoolean()?InteractionHand.OFF_HAND:InteractionHand.MAIN_HAND;
+                var animation=SwingAnimation.STREAM_CODEC.decode(buffer);int duration=buffer.readInt();
                 if(duration<1||duration>1000||animation.duration()<1||animation.duration()>1000)throw new IllegalArgumentException("Invalid recorded swing duration");
-                swing=new net.minecraft.world.entity.LivingEntity.SwingDescription(hand,animation,duration);
+                swing=new LivingEntity.SwingDescription(hand,animation,duration);
             }
             if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z) || Math.abs(x) > 30000000 || Math.abs(y) > 30000000 || Math.abs(z) > 30000000
                     || !Float.isFinite(yaw) || !Float.isFinite(pitch) || !Float.isFinite(head) || !Float.isFinite(body)
@@ -87,7 +93,7 @@ public final class ReplaySelf {
             actor.yHeadRot = head; actor.yBodyRot = body; actor.setPose(pose);
             actor.setSprinting(sprint); actor.setShiftKeyDown(crouch); actor.setSwimming(swim); actor.setOnGround(ground);
             actor.setHealth(health); actor.setAbsorptionAmount(absorption); actor.hurtTime = hurt; actor.deathTime = death;
-            var swingState=(ru.he3hauka.toolvisuals.mixin.replay.ReplaySwingAccessor)((ru.he3hauka.toolvisuals.mixin.replay.ReplayLivingAccessor)actor).toolvisuals$replaySwing();
+            var swingState=(ReplaySwingAccessor)((ReplayLivingAccessor)actor).toolvisuals$replaySwing();
             swingState.toolvisuals$replaySwing(swing);swingState.toolvisuals$replayTicks(swing==null?0:(int)(attack*swing.durationTicks()));
             swingState.toolvisuals$replayOldAnimation(oldAttack);swingState.toolvisuals$replayAnimation(attack);
             if (equipment != null) for (int slot = 0; slot < equipment.length; slot++) actor.setItemSlot(SLOTS.get(slot), equipment[slot]);

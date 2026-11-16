@@ -3,18 +3,15 @@ package ru.he3hauka.toolvisuals.mixin.customhand;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,6 +20,7 @@ import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
 import ru.he3hauka.toolvisuals.client.hand.render.HandRendering;
 import ru.he3hauka.toolvisuals.client.render.NoSwing;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 

@@ -4,14 +4,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.screens.ChatScreen;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.layout.ChatResizeModel;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.hud.layout.ChatHudAccess;
 
 public final class ChatResizer {
-    private static boolean allowed(){return ToolVisualsClient.CONFIG.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.CHAT_RESIZE);}
+    private static boolean allowed(){return ToolVisualsClient.CONFIG.available(ClientFeature.CHAT_RESIZE);}
     private final ChatResizeModel model=new ChatResizeModel();
     private static int previousWidth=-1;
     private static Object world;

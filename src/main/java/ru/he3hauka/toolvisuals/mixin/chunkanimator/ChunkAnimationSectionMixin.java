@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-
 import ru.he3hauka.toolvisuals.client.chunkanimator.ChunkAnimations;
 
 @Pseudo

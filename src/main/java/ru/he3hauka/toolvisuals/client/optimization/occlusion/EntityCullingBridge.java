@@ -3,9 +3,9 @@ package ru.he3hauka.toolvisuals.client.optimization.occlusion;
 import dev.tr7zw.entityculling.EntityCullingModBase;
 import dev.tr7zw.entityculling.access.Cullable;
 import net.minecraft.client.Minecraft;
-
 import ru.he3hauka.toolvisuals.client.hud.target.VisualTarget;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
+import ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -17,7 +17,7 @@ public final class EntityCullingBridge {
         if (mod == null || mod.config == null) return;
          
         mod.config.tickCulling = false;
-        boolean replay=client.gui.screen() instanceof ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
+        boolean replay=client.gui.screen() instanceof ReplayViewerScreen;
         mod.config.skipEntityCulling = replay||!Optimizations.enabled(OPT_ENTITY_CULLING);
         mod.config.skipBlockEntityCulling = replay||!Optimizations.enabled(OPT_BLOCK_ENTITY_CULLING);
          

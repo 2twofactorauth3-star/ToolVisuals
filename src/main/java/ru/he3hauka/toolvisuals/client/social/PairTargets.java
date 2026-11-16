@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.social;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-
 import ru.he3hauka.toolvisuals.client.player.FakePlayer;
 
 public final class PairTargets {

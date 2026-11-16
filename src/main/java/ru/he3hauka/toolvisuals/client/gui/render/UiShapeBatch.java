@@ -1,10 +1,9 @@
 package ru.he3hauka.toolvisuals.client.gui.render;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;

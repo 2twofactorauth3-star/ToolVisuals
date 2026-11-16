@@ -2,11 +2,13 @@ package ru.he3hauka.toolvisuals.client.cape;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.Identifier;
-
+import net.minecraft.world.entity.player.PlayerSkin;
 import ru.he3hauka.toolvisuals.client.optimization.texture.TextureUploads;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 public final class CapeTexture implements AutoCloseable {
@@ -20,15 +22,15 @@ public final class CapeTexture implements AutoCloseable {
     private Object pending;
     private long retryAfter;
     private long lastUpload=Long.MIN_VALUE;
-    private net.minecraft.world.entity.player.PlayerSkin original,replacement;
+    private PlayerSkin original,replacement;
     public CapeTexture(){this(false);}
     public CapeTexture(boolean foreground){this.foreground=foreground;}
     public boolean ready(){return texture!=null&&hash!=null;}
     public ClientAsset.Texture update(CapeDesign design){
-        if(design.frameCount>1)design=ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.frame(design,System.nanoTime());
+        if(design.frameCount>1)design=CapeAnimationPolicy.frame(design,System.nanoTime());
         desired=design;
         long now=System.nanoTime();
-        if(!design.hash.equals(hash)&&pending==null&&now>=retryAfter&&ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.uploadDue(lastUpload,now)){
+        if(!design.hash.equals(hash)&&pending==null&&now>=retryAfter&&CapeAnimationPolicy.uploadDue(lastUpload,now)){
             Object ticket=new Object();pending=ticket;
             boolean accepted=TextureUploads.offer(this,CapeAtlas.WIDTH*CapeAtlas.HEIGHT*4L,foreground,()->{
                 if(pending!=ticket)return;
@@ -46,7 +48,7 @@ public final class CapeTexture implements AutoCloseable {
         }
         return ready()?asset:null;
     }
-    public void apply(net.minecraft.client.renderer.entity.state.AvatarRenderState state,CapeDesign design){
+    public void apply(AvatarRenderState state,CapeDesign design){
         var cape=update(design);if(cape==null||state.skin==null)return;
         if(state.skin!=original&&state.skin!=replacement){original=state.skin;CapeClient.skin(state,cape);replacement=state.skin;}
         else{state.skin=replacement;state.showCape=true;}

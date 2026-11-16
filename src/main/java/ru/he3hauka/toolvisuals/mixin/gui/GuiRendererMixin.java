@@ -1,27 +1,32 @@
 package ru.he3hauka.toolvisuals.mixin.gui;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.renderer.state.gui.GuiItemRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.gui.render.UiClip;
+import ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems;
 
 @Mixin(GuiRenderer.class)
 public abstract class GuiRendererMixin {
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(method = "submitBlitFromItemAtlas",
+    @ModifyExpressionValue(method = "submitBlitFromItemAtlas",
             at = @At(value = "FIELD", target = "Lcom/mojang/renderpearl/api/textures/FilterMode;NEAREST:Lcom/mojang/renderpearl/api/textures/FilterMode;"))
-    private com.mojang.renderpearl.api.textures.FilterMode toolvisuals$smoothHudSampler(
-            com.mojang.renderpearl.api.textures.FilterMode original,
-            @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) net.minecraft.client.renderer.state.gui.GuiItemRenderState item) {
-        return ((ru.he3hauka.toolvisuals.client.hud.items.SmoothHudItems.State)(Object)item).toolvisuals$smoothItem()
-                ? com.mojang.renderpearl.api.textures.FilterMode.LINEAR : original;
+    private FilterMode toolvisuals$smoothHudSampler(
+            FilterMode original,
+            @Local(argsOnly = true) GuiItemRenderState item) {
+        return ((SmoothHudItems.State)(Object)item).toolvisuals$smoothItem()
+                ? FilterMode.LINEAR : original;
     }
-    @org.spongepowered.asm.mixin.injection.ModifyArg(method = "prepareItemElements", at = @At(value = "INVOKE",
+    @ModifyArg(method = "prepareItemElements", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/render/GuiRenderer;prepareItemAtlas(Ljava/util/Set;I)Lnet/minecraft/client/gui/render/GuiItemAtlas;"), index = 1)
     private int toolvisuals$itemResolution(int original) { return Math.max(32, original); }
     @Inject(method = "executeDraw", at = @At("HEAD"), cancellable = true)

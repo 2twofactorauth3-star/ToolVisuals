@@ -2,7 +2,10 @@ package ru.he3hauka.toolvisuals.client.connection.policy;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 
 public final class ServerFeaturePolicy {
     private volatile Set<String> blocked = Set.of();
@@ -27,15 +30,15 @@ public final class ServerFeaturePolicy {
             String known = FeatureCatalog.resolve(id);
             if (known != null) next.add(known);
         }
-        if (next.contains(ru.he3hauka.toolvisuals.client.module.VisualModule.NO_FLUID.id)) {
-            next.add(FeatureCatalog.option(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.FOG));
-            next.add(FeatureCatalog.option(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.WATER_OVERLAY));
+        if (next.contains(VisualModule.NO_FLUID.id)) {
+            next.add(FeatureCatalog.option(RenderOption.FOG));
+            next.add(FeatureCatalog.option(RenderOption.WATER_OVERLAY));
         }
-        if (next.contains(ru.he3hauka.toolvisuals.client.module.VisualModule.NO_HURT_CAM.id)) {
-            for (var option : java.util.List.of(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.HURT_CAMERA,
-                    ru.he3hauka.toolvisuals.client.render.filter.RenderOption.VIEW_BOBBING,
-                    ru.he3hauka.toolvisuals.client.render.filter.RenderOption.NAUSEA,
-                    ru.he3hauka.toolvisuals.client.render.filter.RenderOption.PORTAL_DISTORTION)) next.add(FeatureCatalog.option(option));
+        if (next.contains(VisualModule.NO_HURT_CAM.id)) {
+            for (var option : List.of(RenderOption.HURT_CAMERA,
+                    RenderOption.VIEW_BOBBING,
+                    RenderOption.NAUSEA,
+                    RenderOption.PORTAL_DISTORTION)) next.add(FeatureCatalog.option(option));
         }
         var snapshot = Set.copyOf(next);
         if (snapshot.equals(blocked)) return;

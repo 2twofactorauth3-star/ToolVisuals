@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.mixin.hud;
 
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.spongepowered.asm.mixin.*;
-
 import ru.he3hauka.toolvisuals.client.hud.target.PortraitState;
 
 @Mixin(EntityRenderState.class)

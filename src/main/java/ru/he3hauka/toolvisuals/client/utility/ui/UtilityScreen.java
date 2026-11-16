@@ -1,27 +1,29 @@
 package ru.he3hauka.toolvisuals.client.utility.ui;
 
+import java.io.IOException;
 import java.util.*;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
+import org.slf4j.LoggerFactory;
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.screen.VisualEditorScreen;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public abstract class UtilityScreen extends VisualEditorScreen {
-    @FunctionalInterface protected interface WriteAction {void run() throws java.io.IOException;}
+    @FunctionalInterface protected interface WriteAction {void run() throws IOException;}
     protected void persist(WriteAction write,Runnable success) {
         try {write.run();success.run();}
-        catch(java.io.IOException error){status=ui("io_error").getString();}
+        catch(IOException error){status=ui("io_error").getString();}
         catch(IllegalArgumentException|IllegalStateException error){status=ui("storage_limit").getString();}
     }
     protected void preferencesStatus() {
-        var state=ru.he3hauka.toolvisuals.client.ToolVisualsClient.UTILITIES.status();
-        if(state==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED||state==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.WRITE_FAILED)status=ui("io_error").getString();
+        var state=ToolVisualsClient.UTILITIES.status();
+        if(state==JsonFile.Status.LOAD_FAILED||state==JsonFile.Status.WRITE_FAILED)status=ui("io_error").getString();
     }
     protected final List<AbstractWidget> listControls=new ArrayList<>();
     protected int page;
@@ -41,5 +43,5 @@ public abstract class UtilityScreen extends VisualEditorScreen {
     }
     protected void label(GuiGraphicsExtractor g,String text,int x,int y,int width,float size,int color){UiPaint.baseline(g,UiPaint.fit(g,Component.literal(text),width,size),px+x,UiPaint.textBaseline(g,py+y,24,size),size,color,1);}
     protected void footer(GuiGraphicsExtractor g){label(g,status,104,398,358,.72f,palette.muted);}
-    protected void attempt(Runnable action){try{action.run();status=ui("done").getString();}catch(Exception error){status=ui("failed").getString();org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Utility action failed",error);}}
+    protected void attempt(Runnable action){try{action.run();status=ui("done").getString();}catch(Exception error){status=ui("failed").getString();LoggerFactory.getLogger("ToolVisuals").warn("Utility action failed",error);}}
 }

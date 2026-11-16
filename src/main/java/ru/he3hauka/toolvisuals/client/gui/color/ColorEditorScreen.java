@@ -1,18 +1,18 @@
 package ru.he3hauka.toolvisuals.client.gui.color;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.awt.Color;
 import java.util.*;
 import java.util.function.Consumer;
-
-import com.mojang.blaze3d.platform.InputConstants;
+import java.util.function.IntConsumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
+import ru.he3hauka.toolvisuals.client.config.color.HexColor;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.render.UiSprites;
@@ -39,7 +39,7 @@ public final class ColorEditorScreen extends VisualEditorScreen {
     public ColorEditorScreen(Screen parent,Component name,ColorStyle initial,Consumer<ColorStyle> apply,boolean spatial) {
         this(parent,name,initial,apply,spatial,false);
     }
-    public static ColorEditorScreen single(Screen parent,Component name,int initial,java.util.function.IntConsumer apply){
+    public static ColorEditorScreen single(Screen parent,Component name,int initial,IntConsumer apply){
         return new ColorEditorScreen(parent,name,ColorStyle.solid(initial),style->apply.accept(style.colors.getFirst()),false,true);
     }
     private ColorEditorScreen(Screen parent,Component name,ColorStyle initial,Consumer<ColorStyle> apply,boolean spatial,boolean single) {
@@ -88,14 +88,14 @@ public final class ColorEditorScreen extends VisualEditorScreen {
         try {int n=Integer.parseInt(value);if(n<0||n>255)return;int shift=(2-channel)*8;colors.set(selected,colors.get(selected)&~(255<<shift)|n<<shift);readColor();syncFieldsExcept(rgb[channel]);}catch(NumberFormatException ignored){}
     }
     private void typedHex(String value) {
-        if(updating)return;var parsed=ru.he3hauka.toolvisuals.client.config.color.HexColor.parse(value);if(parsed==null)return;
+        if(updating)return;var parsed=HexColor.parse(value);if(parsed==null)return;
         colors.set(selected,parsed);readColor();syncFieldsExcept(hex);
     }
     private void syncFields(){syncFieldsExcept(null);}
     private void syncFieldsExcept(EditBox except) {
         updating=true;int color=colors.get(selected);
         for(int i=0;i<3;i++)if(rgb[i]!=null&&rgb[i]!=except)rgb[i].setValue(Integer.toString(color>>(2-i)*8&255));
-        if(hex!=null&&hex!=except)hex.setValue(ru.he3hauka.toolvisuals.client.config.color.HexColor.format(color,true));updating=false;
+        if(hex!=null&&hex!=except)hex.setValue(HexColor.format(color,true));updating=false;
     }
     private void pick(double x,double y) {
         if(drag==0){double dx=x-116,dy=y-174;hue=(float)((Math.atan2(dy,dx)/Math.TAU+1)%1);saturation=(float)Math.min(1,Math.hypot(dx,dy)/96);}

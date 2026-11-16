@@ -1,18 +1,17 @@
 package ru.he3hauka.toolvisuals.client.storage;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.Strictness;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class BoundedJson {
     public static final int MAX_BYTES = 2 * 1024 * 1024;

@@ -1,7 +1,7 @@
 package ru.he3hauka.toolvisuals.client.compatibility.render;
 
-import java.util.LinkedHashMap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.LinkedHashMap;
 import net.minecraft.client.renderer.RenderType;
 
 public final class PortraitRenderTypes {

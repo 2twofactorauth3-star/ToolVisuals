@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.Emote;
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.animation.network.WireCatalog;

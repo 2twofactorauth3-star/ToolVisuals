@@ -1,8 +1,7 @@
 package ru.he3hauka.toolvisuals.client.compatibility.render;
 
-import java.util.Optional;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderStateShard;
+import java.util.Optional;
 import net.minecraft.client.renderer.RenderType;
 
 public final class LegacyRenderType extends RenderType {

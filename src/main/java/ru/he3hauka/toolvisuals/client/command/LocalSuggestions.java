@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -82,7 +83,7 @@ public final class LocalSuggestions {
     }
 
     private static List<String> worlds() {
-        var worlds = new java.util.LinkedHashSet<>(List.of("overworld", "the_nether", "the_end", "spawn", "arena"));
+        var worlds = new LinkedHashSet<>(List.of("overworld", "the_nether", "the_end", "spawn", "arena"));
         for (var mark : ToolVisualsClient.GPS_POINTS.all()) if (!mark.target().world().isBlank()) worlds.add(mark.target().world());
         return List.copyOf(worlds);
     }

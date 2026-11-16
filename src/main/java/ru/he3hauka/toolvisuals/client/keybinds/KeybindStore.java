@@ -1,11 +1,9 @@
 package ru.he3hauka.toolvisuals.client.keybinds;
 
+import com.google.gson.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
-import com.google.gson.*;
-
 import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class KeybindStore {

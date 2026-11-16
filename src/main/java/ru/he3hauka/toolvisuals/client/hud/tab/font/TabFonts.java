@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.hud.tab.font;
 
+import java.util.Arrays;
 import net.minecraft.client.gui.Font;
 import ru.he3hauka.toolvisuals.mixin.gui.FontAccessor;
 
@@ -15,7 +16,7 @@ public final class TabFonts {
 
     public static Font get(Font original, TabFontRaster raster) {
         if (source != original) {
-            java.util.Arrays.fill(FONTS, null);
+            Arrays.fill(FONTS, null);
             source = original;
         }
         Font font = FONTS[raster.ordinal()];
@@ -26,5 +27,5 @@ public final class TabFonts {
         return font;
     }
 
-    public static void invalidate() { source = null; java.util.Arrays.fill(FONTS, null); }
+    public static void invalidate() { source = null; Arrays.fill(FONTS, null); }
 }

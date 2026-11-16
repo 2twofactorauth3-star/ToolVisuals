@@ -3,17 +3,18 @@ package ru.he3hauka.toolvisuals.client.cosmetic.accessory.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-
+import ru.he3hauka.toolvisuals.client.compatibility.render.GeometryCollector;
 import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook;
 
 public final class AccessoryLayer extends RenderLayer<AvatarRenderState,PlayerModel> {
     public AccessoryLayer(RenderLayerParent<AvatarRenderState,PlayerModel> parent){super(parent);}
-    @Override public void render(PoseStack pose,net.minecraft.client.renderer.MultiBufferSource buffers,int light,AvatarRenderState state,float yaw,float pitch){
-        var collector=new ru.he3hauka.toolvisuals.client.compatibility.render.GeometryCollector(buffers);
+    @Override public void render(PoseStack pose,MultiBufferSource buffers,int light,AvatarRenderState state,float yaw,float pitch){
+        var collector=new GeometryCollector(buffers);
         var frame=((AccessoryVisualState)state).toolvisuals$accessories();
         if(frame==null||state.isInvisible||state.isSpectator)return;
         if(frame.backVisible&&frame.look.back()!=AccessoryLook.Back.NONE){

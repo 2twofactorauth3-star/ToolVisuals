@@ -1,12 +1,13 @@
 package ru.he3hauka.toolvisuals.client.connection.ui;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
-import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,7 +18,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.PlayerSkin;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.AccountStore;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;
@@ -27,7 +27,9 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 import static ru.he3hauka.toolvisuals.client.gui.module.VisualsButton.Kind.*;
 
@@ -61,7 +63,7 @@ public final class AccountScreen extends Screen {
     private static Component tr(String key,Object... args){return UiI18n.tr("toolvisuals.accounts."+key,args);}
 
     @Override protected void init(){
-        if(store.status()==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED)status=tr("io_error");
+        if(store.status()==JsonFile.Status.LOAD_FAILED)status=tr("io_error");
         controls.clear();rows.clear();quickLogin.clear();
         viewport=new UiViewport(width,height,minecraft.getWindow().getGuiScale());
         pw=Math.min(720,viewport.width-32);ph=Math.min(484,viewport.height-32);px=(viewport.width-pw)/2;py=(viewport.height-ph)/2;
@@ -101,19 +103,18 @@ public final class AccountScreen extends Screen {
         refreshRows();setFocused(search);search.setFocused(true);lastFrame=System.nanoTime();
     }
     private EditBox field(int x,int y,int w,int h,Component label){
-        var field=new EditBox(UiFont.get(),x,y,w,h,label){
+        var field=new CenteredEditBox(UiFont.get(),x,y,w,h,label){
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial){
                 if(getValue().isEmpty()&&!isFocused()){
                     line(g,label,getX(),getY(),getWidth(),getHeight(),1,palette.muted);return;
                 }
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));
-                super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
+                super.extractWidgetRenderState(g,mx,my,partial);
             }
         };
         field.setBordered(false);field.setTextShadow(false);return field;
     }
     private VisualsButton control(int x,int y,int w,int h,Component text,VisualsButton.Kind kind,UiPaint.Icon icon,
-                                  Runnable action,java.util.function.BooleanSupplier selected){
+                                  Runnable action,BooleanSupplier selected){
         var button=addWidget(new VisualsButton(x,y,w,h,text,kind,icon,text,action,selected));controls.add(button);return button;
     }
     private List<Entry> entries(){
@@ -148,20 +149,20 @@ public final class AccountScreen extends Screen {
         try {
         if(entry.launcher)ConnectionIdentity.restore(minecraft);else ConnectionIdentity.apply(minecraft,entry.name);
         status=tr("switched",minecraft.getUser().getName());refreshRows();
-        }catch(java.io.IOException error){status=tr("io_error");}
+        }catch(IOException error){status=tr("io_error");}
     }
-    private void toggleFavorite(){var e=selected();if(e==null||e.launcher)return;try{store.favorite(e.name,!e.favorite);refreshRows();}catch(java.io.IOException error){status=tr("io_error");}}
+    private void toggleFavorite(){var e=selected();if(e==null||e.launcher)return;try{store.favorite(e.name,!e.favorite);refreshRows();}catch(IOException error){status=tr("io_error");}}
     private void deleteSelected(){
         var entry=selected();if(entry==null||entry.launcher)return;
         try {store.remove(entry.name);if(current(entry))ConnectionIdentity.restore(minecraft);
-        status=tr("removed",entry.name);selectedName=minecraft.getUser().getName();refreshRows();}catch(java.io.IOException error){status=tr("io_error");}
+        status=tr("removed",entry.name);selectedName=minecraft.getUser().getName();refreshRows();}catch(IOException error){status=tr("io_error");}
     }
     private void addProfile(){
         String name=newName.getValue();if(!ConnectionIdentity.valid(name))return;
         if(name.equals(launcher.name())){selectedName=name;status=tr("exists");updateActions();return;}
         try{boolean added=store.add(name);selectedName=name;status=tr(added?"added":"exists",name);}
         catch(IllegalStateException error){status=tr("limit");return;}
-        catch(java.io.IOException error){status=tr("io_error");return;}
+        catch(IOException error){status=tr("io_error");return;}
         newName.setValue("");query="";search.setValue("");favoritesOnly=false;scrollTarget=0;scroll.snap(0);refreshRows();
     }
     private void randomProfile(){

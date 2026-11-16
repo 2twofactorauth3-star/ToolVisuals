@@ -1,14 +1,16 @@
 package ru.he3hauka.toolvisuals.client.replay.ui;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -37,7 +39,7 @@ public final class ReplayViewerScreen extends Screen {
         catch (Exception error) { failure(error); }
     }
 
-    public void frame() throws java.io.IOException {
+    public void frame() throws IOException {
         if (playback == null) return;
         if (requested >= 0 && !timeline && System.nanoTime() - requestedAt > 120000000) {
             playback.seek(requested); requested = -1;
@@ -52,7 +54,7 @@ public final class ReplayViewerScreen extends Screen {
     public void failure(Throwable error) {
         if (failed) return;
         failed = true;
-        org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Replay viewer stopped; live world restored", error);
+        LoggerFactory.getLogger("ToolVisuals").warn("Replay viewer stopped; live world restored", error);
         if (playback != null) { playback.close(); playback = null; }
         if (minecraft != null) { minecraft.gui.setScreen(parent); ChatMessages.notice("replay.read_error"); }
     }

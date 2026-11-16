@@ -1,9 +1,8 @@
 package ru.he3hauka.toolvisuals.client.replay.io;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 public final class ReplayStream implements AutoCloseable {
     private final ArrayBlockingQueue<ReplayFrame> frames = new ArrayBlockingQueue<>(128);

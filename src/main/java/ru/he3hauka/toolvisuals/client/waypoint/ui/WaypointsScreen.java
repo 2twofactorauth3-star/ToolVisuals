@@ -1,15 +1,17 @@
 package ru.he3hauka.toolvisuals.client.waypoint.ui;
 
+import java.io.IOException;
 import java.util.*;
-
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.*;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
+import ru.he3hauka.toolvisuals.client.config.color.HexColor;
 import ru.he3hauka.toolvisuals.client.gui.color.ColorEditorScreen;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
 import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
@@ -17,6 +19,7 @@ import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.sound.SoundCustomizer;
 import ru.he3hauka.toolvisuals.client.waypoint.WaypointStore;
@@ -66,17 +69,17 @@ public final class WaypointsScreen extends Screen {
     private void openColor(){
         var parsed=color.color();int rgb=parsed==null?0xb69aff:parsed;
         minecraft.gui.setScreen(new ColorEditorScreen(this,tr("color"),draftStyle==null?ColorStyle.solid(rgb):draftStyle,style->{
-            draftStyle=style;draftColor=ru.he3hauka.toolvisuals.client.config.color.HexColor.format(style.colors.getFirst(),true);
+            draftStyle=style;draftColor=HexColor.format(style.colors.getFirst(),true);
         }));
     }
-    private VisualsButton control(int x,int y,int w,int h,Component text,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,java.util.function.BooleanSupplier on) {
+    private VisualsButton control(int x,int y,int w,int h,Component text,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,BooleanSupplier on) {
         var button=addWidget(new VisualsButton(x,y,w,h,text,kind,icon,text,action,on));controls.add(button);return button;
     }
-    private EditBox field(int left,int top,int width,int height,String key,String value,java.util.function.Consumer<String> responder,int limit) {
-        var field=addWidget(new EditBox(UiFont.get(),left,top,width,height,tr(key)) {
+    private EditBox field(int left,int top,int width,int height,String key,String value,Consumer<String> responder,int limit) {
+        var field=addWidget(new CenteredEditBox(UiFont.get(),left,top,width,height,tr(key)) {
             @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
                 if(getValue().isEmpty()){UiPaint.centered(g,tr(key).getString(),getX(),getY(),getWidth(),getHeight(),.85f,palette.muted,1);if(!isFocused())return;}
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
+                super.extractWidgetRenderState(g,mx,my,partial);
             }
         });field.setBordered(false);field.setTextShadow(false);field.setMaxLength(limit);field.setValue(value);
         field.setResponder(v->{responder.accept(v);updateActions();});fields.add(field);return field;
@@ -91,11 +94,11 @@ public final class WaypointsScreen extends Screen {
         var old=ToolVisualsClient.WAYPOINTS.entries(Waypoints.context()).stream().filter(p->p.id.equals(selected)).findFirst().orElse(null);
         return new WaypointStore.Point(selected==null?UUID.randomUUID():selected,Waypoints.context(),old==null?Waypoints.dimension():old.dimension,draftName,
                 Double.parseDouble(draftX.replace(',','.')),Double.parseDouble(draftY.replace(',','.')),Double.parseDouble(draftZ.replace(',','.')),
-                draftStyle==null?ColorStyle.solid(ru.he3hauka.toolvisuals.client.config.color.HexColor.require(draftColor)):draftStyle,old==null||old.enabled,old!=null&&old.death);
+                draftStyle==null?ColorStyle.solid(HexColor.require(draftColor)):draftStyle,old==null||old.enabled,old!=null&&old.death);
     }
-    private void updateActions(){if(save==null)return;try{draft();save.active=ru.he3hauka.toolvisuals.client.config.color.HexColor.parse(draftColor)!=null;}catch(RuntimeException error){save.active=false;}}
-    private void save(){try{var point=draft();ToolVisualsClient.WAYPOINTS.put(point);selected=point.id;status=tr("saved").getString();SoundCustomizer.notice();refresh();}catch(java.io.IOException|RuntimeException error){status=tr("save_error").getString();}}
-    private void select(WaypointStore.Point point){selected=point.id;draftName=point.death?tr("death").getString():point.name;draftX=number(point.x);draftY=number(point.y);draftZ=number(point.z);draftStyle=point.style;draftColor=ru.he3hauka.toolvisuals.client.config.color.HexColor.format(point.color,false);rebuildWidgets();}
+    private void updateActions(){if(save==null)return;try{draft();save.active=HexColor.parse(draftColor)!=null;}catch(RuntimeException error){save.active=false;}}
+    private void save(){try{var point=draft();ToolVisualsClient.WAYPOINTS.put(point);selected=point.id;status=tr("saved").getString();SoundCustomizer.notice();refresh();}catch(IOException|RuntimeException error){status=tr("save_error").getString();}}
+    private void select(WaypointStore.Point point){selected=point.id;draftName=point.death?tr("death").getString():point.name;draftX=number(point.x);draftY=number(point.y);draftZ=number(point.z);draftStyle=point.style;draftColor=HexColor.format(point.color,false);rebuildWidgets();}
     private void refresh() {
         for(var row:rows){removeWidget(row.label);removeWidget(row.toggle);removeWidget(row.remove);}rows.clear();
         for(var p:ToolVisualsClient.WAYPOINTS.entries(Waypoints.context())) {
@@ -108,8 +111,8 @@ public final class WaypointsScreen extends Screen {
         }
         scroll=Math.clamp(scroll,0,maxScroll());position();if(getFocused()!=null&&!children().contains(getFocused()))setFocused(null);
     }
-    @FunctionalInterface private interface Operation { void run() throws java.io.IOException; }
-    private void change(Operation operation){try{operation.run();refresh();}catch(java.io.IOException|RuntimeException error){status=tr("save_error").getString();}}
+    @FunctionalInterface private interface Operation { void run() throws IOException; }
+    private void change(Operation operation){try{operation.run();refresh();}catch(IOException|RuntimeException error){status=tr("save_error").getString();}}
     private float maxScroll(){return Math.max(0,rows.size()*42-(listBottom-listY));}
     private void position(){for(int i=0;i<rows.size();i++){var row=rows.get(i);int y=listY+i*42-Math.round(scroll);row.label.setX(px+20);row.label.setY(y);row.toggle.setX(px+pw-100);row.toggle.setY(y+3);row.remove.setX(px+pw-54);row.remove.setY(y+3);row.label.visible=row.toggle.visible=row.remove.visible=y<listBottom&&y+36>listY;}}
     @Override public void extractBackground(GuiGraphicsExtractor g,int mx,int my,float partial){g.fill(0,0,width,height,0x90070910);}

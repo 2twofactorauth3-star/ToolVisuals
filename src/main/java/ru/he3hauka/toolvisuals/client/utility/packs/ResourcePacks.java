@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.utility.packs;
 
 import java.io.*;
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.repository.Pack;
 

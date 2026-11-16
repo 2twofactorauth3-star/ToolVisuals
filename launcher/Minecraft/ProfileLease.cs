@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using ToolLauncher.Storage;
 namespace ToolLauncher.Minecraft;
 
 public sealed class ProfileLease : IDisposable
@@ -16,7 +18,7 @@ public sealed class ProfileLease : IDisposable
             {
                 if (File.Exists(processFile))
                 {
-                    var previous = Storage.AtomicJson.Read<ProcessIdentity>(processFile);
+                    var previous = AtomicJson.Read<ProcessIdentity>(processFile);
                     try
                     {
                         using var process = System.Diagnostics.Process.GetProcessById(previous.Pid);
@@ -32,7 +34,7 @@ public sealed class ProfileLease : IDisposable
         }
         catch (IOException error) { throw new IOException("This profile is currently running or being modified. Close Minecraft before changing its files.", error); }
     }
-    public void MarkGame(System.Diagnostics.Process process) => Storage.AtomicJson.Write(processFile, new ProcessIdentity { Pid = process.Id, Started = process.StartTime.ToUniversalTime().Ticks });
+    public void MarkGame(Process process) => AtomicJson.Write(processFile, new ProcessIdentity { Pid = process.Id, Started = process.StartTime.ToUniversalTime().Ticks });
     public void GameEnded() { if (File.Exists(processFile)) File.Delete(processFile); }
     public void Dispose() => stream.Dispose();
     private sealed class ProcessIdentity { public int Pid { get; set; } public long Started { get; set; } }

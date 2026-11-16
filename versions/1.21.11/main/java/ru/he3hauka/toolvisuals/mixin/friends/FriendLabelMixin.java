@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import ru.he3hauka.toolvisuals.client.compatibility.render.VersionState;
 import ru.he3hauka.toolvisuals.client.friends.FriendRenderState;
 import ru.he3hauka.toolvisuals.client.render.label.NameTagRows;
 
@@ -19,7 +19,7 @@ public abstract class FriendLabelMixin {
     private void toolvisuals$friendLabel(EntityRenderState state,PoseStack pose,SubmitNodeCollector collector,CameraRenderState camera,CallbackInfo ci) {
         int offset=0;
         if(!(state instanceof FriendRenderState friend)||friend.toolvisuals$friendLabel()==null||state.nameTag==null||state.nameTagAttachment==null)return;
-        double height=NameTagRows.above(ru.he3hauka.toolvisuals.client.compatibility.render.VersionState.hasScore(state),1);
+        double height=NameTagRows.above(VersionState.hasScore(state),1);
         collector.submitNameTag(pose,state.nameTagAttachment.add(0,height,0),offset,friend.toolvisuals$friendLabel(),!state.isDiscrete,state.lightCoords,state.distanceToCameraSq,camera);
     }
 }

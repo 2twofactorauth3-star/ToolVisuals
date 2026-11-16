@@ -1,12 +1,13 @@
 package ru.he3hauka.toolvisuals.client.hand.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
@@ -14,6 +15,7 @@ import ru.he3hauka.toolvisuals.client.hand.HandProfiles;
 import ru.he3hauka.toolvisuals.client.hand.HandSide;
 import ru.he3hauka.toolvisuals.client.hand.editor.HandProjection;
 import ru.he3hauka.toolvisuals.client.hand.ui.HandEditorScreen;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.CUSTOM_HAND;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.HAND_CHAT_EDITOR;
 
@@ -52,8 +54,8 @@ public final class HandRendering {
         if(current==null)return;
         capture(pose,item.getModelBoundingBox());
     }
-    public static AABB armBounds(net.minecraft.world.entity.HumanoidArm arm){return arm==net.minecraft.world.entity.HumanoidArm.RIGHT?RIGHT_ARM_BOUNDS:LEFT_ARM_BOUNDS;}
-    public static void arm(PoseStack pose,net.minecraft.world.entity.HumanoidArm arm){if(current!=null&&current.side.arm==arm)capture(pose,armBounds(arm));}
+    public static AABB armBounds(HumanoidArm arm){return arm==HumanoidArm.RIGHT?RIGHT_ARM_BOUNDS:LEFT_ARM_BOUNDS;}
+    public static void arm(PoseStack pose,HumanoidArm arm){if(current!=null&&current.side.arm==arm)capture(pose,armBounds(arm));}
     public static void map(PoseStack pose){if(current!=null)capture(pose,MAP_BOUNDS);}
     private static void capture(PoseStack pose,AABB box) {
         var client=Minecraft.getInstance();var camera=client.gameRenderer.gameRenderState().levelRenderState.cameraRenderState;

@@ -7,9 +7,9 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.render.particles.ParticleVisibility;
+import ru.he3hauka.toolvisuals.client.render.weather.PrecipitationVisibility;
 
 public final class NoRender {
     private NoRender() {
@@ -18,7 +18,7 @@ public final class NoRender {
     public static boolean hides(RenderOption option) {
         return ToolVisualsClient.CONFIG.hides(option)
                 || ParticleVisibility.hidesOptimized(ToolVisualsClient.CONFIG, option)
-                || ru.he3hauka.toolvisuals.client.render.weather.PrecipitationVisibility.hides(ToolVisualsClient.CONFIG, option);
+                || PrecipitationVisibility.hides(ToolVisualsClient.CONFIG, option);
     }
 
     public static boolean hidesEntity(Entity entity) {

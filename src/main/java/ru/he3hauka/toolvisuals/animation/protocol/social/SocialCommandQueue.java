@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.animation.protocol.social;
 
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 
 public final class SocialCommandQueue {

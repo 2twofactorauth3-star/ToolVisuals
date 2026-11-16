@@ -3,6 +3,9 @@ package ru.he3hauka.toolvisuals.client.discord;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.net.URI;
+import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.localization.UiLanguage;
 
@@ -14,7 +17,7 @@ public record DiscordActivity(String name,String details,String state,String ima
 
     public DiscordActivity{name=clean(name,128);if(name.isEmpty())name=DiscordBrand.NAME;details=clean(details,128);state=clean(state,128);imageText=clean(imageText,128);button=clean(button,32);secondaryButton=clean(secondaryButton,32);if(secondaryButton.isEmpty())secondaryUrl=null;else if(secondaryUrl==null)throw new IllegalArgumentException("Missing secondary button URL");if(started<0)throw new IllegalArgumentException("Invalid activity timestamp");}
     public static DiscordActivity create(Context context,UiLanguage language,long started){
-        String details=UiI18n.text(language,"toolvisuals.discord.mode."+context.mode.name().toLowerCase(java.util.Locale.ROOT));
+        String details=UiI18n.text(language,"toolvisuals.discord.mode."+context.mode.name().toLowerCase(Locale.ROOT));
         if(!context.server.isEmpty())details=UiI18n.text(language,"toolvisuals.discord.server",context.server);
         String state=UiI18n.text(language,"toolvisuals.discord.version",clean(context.gameVersion,32));
         String name=(DiscordBrand.NAME+" "+clean(context.nativeVersion,32)).strip();
@@ -23,8 +26,8 @@ public record DiscordActivity(String name,String details,String state,String ima
         URI secondaryUrl=multiplayer?(toolrise?DiscordBrand.JOIN_TOOLRISE:DiscordBrand.DEVELOPER):null;
         return new DiscordActivity(name,details,state,name+" · "+clean(context.clientVersion,24),started,UiI18n.text(language,"toolvisuals.discord.download"),secondaryButton,secondaryUrl);
     }
-    public static String resolveVersion(String nativeVersion,java.util.function.Supplier<String> protocol,
-                                        java.util.function.Consumer<Throwable> failure) {
+    public static String resolveVersion(String nativeVersion,Supplier<String> protocol,
+                                        Consumer<Throwable> failure) {
         try {
             String version=clean(protocol.get(),32);
             return version.isEmpty()||version.equalsIgnoreCase("unknown")?nativeVersion:version;

@@ -4,12 +4,13 @@ import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.sdl.SDL_DialogFileCallback;
 import org.lwjgl.sdl.SDL_DialogFileFilter;
 import org.lwjgl.system.MemoryUtil;
 import ru.he3hauka.toolvisuals.client.compatibility.input.NativeEventThread;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 
 import static org.lwjgl.sdl.SDLDialog.*;
 import static org.lwjgl.sdl.SDLError.SDL_GetError;
@@ -57,7 +58,7 @@ public final class FileDialogs {
         var client=Minecraft.getInstance();
         if(!client.isSameThread()){client.execute(()->choose(save,title,description,extensions,defaultName,chosen,failed));return;}
         if(!OPEN.compareAndSet(false,true))return;
-        net.minecraft.client.KeyMapping.releaseAll();
+        KeyMapping.releaseAll();
         var request=new Request(client,save,description,extensions,defaultName,chosen,failed);pending=request;
         NativeEventThread.execute(()->{
             try{request.open(title);}
@@ -79,7 +80,7 @@ public final class FileDialogs {
         if(pending!=request)return;
         pending=null;
         try{request.close();}finally{OPEN.set(false);}
-        if(error!=null){ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors.report("Open native file dialog",error);request.failed.run();}
+        if(error!=null){ClientErrors.report("Open native file dialog",error);request.failed.run();}
         else if(selected!=null){lastDirectory=selected.getParent();request.chosen.accept(selected);}
     }
 }

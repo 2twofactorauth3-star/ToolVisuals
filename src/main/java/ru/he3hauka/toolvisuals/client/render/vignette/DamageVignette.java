@@ -4,7 +4,9 @@ import java.lang.ref.WeakReference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.DAMAGE_VIGNETTE;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -37,7 +39,7 @@ public final class DamageVignette {
         var client=Minecraft.getInstance();var config=ToolVisualsClient.CONFIG;
         if (!config.active(DAMAGE_VIGNETTE)||client.player==null||client.level==null||!client.player.isAlive()
                 ||client.player.isSpectator()||client.gui.hud.isHidden()||client.gui.screen()!=null
-                ||ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active()) { opacity=0;lastFrame=0;return; }
+                ||ReplayScope.active()) { opacity=0;lastFrame=0;return; }
         if (curve==null||revision!=config.revision()) { curve=VignetteSettings.curve(config);revision=config.revision(); }
         long now=System.nanoTime();
         double hp=client.player.getHealth()+(config.flag(VIGNETTE_ABSORPTION)?client.player.getAbsorptionAmount():0);

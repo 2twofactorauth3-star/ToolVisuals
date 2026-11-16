@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
 import ru.he3hauka.toolvisuals.client.camera.FreeLook;
 
 @Mixin(Camera.class)

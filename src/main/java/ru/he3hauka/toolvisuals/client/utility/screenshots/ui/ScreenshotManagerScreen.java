@@ -1,18 +1,15 @@
 package ru.he3hauka.toolvisuals.client.utility.screenshots.ui;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
+import com.mojang.blaze3d.Blaze3D;
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.utility.preview.PreviewImages;
 import ru.he3hauka.toolvisuals.client.utility.screenshots.ScreenshotFiles;

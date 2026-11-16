@@ -6,8 +6,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
 
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.LIGHTNING_FLASH;
 
@@ -15,11 +18,11 @@ import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.LIGHTNIN
 public abstract class ClientLevelMixin {
     @Inject(method = "tickWeatherEffects", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$clearWeather(CallbackInfo ci) {
-        var config = ru.he3hauka.toolvisuals.client.ToolVisualsClient.CONFIG;
-        if (config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.WORLD_CUSTOMIZER)
-                && config.flag(ru.he3hauka.toolvisuals.client.module.VisualSetting.CLEAR_WEATHER)
-                || NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.RAIN)
-                && NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.SNOW)) ci.cancel();
+        var config = ToolVisualsClient.CONFIG;
+        if (config.active(VisualModule.WORLD_CUSTOMIZER)
+                && config.flag(VisualSetting.CLEAR_WEATHER)
+                || NoRender.hides(RenderOption.RAIN)
+                && NoRender.hides(RenderOption.SNOW)) ci.cancel();
     }
     @Inject(method = "getSkyFlashTime", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$hideLightningFlash(CallbackInfoReturnable<Integer> cir) {

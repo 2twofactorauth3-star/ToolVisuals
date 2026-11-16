@@ -5,7 +5,6 @@ import net.minecraft.network.chat.FormattedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 
 @Mixin(ComponentRenderUtils.class)

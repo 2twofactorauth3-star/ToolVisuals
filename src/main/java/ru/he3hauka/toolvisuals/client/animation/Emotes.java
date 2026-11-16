@@ -1,21 +1,29 @@
 package ru.he3hauka.toolvisuals.client.animation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-
+import net.minecraft.world.phys.Vec3;
 import ru.he3hauka.toolvisuals.animation.Emote;
+import ru.he3hauka.toolvisuals.animation.PairEmote;
 import ru.he3hauka.toolvisuals.animation.network.*;
 import ru.he3hauka.toolvisuals.animation.protocol.PlaybackReplica.StopReason;
+import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
 import ru.he3hauka.toolvisuals.animation.social.SocialProtocol;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.ui.EmoteWheelScreen;
+import ru.he3hauka.toolvisuals.client.camera.CameraLeases;
+import ru.he3hauka.toolvisuals.client.camera.ClientCamera;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.player.ClientActions;
+import ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 import ru.he3hauka.toolvisuals.client.social.SocialClient;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
@@ -37,15 +45,15 @@ public final class Emotes {
 
     public static void initialize() {
         PlaybackClient.initialize();
-        var c2s = net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay();
-        var s2c = net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay();
+        var c2s = PayloadTypeRegistry.serverboundPlay();
+        var s2c = PayloadTypeRegistry.clientboundPlay();
         c2s.register(EmoteRequestPayload.TYPE, EmoteRequestPayload.CODEC);
         c2s.register(EmoteRequestPayload.EXTENDED_TYPE, EmoteRequestPayload.EXTENDED_CODEC);
         s2c.register(EmoteStatePayload.TYPE, EmoteStatePayload.CODEC);
         s2c.register(EmoteStatePayload.EXTENDED_TYPE, EmoteStatePayload.EXTENDED_CODEC);
         ClientPlayNetworking.registerGlobalReceiver(EmoteStatePayload.TYPE, (payload, context) -> receive(payload));
         ClientPlayNetworking.registerGlobalReceiver(EmoteStatePayload.EXTENDED_TYPE, (payload, context) -> receive(payload));
-        ru.he3hauka.toolvisuals.client.replay.integration.ReplayLifecycle.unload((entity, world) -> { TIMELINE.remove(entity.getUUID()); STAGING.remove(entity.getUUID()); PAIRS.remove(entity.getUUID()); PlaybackClient.unload(entity.getUUID()); });
+        ReplayLifecycle.unload((entity, world) -> { TIMELINE.remove(entity.getUUID()); STAGING.remove(entity.getUUID()); PAIRS.remove(entity.getUUID()); PlaybackClient.unload(entity.getUUID()); });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             PlaybackClient.disconnect();
             sharing = false;
@@ -97,7 +105,7 @@ public final class Emotes {
         boolean synchronize = ToolVisualsClient.CONFIG.flag(EMOTE_SYNC) && synchronizedServer(emote);
         lastStart = clock;
         TIMELINE.start(player.getUUID(), emote, clock, 0);
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(ANIMATIONS,"solo_started","emote_id="+emote.id+" synchronized="+synchronize);
+        if(ModuleLog.active())ModuleLog.action(ANIMATIONS,"solo_started","emote_id="+emote.id+" synchronized="+synchronize);
         startX = player.getX();
         startY = player.getY();
         startZ = player.getZ();
@@ -112,7 +120,7 @@ public final class Emotes {
     }
 
     private static void stop(Minecraft client, double clock, boolean notify,StopReason reason) {
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active()&&client.player!=null&&TIMELINE.current(client.player.getUUID(),clock)!=null)ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(ANIMATIONS,"stopped","reason="+reason);
+        if(ModuleLog.active()&&client.player!=null&&TIMELINE.current(client.player.getUUID(),clock)!=null)ModuleLog.action(ANIMATIONS,"stopped","reason="+reason);
         if (client.player != null && PAIRS.containsKey(client.player.getUUID())) {
             clearPair(client.player.getUUID(), clock);
         }
@@ -123,10 +131,10 @@ public final class Emotes {
     }
 
     private static void camera(Minecraft client) {
-        if (ToolVisualsClient.CONFIG.flag(EMOTE_THIRD_PERSON)) ru.he3hauka.toolvisuals.client.camera.ClientCamera.emote(client);
+        if (ToolVisualsClient.CONFIG.flag(EMOTE_THIRD_PERSON)) ClientCamera.emote(client);
     }
     private static void restoreCamera(Minecraft client) {
-        ru.he3hauka.toolvisuals.client.camera.ClientCamera.release(client, ru.he3hauka.toolvisuals.client.camera.CameraLeases.Owner.EMOTE);
+        ClientCamera.release(client, CameraLeases.Owner.EMOTE);
     }
     public static void resetPlayback() {
         var client = Minecraft.getInstance();
@@ -136,7 +144,7 @@ public final class Emotes {
 
     public static void tick(Minecraft client) {
         PlaybackClient.tick(client);
-        ru.he3hauka.toolvisuals.client.camera.ClientCamera.update(client);
+        ClientCamera.update(client);
         double clock = time(client);
         boolean enabled = ToolVisualsClient.CONFIG.active(ANIMATIONS);
         boolean synchronize=ToolVisualsClient.CONFIG.flag(EMOTE_SYNC);
@@ -173,7 +181,7 @@ public final class Emotes {
     }
 
     public static EmotePose pose(UUID player) {
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return null;
+        if(ReplayScope.active())return null;
         var client = Minecraft.getInstance();
         if (client.level == null || client.player == null || !ToolVisualsClient.CONFIG.active(ANIMATIONS)) return null;
         if (!player.equals(client.player.getUUID()) && !ToolVisualsClient.CONFIG.flag(EMOTE_OTHERS)) return null;
@@ -190,13 +198,13 @@ public final class Emotes {
         var second = client.level.getPlayerByUUID(state.second());
         if (first == null || second == null) return;
         boolean existing = PAIRS.values().stream().anyMatch(pair -> pair.id().equals(state.id()));
-        if(!existing&&ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(ANIMATIONS,"pair_started","emote="+state.emote().name());
+        if(!existing&&ModuleLog.active())ModuleLog.action(ANIMATIONS,"pair_started","emote="+state.emote().name());
         if (!existing) {
             clearPair(state.first(), clock);
             clearPair(state.second(), clock);
         }
         var stage = ANCHORS.computeIfAbsent(state.id(), id -> PairStage.between(state.emote(), first.position(), second.position(), first.getYRot()));
-        for (var id : java.util.List.of(state.first(), state.second())) {
+        for (var id : List.of(state.first(), state.second())) {
             var previous = PAIRS.get(id);
             if (previous != null && previous.id().equals(state.id()) && TIMELINE.current(id, clock) != null) continue;
             PAIRS.put(id, state);
@@ -218,37 +226,37 @@ public final class Emotes {
         var pair = PAIRS.get(actor);
         if (pair == null) return;
         ANCHORS.remove(pair.id());
-        for (var id : java.util.List.of(pair.first(), pair.second())) {
+        for (var id : List.of(pair.first(), pair.second())) {
             if (PAIRS.get(id) != null && PAIRS.get(id).id().equals(pair.id())) { PAIRS.remove(id); TIMELINE.stop(id, clock); STAGING.stop(id, clock); }
         }
     }
     public static void stopPair(UUID nonce) {
         double clock = time(Minecraft.getInstance());
-        for (var entry : java.util.List.copyOf(PAIRS.entrySet())) if (entry.getValue().id().equals(nonce)) clearPair(entry.getKey(), clock);
+        for (var entry : List.copyOf(PAIRS.entrySet())) if (entry.getValue().id().equals(nonce)) clearPair(entry.getKey(), clock);
     }
-    public static PairStagingTimeline.Frame staging(UUID actor, net.minecraft.world.phys.Vec3 actual, float originalYaw) {
-        if(ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active())return null;
+    public static PairStagingTimeline.Frame staging(UUID actor, Vec3 actual, float originalYaw) {
+        if(ReplayScope.active())return null;
         var client=Minecraft.getInstance();
         if(!ToolVisualsClient.CONFIG.active(ANIMATIONS)||client.player==null||!actor.equals(client.player.getUUID())&&!ToolVisualsClient.CONFIG.flag(EMOTE_OTHERS))return null;
         return STAGING.frame(actor, actual, originalYaw, time(client));
     }
 
-    public static boolean receive(ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.State state) {
+    public static boolean receive(PlaybackWire.State state) {
         var client = Minecraft.getInstance();
         double clock = time(client);
-        if(state.mode()==ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.Mode.STOPPED){
+        if(state.mode()==PlaybackWire.Mode.STOPPED){
             clearPair(state.actor(),clock);TIMELINE.stop(state.actor(),clock);
             if(client.player!=null&&state.actor().equals(client.player.getUUID()))sharing=false;
             return true;
         }
         if (client.player == null || client.level == null || !ToolVisualsClient.CONFIG.active(ANIMATIONS)) return false;
         boolean self = state.actor().equals(client.player.getUUID());
-        if (state.mode() == ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire.Mode.PAIR) {
+        if (state.mode() == PlaybackWire.Mode.PAIR) {
             var pair = state.pair();
             if (client.level.getPlayerByUUID(state.actor()) == null || client.level.getPlayerByUUID(pair.partner()) == null) return false;
             var first = pair.second() ? pair.partner() : state.actor();
             var second = pair.second() ? state.actor() : pair.partner();
-            startPair(new SocialProtocol.Started(pair.id(), first, second, ru.he3hauka.toolvisuals.animation.PairEmote.byId(state.emote()), state.ageMillis() / 50), state.ageMillis() / 50d);
+            startPair(new SocialProtocol.Started(pair.id(), first, second, PairEmote.byId(state.emote()), state.ageMillis() / 50), state.ageMillis() / 50d);
         } else if (!self) {
             if (client.level.getPlayerByUUID(state.actor()) == null) return false;
             clearPair(state.actor(), clock);

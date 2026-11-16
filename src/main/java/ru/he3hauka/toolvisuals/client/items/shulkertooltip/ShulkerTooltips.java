@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.items.shulkertooltip;
 
 import java.util.Optional;
-
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.minecraft.client.Minecraft;
@@ -13,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 

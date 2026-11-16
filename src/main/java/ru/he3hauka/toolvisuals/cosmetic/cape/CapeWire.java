@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.cosmetic.cape;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.cosmetic.sync.CosmeticState;
 
 public final class CapeWire {

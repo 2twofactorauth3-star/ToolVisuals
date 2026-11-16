@@ -8,11 +8,13 @@ import net.minecraft.client.renderer.OutlineBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollection;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.items.GroundItemBatch;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.OPT_FAST_VISUALS;
 
 @Mixin(ItemFeatureRenderer.class)
@@ -31,7 +33,7 @@ public abstract class GroundItemBatchMixin {
             } else {
                 toolvisuals$pose.last().set(item.pose());
                 ItemRenderer.renderItem(item.displayContext(),toolvisuals$pose,buffers,item.lightCoords(),item.overlayCoords(),item.tintLayers(),item.quads(),item.renderType(),item.foilType());
-                if(item.outlineColor()!=0){outlines.setColor(item.outlineColor());ItemRenderer.renderItem(item.displayContext(),toolvisuals$pose,outlines,item.lightCoords(),item.overlayCoords(),item.tintLayers(),item.quads(),item.renderType(),net.minecraft.client.renderer.item.ItemStackRenderState.FoilType.NONE);}
+                if(item.outlineColor()!=0){outlines.setColor(item.outlineColor());ItemRenderer.renderItem(item.displayContext(),toolvisuals$pose,outlines,item.lightCoords(),item.overlayCoords(),item.tintLayers(),item.quads(),item.renderType(),ItemStackRenderState.FoilType.NONE);}
                 index++;
             }
         }

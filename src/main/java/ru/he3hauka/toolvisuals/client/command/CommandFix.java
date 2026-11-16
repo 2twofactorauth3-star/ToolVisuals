@@ -2,10 +2,9 @@ package ru.he3hauka.toolvisuals.client.command;
 
 import java.util.Locale;
 import java.util.function.Predicate;
-
 import net.minecraft.client.Minecraft;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.COMMAND_FIX;
 
@@ -17,7 +16,7 @@ public final class CommandFix {
         var connection = Minecraft.getInstance().getConnection();
         if (!ToolVisualsClient.CONFIG.active(COMMAND_FIX) || connection == null) return command;
         String result=correct(command, name -> connection.getCommands().getRoot().getChild(name) != null);
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(COMMAND_FIX,"checked",result.equals(command)?"unchanged":"layout_corrected");
+        if(ModuleLog.active())ModuleLog.action(COMMAND_FIX,"checked",result.equals(command)?"unchanged":"layout_corrected");
         return result;
     }
     public static String correct(String command, Predicate<String> knownCommand) {

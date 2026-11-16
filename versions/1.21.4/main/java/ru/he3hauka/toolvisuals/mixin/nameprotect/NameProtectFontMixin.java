@@ -6,7 +6,6 @@ import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 
 @Mixin(Font.class)

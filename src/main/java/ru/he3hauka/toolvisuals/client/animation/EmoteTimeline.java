@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.animation;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.Emote;
 import ru.he3hauka.toolvisuals.animation.PairEmote;
 

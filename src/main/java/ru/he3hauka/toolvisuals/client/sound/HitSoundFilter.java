@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.sound;
 
 import java.util.*;
-
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 

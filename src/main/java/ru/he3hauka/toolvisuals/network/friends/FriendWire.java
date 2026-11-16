@@ -3,16 +3,16 @@ package ru.he3hauka.toolvisuals.network.friends;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public final class FriendWire {
     public static final String REQUEST_CHANNEL="toolvisuals:friends_request_v1",STATE_CHANNEL="toolvisuals:friends_state_v1";
     public static final int HEALTH=1,ARMOR=2,INVENTORY=4,MAX_FRIENDS=256,MAX_REQUEST=42,MAX_STATE=4096;
     public static final UUID NONE=new UUID(0,0);
-    private static final java.util.regex.Pattern ITEM_KEY=java.util.regex.Pattern.compile("[a-z0-9_.-]+:[a-z0-9_./-]+");
+    private static final Pattern ITEM_KEY=Pattern.compile("[a-z0-9_.-]+:[a-z0-9_./-]+");
     public enum Operation { HELLO(0),CONTACT(1),REMOVE(2),KEEP(3),BYE(4);
         public final int id;Operation(int id){this.id=id;}
         static Operation byId(int id){for(var value:values())if(value.id==id)return value;throw new IllegalArgumentException("Unknown friend operation");}

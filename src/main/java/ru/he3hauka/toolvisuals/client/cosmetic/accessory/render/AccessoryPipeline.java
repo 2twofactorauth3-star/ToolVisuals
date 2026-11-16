@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.cosmetic.accessory.render;
 import com.mojang.renderpearl.api.pipeline.*;
 import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.resources.Identifier;
-
 import ru.he3hauka.toolvisuals.mixin.render.RenderPipelinesAccessor;
 import ru.he3hauka.toolvisuals.mixin.render.RenderSetupAccessor;
 import ru.he3hauka.toolvisuals.mixin.render.RenderTypeAccessor;

@@ -1,11 +1,11 @@
 package ru.he3hauka.toolvisuals.client.compatibility.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.renderer.CoreShaders;
 
 
 public final class WorldPipelines extends RenderStateShard {

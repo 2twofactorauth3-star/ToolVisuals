@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.KeyboardInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
 import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
+import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
 import ru.he3hauka.toolvisuals.client.player.sprint.AutoSprint;
 
 @Mixin(KeyboardInput.class)

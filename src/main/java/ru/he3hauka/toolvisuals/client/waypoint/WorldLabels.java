@@ -1,21 +1,25 @@
 package ru.he3hauka.toolvisuals.client.waypoint;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.state.level.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
-
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.camera.FreeLook;
+import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.navigation.gps.Gps;
+import ru.he3hauka.toolvisuals.client.optimization.scene.NearbyEntities;
+import ru.he3hauka.toolvisuals.client.presents.ToolPresents;
 import ru.he3hauka.toolvisuals.client.pvp.TotemCounter;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
+import ru.he3hauka.toolvisuals.client.waypoint.label.WorldLabelLayout;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -35,7 +39,7 @@ public final class WorldLabels {
         if(client.player==null||client.level==null){labels=List.of();return;}
         var camera=state.cameraRenderState;
         if(camera.projectionMatrix==null||camera.viewRotationMatrix==null){labels=List.of();return;}
-        for(var marker:ru.he3hauka.toolvisuals.client.navigation.gps.Gps.visibleMarkers(client)) {
+        for(var marker:Gps.visibleMarkers(client)) {
             var gps=marker.target();
             var position=new Vec3(gps.x(),gps.y()+1,gps.z());
             String name=marker.name()+" · "+Math.round(client.player.position().distanceTo(position))+" m";
@@ -49,11 +53,11 @@ public final class WorldLabels {
                 if(distance>range)continue;
                 String name=point.death?UiI18n.tr("toolvisuals.waypoints.death").getString():point.name;
                 if(config.flag(WAYPOINT_DISTANCE))name+=" · "+Math.round(distance)+" m";
-                add(next,camera,position,name,point.style.sample(ru.he3hauka.toolvisuals.client.config.color.ColorStyle.clock(),0),config.number(WAYPOINT_SCALE));
+                add(next,camera,position,name,point.style.sample(ColorStyle.clock(),0),config.number(WAYPOINT_SCALE));
             }
         }
         if(config.flag(PRESENTS_MARKERS)) {
-            var route=ru.he3hauka.toolvisuals.client.presents.ToolPresents.route();
+            var route=ToolPresents.route();
             for(int index=0;index<Math.min(3,route.size());index++) {
                 var point=route.get(index);
                 var position=new Vec3(point.x()+.5,point.y()+1.5,point.z()+.5);
@@ -61,8 +65,8 @@ public final class WorldLabels {
                 add(next,camera,position,name,index==0?0xbda5ff:0x8aa2b8,index==0?1:.8f);
             }
         }
-        if(config.active(TOTEM_POP_COUNTER)&&config.flag(TOTEM_LABELS)&&!NoRender.hides(ru.he3hauka.toolvisuals.client.render.filter.RenderOption.NAME_TAGS)) {
-            for(var entity:ru.he3hauka.toolvisuals.client.optimization.scene.NearbyEntities.get(client)) {
+        if(config.active(TOTEM_POP_COUNTER)&&config.flag(TOTEM_LABELS)&&!NoRender.hides(RenderOption.NAME_TAGS)) {
+            for(var entity:NearbyEntities.get(client)) {
                 if(!(entity instanceof Player)||entity.isRemoved()||entity.level()!=client.level)continue;
                 int count=TotemCounter.count(entity.getUUID());
                 if(count<=0||entity.distanceToSqr(client.player)>4096||entity.isInvisibleTo(client.player)||NoRender.hidesEntity(entity)
@@ -97,8 +101,8 @@ public final class WorldLabels {
         g.pose().pushMatrix();g.pose().scale(density,density);
         var current=labels;
         float width=g.guiWidth()/density,height=g.guiHeight()/density;
-        var layout=new ru.he3hauka.toolvisuals.client.waypoint.label.WorldLabelLayout(width,height);
-        var boxes=new ru.he3hauka.toolvisuals.client.waypoint.label.WorldLabelLayout.Box[current.size()];
+        var layout=new WorldLabelLayout(width,height);
+        var boxes=new WorldLabelLayout.Box[current.size()];
         for(int index=0;index<current.size();index++){
             var label=current.get(index);
             float scale=.8f*label.scale,w=UiPaint.textWidth(g,label.text,scale)+14,h=22*label.scale;

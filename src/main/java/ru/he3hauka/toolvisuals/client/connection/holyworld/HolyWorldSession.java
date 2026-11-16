@@ -2,7 +2,6 @@ package ru.he3hauka.toolvisuals.client.connection.holyworld;
 
 import java.util.Set;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.client.connection.policy.ServerFeaturePolicy;
 
 public final class HolyWorldSession {

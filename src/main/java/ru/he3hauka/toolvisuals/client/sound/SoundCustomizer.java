@@ -5,13 +5,12 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.protocol.game.ClientboundDamageEventPacket;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.sound.library.CustomSounds;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.SOUND_CUSTOMIZER;
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
@@ -30,7 +29,7 @@ public final class SoundCustomizer {
         var kind=switch(channel){case HIT->SOUND_HIT_KIND;case MODULE->SOUND_MODULE_KIND;case NOTICE->SOUND_NOTICE_KIND;};
         var volume=switch(channel){case HIT->SOUND_HIT_VOLUME;case MODULE->SOUND_MODULE_VOLUME;case NOTICE->SOUND_NOTICE_VOLUME;};
         int selected=(int)config.value(kind);
-        SoundEvent sound=selected==SoundPreset.CUSTOM?ru.he3hauka.toolvisuals.client.sound.library.CustomSounds.event(channel):SoundPreset.event(selected);
+        SoundEvent sound=selected==SoundPreset.CUSTOM?CustomSounds.event(channel):SoundPreset.event(selected);
         if(sound==null)sound=SoundPreset.event(0);
         if(config.number(volume)>0)Minecraft.getInstance().getSoundManager().play(
                 SimpleSoundInstance.forUI(sound,Math.clamp(config.number(SOUND_PITCH)*pitchFactor,.5f,2f),config.number(volume)));

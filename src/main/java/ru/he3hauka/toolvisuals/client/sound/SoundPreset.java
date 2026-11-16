@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.sound;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
@@ -30,7 +30,7 @@ public enum SoundPreset {
     public final String id, title;
     public final Supplier<SoundEvent> sound;
     SoundPreset(String id, String title, Supplier<SoundEvent> sound) { this.id = id; this.title = title; this.sound = sound; }
-    public static String[] choices() { return java.util.stream.Stream.concat(Arrays.stream(PRESETS).map(p -> p.title), java.util.stream.Stream.of("Custom")).toArray(String[]::new); }
+    public static String[] choices() { return Stream.concat(Arrays.stream(PRESETS).map(p -> p.title), Stream.of("Custom")).toArray(String[]::new); }
     public static boolean reserved(String id) { return id.equals("custom") || Arrays.stream(PRESETS).anyMatch(p -> p.id.equals(id)); }
     public static SoundEvent event(int index) { return PRESETS[Math.clamp(index, 0, PRESETS.length - 1)].sound.get(); }
 }

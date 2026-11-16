@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.mixin.potion;
 
 import java.util.List;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import org.spongepowered.asm.mixin.*;
 import ru.he3hauka.toolvisuals.client.potion.liquid.*;
 

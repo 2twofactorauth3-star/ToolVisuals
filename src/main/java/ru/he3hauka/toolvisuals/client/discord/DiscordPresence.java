@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionVersions;
@@ -55,7 +56,7 @@ public final class DiscordPresence {
     }
     public static void diagnostic() {
         var status=RPC.status();
-        org.slf4j.LoggerFactory.getLogger("ToolVisuals/DiscordRPC").info("RPC diagnostic: status={}, application_id={}, game_pid={}, native_minecraft={}, mod_version={}",
+        LoggerFactory.getLogger("ToolVisuals/DiscordRPC").info("RPC diagnostic: status={}, application_id={}, game_pid={}, native_minecraft={}, mod_version={}",
                 status,DiscordBrand.APPLICATION_ID,ProcessHandle.current().pid(),MINECRAFT,VERSION);
         ChatMessages.notice("discord.status",status.name(),MINECRAFT);
         if(status==DiscordRpc.Status.CONNECTED)ChatMessages.notice("discord.competing");

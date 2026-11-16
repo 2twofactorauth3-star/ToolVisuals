@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.minigame.board;
 
 import java.util.Arrays;
-
 import ru.he3hauka.toolvisuals.minigame.GameKind;
 
 public final class GridBoard {

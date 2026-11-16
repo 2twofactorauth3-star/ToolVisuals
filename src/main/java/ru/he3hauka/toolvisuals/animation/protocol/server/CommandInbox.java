@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.animation.protocol.server;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import ru.he3hauka.toolvisuals.animation.protocol.PlaybackWire;
 
 public final class CommandInbox {

@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.client.config;
 
+import com.google.gson.JsonElement;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -7,33 +8,42 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.he3hauka.toolvisuals.client.chat.layout.ChatSize;
+import ru.he3hauka.toolvisuals.client.config.color.ColorSettings;
+import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
 import ru.he3hauka.toolvisuals.client.connection.policy.FeatureCatalog;
 import ru.he3hauka.toolvisuals.client.connection.policy.ServerFeaturePolicy;
-import ru.he3hauka.toolvisuals.client.config.color.ColorSettings;
-import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
+import ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryConfigCodec;
 import ru.he3hauka.toolvisuals.client.crosshair.CrosshairDesign;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudPosition;
 import ru.he3hauka.toolvisuals.client.hud.layout.resize.HudScale;
+import ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules;
 import ru.he3hauka.toolvisuals.client.localization.UiLanguage;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+import ru.he3hauka.toolvisuals.client.nameprotect.NameMask;
+import ru.he3hauka.toolvisuals.client.pvp.CombatCommands;
 import ru.he3hauka.toolvisuals.client.render.filter.RenderOption;
+import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
+import ru.he3hauka.toolvisuals.client.storage.DeferredJson;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
+import ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook;
 
 public final class ClientConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger("ToolVisuals");
     private final Path path;
-    private final ru.he3hauka.toolvisuals.client.storage.JsonFile file;
-    private final ru.he3hauka.toolvisuals.client.storage.DeferredJson persistence;
-    public ru.he3hauka.toolvisuals.client.storage.JsonFile.Status persistenceStatus(){return file.status();}
+    private final JsonFile file;
+    private final DeferredJson persistence;
+    public JsonFile.Status persistenceStatus(){return file.status();}
     public void flush() throws IOException {persistence.flush();}
     public final ConfigHistory history=new ConfigHistory();
     private boolean restoringHistory;
@@ -76,18 +86,18 @@ public final class ClientConfig {
     private volatile Map<VisualSetting, Double> values = Map.of();
     private volatile Map<VisualSetting, ColorStyle> colors = Map.of();
     private volatile CrosshairDesign crosshairDesign = CrosshairDesign.cross();
-    private volatile ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules itemHighlights = ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults();
-    public ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules itemHighlights() { return itemHighlights; }
-    public void setItemHighlights(ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules rules) {
-        java.util.Objects.requireNonNull(rules);
+    private volatile ItemHighlightRules itemHighlights = ItemHighlightRules.defaults();
+    public ItemHighlightRules itemHighlights() { return itemHighlights; }
+    public void setItemHighlights(ItemHighlightRules rules) {
+        Objects.requireNonNull(rules);
         if (itemHighlights.colors.equals(rules.colors)) return;
         itemHighlights = rules; save("item_highlights");
     }
-    private volatile ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook accessories=ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook.EMPTY;
-    public ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook accessories(){return accessories;}
-    public void setAccessories(ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook look){accessories=java.util.Objects.requireNonNull(look);save();}
-    public void applyAppearance(ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook look,boolean cape){
-        accessories=java.util.Objects.requireNonNull(look);var next=modules.clone();
+    private volatile AccessoryLook accessories=AccessoryLook.EMPTY;
+    public AccessoryLook accessories(){return accessories;}
+    public void setAccessories(AccessoryLook look){accessories=Objects.requireNonNull(look);save();}
+    public void applyAppearance(AccessoryLook look,boolean cape){
+        accessories=Objects.requireNonNull(look);var next=modules.clone();
         if(!look.empty())next.add(VisualModule.COSMETICS);
         if(cape)next.add(VisualModule.CAPES);
         modules=next;save("appearance");
@@ -107,7 +117,7 @@ public final class ClientConfig {
         save("color:"+setting.id);
     }
     public void setCrosshairDesign(CrosshairDesign design,ColorStyle style) {
-        crosshairDesign=java.util.Objects.requireNonNull(design);
+        crosshairDesign=Objects.requireNonNull(design);
         var c=new EnumMap<VisualSetting,ColorStyle>(VisualSetting.class);c.putAll(colors);c.put(VisualSetting.CROSSHAIR_COLOR,ColorStyle.safe(style,0xffffff));colors=Map.copyOf(c);
         var v=new EnumMap<VisualSetting,Double>(VisualSetting.class);v.putAll(values);v.put(VisualSetting.CROSSHAIR_STYLE,3d);values=Map.copyOf(v);
         var nextModules=modules.clone();nextModules.add(VisualModule.CROSSHAIR);modules=nextModules;save("crosshair_design");
@@ -122,7 +132,7 @@ public final class ClientConfig {
         var nextPositions=new EnumMap<HudElement,HudPosition>(HudElement.class);nextPositions.putAll(hudPositions);
         nextPositions.put(element,new HudPosition(position.x,position.y));
         applyHudState(nextPositions,nextScales,false,"hud_resize:"+element.id);
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(element.module,"hud_resized","element="+element.id+" scale="+scale);
+        if(ModuleLog.active())ModuleLog.action(element.module,"hud_resized","element="+element.id+" scale="+scale);
     }
     private volatile HudPosition hudEditorToolbar=new HudPosition(50,98);
     public HudPosition hudEditorToolbar() { return hudEditorToolbar; }
@@ -136,10 +146,10 @@ public final class ClientConfig {
         if (!next.remove(module)) next.add(module);
         favorites = Set.copyOf(next); save();
     }
-    private volatile java.util.List<String> pvpBlockedCommands = ru.he3hauka.toolvisuals.client.pvp.CombatCommands.DEFAULTS;
-    public java.util.List<String> pvpBlockedCommands() { return pvpBlockedCommands; }
+    private volatile List<String> pvpBlockedCommands = CombatCommands.DEFAULTS;
+    public List<String> pvpBlockedCommands() { return pvpBlockedCommands; }
     public void setPvpBlockedCommands(Collection<String> commands) {
-        var next = ru.he3hauka.toolvisuals.client.pvp.CombatCommands.normalize(commands);
+        var next = CombatCommands.normalize(commands);
         if (next.equals(pvpBlockedCommands)) return;
         pvpBlockedCommands = next; save();
     }
@@ -171,7 +181,7 @@ public final class ClientConfig {
 
     public boolean active(VisualModule module) {
         boolean active=available(module) && (module == VisualModule.NO_RENDER ? enabled : modules.contains(module));
-        ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.checked(this,module,active);
+        ModuleLog.checked(this,module,active);
         return active;
     }
 
@@ -182,7 +192,7 @@ public final class ClientConfig {
         var next = modules.clone();
         if (active) next.add(module); else next.remove(module);
         modules = next;
-        if(changed&&ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(module,"toggle","enabled="+active);
+        if(changed&&ModuleLog.active())ModuleLog.action(module,"toggle","enabled="+active);
         save();
     }
 
@@ -200,7 +210,7 @@ public final class ClientConfig {
         EnumMap<HudElement,HudPosition> positions=null;
         boolean changed=false;
         for(var entry:changes.entrySet()) {
-            var setting=java.util.Objects.requireNonNull(entry.getKey());double value=setting.sanitize(entry.getValue());
+            var setting=Objects.requireNonNull(entry.getKey());double value=setting.sanitize(entry.getValue());
             if(Double.compare(value(setting),value)!=0){next.put(setting,value);changed=true;}
             var color=ColorSettings.contains(setting)?setting:
                     setting==VisualSetting.CROSSHAIR_RED||setting==VisualSetting.CROSSHAIR_GREEN||setting==VisualSetting.CROSSHAIR_BLUE?VisualSetting.CROSSHAIR_COLOR:null;
@@ -221,11 +231,11 @@ public final class ClientConfig {
     }
 
     public void reset(VisualModule module) {
-        if (module == VisualModule.ITEM_HIGHLIGHTS) itemHighlights = ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults();
-        if(module==VisualModule.COSMETICS)accessories=ru.he3hauka.toolvisuals.cosmetic.accessory.AccessoryLook.EMPTY;
+        if (module == VisualModule.ITEM_HIGHLIGHTS) itemHighlights = ItemHighlightRules.defaults();
+        if(module==VisualModule.COSMETICS)accessories=AccessoryLook.EMPTY;
         if (module == VisualModule.NO_RENDER) { reset(); return; }
         if (module == VisualModule.NAME_PROTECT) protectedName = "ToolVisuals";
-        if (module == VisualModule.PVP_SAVE) pvpBlockedCommands = ru.he3hauka.toolvisuals.client.pvp.CombatCommands.DEFAULTS;
+        if (module == VisualModule.PVP_SAVE) pvpBlockedCommands = CombatCommands.DEFAULTS;
         if (module == VisualModule.CROSSHAIR) crosshairDesign = CrosshairDesign.cross();
         var nextColors=new EnumMap<VisualSetting,ColorStyle>(VisualSetting.class);colors.forEach((setting,color)->{if(setting.module!=module)nextColors.put(setting,color);});colors=Map.copyOf(nextColors);
         var positions = new EnumMap<HudElement, HudPosition>(HudElement.class);
@@ -240,8 +250,8 @@ public final class ClientConfig {
 
     public ClientConfig(Path path) {
         this.path = path;
-        file=new ru.he3hauka.toolvisuals.client.storage.JsonFile(path);
-        persistence=new ru.he3hauka.toolvisuals.client.storage.DeferredJson(file);
+        file=new JsonFile(path);
+        persistence=new DeferredJson(file);
         history.reset(historyState());
     }
 
@@ -270,22 +280,22 @@ public final class ClientConfig {
     }
 
     public boolean needsMenuBindingMigration() {
-        return file.status()!=ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED&&menuBindingVersion < 1;
+        return file.status()!=JsonFile.Status.LOAD_FAILED&&menuBindingVersion < 1;
     }
-    public boolean needsZoomBindingMigration() { return file.status()!=ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.LOAD_FAILED&&menuBindingVersion < 2; }
+    public boolean needsZoomBindingMigration() { return file.status()!=JsonFile.Status.LOAD_FAILED&&menuBindingVersion < 2; }
     public void finishZoomBindingMigration() { menuBindingVersion = 2; save(); }
 
     public boolean lightTheme() {
         return lightTheme;
     }
     public UiLanguage language() { return language; }
-    public void setLanguage(UiLanguage language) { this.language = java.util.Objects.requireNonNull(language); save(); }
+    public void setLanguage(UiLanguage language) { this.language = Objects.requireNonNull(language); save(); }
 
     public String nickname() { return nickname; }
     public void setNickname(String nickname) { this.nickname = nickname; save(); }
     public String protectedName() { return protectedName; }
     public void setProtectedName(String name) {
-        String sanitized = ru.he3hauka.toolvisuals.client.nameprotect.NameMask.sanitizeAlias(name);
+        String sanitized = NameMask.sanitizeAlias(name);
         if (protectedName.equals(sanitized)) return;
         protectedName = sanitized; save();
     }
@@ -304,7 +314,7 @@ public final class ClientConfig {
         if (!available(VisualModule.NO_RENDER)) return;
         boolean changed=this.enabled!=enabled;
         this.enabled = enabled;
-        if(changed&&ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(VisualModule.NO_RENDER,"toggle","enabled="+enabled);
+        if(changed&&ModuleLog.active())ModuleLog.action(VisualModule.NO_RENDER,"toggle","enabled="+enabled);
         save();
     }
 
@@ -336,10 +346,10 @@ public final class ClientConfig {
     }
 
     private static ClientConfig parse(String json, boolean preset) {
-            return parse(ru.he3hauka.toolvisuals.client.storage.BoundedJson.parse(json),preset);
+            return parse(BoundedJson.parse(json),preset);
     }
 
-    private static ClientConfig parse(com.google.gson.JsonElement object, boolean preset) {
+    private static ClientConfig parse(JsonElement object, boolean preset) {
             if (!object.isJsonObject()) throw new IllegalArgumentException("Expected configuration object");
             if (preset && !object.getAsJsonObject().has("modules") && !object.getAsJsonObject().has("values")
                     && !object.getAsJsonObject().has("hidden")) throw new IllegalArgumentException("Not a ToolVisuals preset");
@@ -353,7 +363,7 @@ public final class ClientConfig {
     }
 
     private void readSaved(ConfigSnapshot saved) {
-            itemHighlights = saved.itemHighlights == null ? ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules.defaults() : new ru.he3hauka.toolvisuals.client.items.highlight.ItemHighlightRules(saved.itemHighlights);
+            itemHighlights = saved.itemHighlights == null ? ItemHighlightRules.defaults() : new ItemHighlightRules(saved.itemHighlights);
             EnumSet<RenderOption> loaded = defaults();
             if (saved.hidden != null) {
                 loaded.clear();
@@ -372,9 +382,9 @@ public final class ClientConfig {
             hudEditorToolbar=saved.hudEditorToolbar==null?new HudPosition(50,98):new HudPosition(saved.hudEditorToolbar.x,saved.hudEditorToolbar.y);
             language = UiLanguage.fromId(saved.uiLanguage);
             nickname = saved.nickname == null ? "" : saved.nickname;
-            protectedName = ru.he3hauka.toolvisuals.client.nameprotect.NameMask.sanitizeAlias(saved.protectedName);
-            pvpBlockedCommands = saved.pvpBlockedCommands == null ? ru.he3hauka.toolvisuals.client.pvp.CombatCommands.DEFAULTS
-                    : ru.he3hauka.toolvisuals.client.pvp.CombatCommands.normalize(saved.pvpBlockedCommands);
+            protectedName = NameMask.sanitizeAlias(saved.protectedName);
+            pvpBlockedCommands = saved.pvpBlockedCommands == null ? CombatCommands.DEFAULTS
+                    : CombatCommands.normalize(saved.pvpBlockedCommands);
             var loadedModules = EnumSet.noneOf(VisualModule.class);
             if (saved.modules != null) for (VisualModule module : VisualModule.values()) {
                 if (module != VisualModule.NO_RENDER && saved.modules.contains(module.id)) loadedModules.add(module);
@@ -394,7 +404,7 @@ public final class ClientConfig {
             var loadedColors=new EnumMap<VisualSetting,ColorStyle>(VisualSetting.class);
             if(saved.colors!=null)for(var setting:VisualSetting.values())if(ColorSettings.contains(setting)&&saved.colors.containsKey(setting.id))loadedColors.put(setting,ColorStyle.safe(saved.colors.get(setting.id),ColorSettings.legacy(this,setting)));
             colors=Map.copyOf(loadedColors);
-            accessories=ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryConfigCodec.decode(saved.cosmeticAppearance);
+            accessories=AccessoryConfigCodec.decode(saved.cosmeticAppearance);
             crosshairDesign=saved.crosshairDesign==null?CrosshairDesign.cross():new CrosshairDesign(saved.crosshairDesign);
             var positions = new EnumMap<HudElement, HudPosition>(HudElement.class);
             if (saved.hudPositions != null) for (var element : HudElement.values()) {
@@ -467,7 +477,7 @@ public final class ClientConfig {
         saved.favorites = new LinkedHashSet<>();
         saved.colors = new LinkedHashMap<>(); colors.forEach((setting,color)->saved.colors.put(setting.id,color));
         saved.crosshairDesign = crosshairDesign.rows;
-        saved.cosmeticAppearance=ru.he3hauka.toolvisuals.client.cosmetic.accessory.AccessoryConfigCodec.encode(accessories);
+        saved.cosmeticAppearance=AccessoryConfigCodec.encode(accessories);
         saved.itemHighlights = itemHighlights.colors;
         for (var module : VisualModule.values()) if (favorite(module)) saved.favorites.add(module.id);
         for (RenderOption option : hidden) saved.hidden.add(option.id);

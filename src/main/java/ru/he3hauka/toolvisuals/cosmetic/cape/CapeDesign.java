@@ -1,13 +1,11 @@
 package ru.he3hauka.toolvisuals.cosmetic.cape;
 
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HexFormat;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import ru.he3hauka.toolvisuals.storage.ContentHash;
 
 public final class CapeDesign {
     public static final int WIDTH=20, HEIGHT=32, FACE_PIXELS=WIDTH*HEIGHT, PIXELS=FACE_PIXELS*2, BYTES=PIXELS*4;
@@ -20,17 +18,14 @@ public final class CapeDesign {
     public CapeDesign(int[] pixels){
         if(pixels==null||pixels.length!=PIXELS)throw new IllegalArgumentException("Invalid cape dimensions");
         this.pixels=pixels.clone();
-        frames=List.of();frameCount=1;fps=DEFAULT_FPS;hash=digest(animationBytes());
+        frames=List.of();frameCount=1;fps=DEFAULT_FPS;hash=ContentHash.sha256(animationBytes());
     }
     public CapeDesign(List<CapeDesign> frames,int fps){
         if(frames==null||frames.isEmpty()||frames.size()>MAX_FRAMES||fps<1||fps>MAX_FPS)throw new IllegalArgumentException("Invalid cape animation");
         for(var frame:frames)if(Objects.requireNonNull(frame).frameCount!=1)throw new IllegalArgumentException("Nested cape animation");
-        this.frames=List.copyOf(frames);frameCount=frames.size();this.fps=fps;pixels=frames.get(0).pixels;hash=digest(animationBytes());
+        this.frames=List.copyOf(frames);frameCount=frames.size();this.fps=fps;pixels=frames.get(0).pixels;hash=ContentHash.sha256(animationBytes());
     }
-    private static String digest(byte[] bytes){
-        try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));}
-        catch(NoSuchAlgorithmException error){throw new IllegalStateException(error);}
-    }
+
     public CapeDesign frame(int index){if(index<0||index>=frameCount)throw new IllegalArgumentException("Invalid cape frame");return frames.isEmpty()?this:frames.get(index);}
     public CapeDesign at(long ticks,float partial){
         long seconds=Math.floorDiv(ticks,20);double fraction=(Math.floorMod(ticks,20)+Math.max(0,Math.min(1,Float.isFinite(partial)?partial:0)))/20;

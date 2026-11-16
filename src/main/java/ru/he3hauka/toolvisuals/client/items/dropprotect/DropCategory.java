@@ -1,12 +1,10 @@
 package ru.he3hauka.toolvisuals.client.items.dropprotect;
 
 import java.util.Set;
-
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 

@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.projectile;
 
 import java.util.*;
-
 import net.minecraft.world.phys.*;
 
 public final class Ballistics {

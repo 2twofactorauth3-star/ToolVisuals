@@ -5,7 +5,6 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.state.gui.pip.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
-
 import ru.he3hauka.toolvisuals.client.hud.target.*;
 
 @Mixin(PictureInPictureRenderer.class)

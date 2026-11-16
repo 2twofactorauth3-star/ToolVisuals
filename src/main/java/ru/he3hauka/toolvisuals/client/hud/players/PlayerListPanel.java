@@ -1,15 +1,14 @@
 package ru.he3hauka.toolvisuals.client.hud.players;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import org.joml.Vector2f;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
-
+import org.joml.Vector2f;
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
@@ -45,7 +44,7 @@ public final class PlayerListPanel {
     public static void draw(GuiGraphicsExtractor g,UiPalette palette,HudElement element,VisualSetting scaleSetting,
                             List<Row> rows,Component title,Component empty,String count,int nameLimit,String moreKey,UiPaint.Icon icon){
         var client=Minecraft.getInstance();
-        boolean clickable=client.gui.screen() instanceof net.minecraft.client.gui.screens.ChatScreen;
+        boolean clickable=client.gui.screen() instanceof ChatScreen;
         var hits=clickable?new ArrayList<Hit>():null;if(!clickable)HITS.remove(element);
         float scale=Math.clamp(client.getWindow().getHeight()/720f,1,2)*ToolVisualsClient.CONFIG.number(scaleSetting)/client.getWindow().getGuiScale();
         g.pose().pushMatrix();g.pose().scale(scale,scale);

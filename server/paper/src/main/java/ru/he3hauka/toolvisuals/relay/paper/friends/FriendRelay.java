@@ -1,19 +1,22 @@
 package ru.he3hauka.toolvisuals.relay.paper.friends;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.nio.BufferUnderflowException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import ru.he3hauka.toolvisuals.animation.network.PacketBudget;
 import ru.he3hauka.toolvisuals.animation.network.RelayLimits;
 import ru.he3hauka.toolvisuals.network.friends.FriendSession;
 import ru.he3hauka.toolvisuals.network.friends.FriendWire;
+
 import static ru.he3hauka.toolvisuals.network.friends.FriendWire.*;
 
 public final class FriendRelay implements Listener,AutoCloseable {
@@ -61,7 +64,7 @@ public final class FriendRelay implements Listener,AutoCloseable {
         if(actor==null)synchronized(actors){actor=actors.get(id);if(actor==null&&actors.size()<RelayLimits.MAX_PLAYERS){actor=new Actor(player);actors.put(id,actor);}}
         if(!running||actor==null||actor.player!=player||!accept(actor,System.nanoTime()))return;
         final Request request;
-        try{request=FriendWire.request(bytes);}catch(IllegalArgumentException|java.nio.BufferUnderflowException invalid){return;}
+        try{request=FriendWire.request(bytes);}catch(IllegalArgumentException|BufferUnderflowException invalid){return;}
         var expected=actor;
         owner(actor,()->{
             UUID before=expected.model.session();boolean accepted=expected.model.apply(request,System.nanoTime());
@@ -75,7 +78,7 @@ public final class FriendRelay implements Listener,AutoCloseable {
         if(!current(actor))return;
         var task=actor.player.getScheduler().run(plugin,ignored->{
             if(!current(actor)||!actor.player.isOnline())return;
-            try{action.run();}catch(RuntimeException error){plugin.getLogger().log(java.util.logging.Level.WARNING,"Could not synchronize friend HUD",error);}
+            try{action.run();}catch(RuntimeException error){plugin.getLogger().log(Level.WARNING,"Could not synchronize friend HUD",error);}
         },()->remove(actor.player));
         if(task==null)remove(actor.player);
     }
@@ -123,7 +126,7 @@ public final class FriendRelay implements Listener,AutoCloseable {
         var task=viewer.player.getScheduler().runDelayed(plugin,ignored->{
             boolean remaining=false;
             try{if(current(viewer)&&viewer.player.isOnline())remaining=flush(viewer);}
-            catch(RuntimeException error){plugin.getLogger().log(java.util.logging.Level.WARNING,"Could not deliver friend HUD",error);}
+            catch(RuntimeException error){plugin.getLogger().log(Level.WARNING,"Could not deliver friend HUD",error);}
             finally{viewer.deliveryScheduled.set(false);}
             if(remaining||viewer.hasPending())schedule(viewer,true);else output.idle(viewer.id);
         },()->remove(viewer.player),retry?2:1);

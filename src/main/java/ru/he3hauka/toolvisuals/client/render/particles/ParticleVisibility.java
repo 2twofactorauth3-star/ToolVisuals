@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.render.particles;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.particle.ExplodeParticle;
 import net.minecraft.client.particle.HugeExplosionParticle;

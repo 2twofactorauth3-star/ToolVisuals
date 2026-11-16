@@ -1,18 +1,24 @@
 package ru.he3hauka.toolvisuals.client.keybinds;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.command.CommandFix;
+import ru.he3hauka.toolvisuals.client.command.LocalCommands;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
+import ru.he3hauka.toolvisuals.client.keybinds.ui.KeybindsScreen;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
+import ru.he3hauka.toolvisuals.client.pvp.PvPSave;
 
 public final class Keybinds {
     public static final KeybindStore STORE=new KeybindStore(FabricLoader.getInstance().getConfigDir().resolve("toolvisuals-keybinds.json"));
     private static final ActionQueue QUEUE=new ActionQueue();
     private static boolean opening;
     private Keybinds(){}
-    public static void initialize(){try{STORE.load();}catch(java.io.IOException error){org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Cannot load keybinds; original file preserved",error);}}
+    public static void initialize(){try{STORE.load();}catch(IOException error){LoggerFactory.getLogger("ToolVisuals").warn("Cannot load keybinds; original file preserved",error);}}
     public static void requestOpen(){opening=true;}
     public static void press(InputConstants.Key key){
         if(key.equals(InputConstants.UNKNOWN))return;
@@ -21,14 +27,14 @@ public final class Keybinds {
     }
     private static boolean allowed(Minecraft client){return client.player!=null&&client.level!=null&&client.getConnection()!=null&&client.gui.screen()==null&&client.gui.overlay()==null&&client.isWindowActive()&&ToolVisualsClient.CONFIG.active(VisualModule.KEYBINDS);}
     public static void tick(Minecraft client){
-        if(opening){opening=false;if(ToolVisualsClient.CONFIG.available(VisualModule.KEYBINDS))client.gui.setScreen(new ru.he3hauka.toolvisuals.client.keybinds.ui.KeybindsScreen(null));}
+        if(opening){opening=false;if(ToolVisualsClient.CONFIG.available(VisualModule.KEYBINDS))client.gui.setScreen(new KeybindsScreen(null));}
         QUEUE.scope(client.getConnection(),allowed(client));var bind=QUEUE.poll(System.nanoTime());if(bind==null)return;
         if(!STORE.entries().contains(bind)||!bind.available(ToolVisualsClient.CONFIG)||!bind.enabled())return;
-        if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(VisualModule.KEYBINDS,"execute","kind="+bind.kind());
+        if(ModuleLog.active())ModuleLog.action(VisualModule.KEYBINDS,"execute","kind="+bind.kind());
         switch(bind.kind()){
             case MODULE->{for(var module:VisualModule.values())if(module.id.equals(bind.value())){ToolVisualsClient.CONFIG.setActive(module,!ToolVisualsClient.CONFIG.active(module));break;}}
-            case COMMAND->{if(ru.he3hauka.toolvisuals.client.pvp.PvPSave.allowCommand(bind.value()))client.getConnection().sendCommand(ru.he3hauka.toolvisuals.client.command.CommandFix.outgoing(bind.value()));}
-            case CHAT->{if(!ru.he3hauka.toolvisuals.client.command.LocalCommands.handle(bind.value()))client.getConnection().sendChat(bind.value());}
+            case COMMAND->{if(PvPSave.allowCommand(bind.value()))client.getConnection().sendCommand(CommandFix.outgoing(bind.value()));}
+            case CHAT->{if(!LocalCommands.handle(bind.value()))client.getConnection().sendChat(bind.value());}
         }
     }
 }

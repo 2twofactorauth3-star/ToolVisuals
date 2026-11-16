@@ -1,21 +1,26 @@
 package ru.he3hauka.toolvisuals.client.optimization.occlusion;
 
+import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-
-import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.phys.*;
-
+import ru.he3hauka.toolvisuals.client.animation.Emotes;
 import ru.he3hauka.toolvisuals.client.hud.target.VisualTarget;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
+import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -42,19 +47,19 @@ public final class OcclusionService {
     private OcclusionService(){}
     public static void initialize(){
         external=FabricLoader.getInstance().isModLoaded("entityculling");
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_LOAD.register((level,chunk)->invalidate());
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_UNLOAD.register((level,chunk)->invalidate());
+        ClientChunkEvents.CHUNK_LOAD.register((level,chunk)->invalidate());
+        ClientChunkEvents.CHUNK_UNLOAD.register((level,chunk)->invalidate());
     }
     public static long revision(){return REVISION.get();}
     public static String backend(){return external?"entityculling":"builtin";}
     public static void invalidate(){REVISION.incrementAndGet();view=Map.of();}
-    private static boolean enabled(boolean block){return !external&&!ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope.active()&&Optimizations.enabled(block?OPT_BLOCK_ENTITY_CULLING:OPT_ENTITY_CULLING);}
+    private static boolean enabled(boolean block){return !external&&!ReplayScope.active()&&Optimizations.enabled(block?OPT_BLOCK_ENTITY_CULLING:OPT_ENTITY_CULLING);}
     public static boolean hidden(Entity entity){
         if(!enabled(false))return false;var client=Minecraft.getInstance();
         if(client.player==null||entity==client.player||entity==VisualTarget.current()||entity.isRemoved()||entity.isPassenger()||entity.isVehicle()||entity.isCurrentlyGlowing()||client.shouldEntityAppearGlowing(entity)||!BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals("minecraft"))return false;
-        if(entity instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon||entity instanceof net.minecraft.world.entity.boss.wither.WitherBoss||entity instanceof net.minecraft.world.entity.monster.Ghast||entity instanceof Display)return false;
-        if(entity instanceof net.minecraft.world.entity.player.Player&&ru.he3hauka.toolvisuals.client.animation.Emotes.pose(entity.getUUID())!=null)return false;
-        return hidden(entity,entity.getBoundingBox().inflate(entity instanceof net.minecraft.world.entity.player.Player?1:.5));
+        if(entity instanceof EnderDragon||entity instanceof WitherBoss||entity instanceof Ghast||entity instanceof Display)return false;
+        if(entity instanceof Player&&Emotes.pose(entity.getUUID())!=null)return false;
+        return hidden(entity,entity.getBoundingBox().inflate(entity instanceof Player?1:.5));
     }
     public static boolean hidden(BlockEntity entity,boolean global){
         if(!enabled(true)||global)return false;

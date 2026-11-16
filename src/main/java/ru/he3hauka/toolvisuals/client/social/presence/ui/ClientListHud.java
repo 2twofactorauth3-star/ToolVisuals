@@ -1,9 +1,9 @@
 package ru.he3hauka.toolvisuals.client.social.presence.ui;
 
 import java.util.List;
-
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-
+import net.minecraft.client.gui.screens.ChatScreen;
 import ru.he3hauka.toolvisuals.client.*;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
@@ -11,7 +11,9 @@ import ru.he3hauka.toolvisuals.client.hud.layout.HudElement;
 import ru.he3hauka.toolvisuals.client.hud.layout.HudPlacement;
 import ru.he3hauka.toolvisuals.client.hud.players.PlayerListPanel;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.social.presence.*;
+import ru.he3hauka.toolvisuals.client.social.profile.PlayerCardScreen;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -22,11 +24,11 @@ public final class ClientListHud {
     private static List<PlayerListPanel.Row> rows=List.of();
     private ClientListHud(){}
     public static boolean openAt(double x,double y){
-        var client=net.minecraft.client.Minecraft.getInstance();
-        if(!(client.gui.screen() instanceof net.minecraft.client.gui.screens.ChatScreen)||!ToolVisualsClient.CONFIG.active(ru.he3hauka.toolvisuals.client.module.VisualModule.CLIENT_LIST)
+        var client=Minecraft.getInstance();
+        if(!(client.gui.screen() instanceof ChatScreen)||!ToolVisualsClient.CONFIG.active(VisualModule.CLIENT_LIST)
                 ||!HudPlacement.bounds().containsKey(HudElement.CLIENTS)||source==null)return false;
         int row=PlayerListPanel.rowAt(HudElement.CLIENTS,x,y);if(row<0||row>=source.size())return false;
-        var entry=source.get(row);client.gui.setScreen(new ru.he3hauka.toolvisuals.client.social.profile.PlayerCardScreen(client.gui.screen(),entry.id(),entry.name()));return true;
+        var entry=source.get(row);client.gui.setScreen(new PlayerCardScreen(client.gui.screen(),entry.id(),entry.name()));return true;
     }
 
     public static void draw(GuiGraphicsExtractor graphics,UiPalette palette){

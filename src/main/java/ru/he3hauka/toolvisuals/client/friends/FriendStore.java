@@ -1,15 +1,13 @@
 package ru.he3hauka.toolvisuals.client.friends;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
 import ru.he3hauka.toolvisuals.client.connection.ConnectionIdentity;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class FriendStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -58,12 +56,12 @@ public final class FriendStore {
                     option==Option.NAME_COLOR?!nameColor:nameColor,option==Option.FRIEND_LABEL?!friendLabel:friendLabel);
         }
     }
-    private final ru.he3hauka.toolvisuals.client.storage.JsonFile file;
+    private final JsonFile file;
     private volatile Map<String,Friend> friends = Map.of();
     private volatile Settings settings = new Settings(true,true,0x77caff,true,true);
     
     private volatile long revision;
-    public FriendStore(Path path) { file=new ru.he3hauka.toolvisuals.client.storage.JsonFile(path,1024*1024); }
+    public FriendStore(Path path) { file=new JsonFile(path,1024*1024); }
     public long revision() { return revision; }
     public List<Friend> entries() { return friends.values().stream().sorted(Comparator.comparing(f->f.name.toLowerCase(Locale.ROOT))).toList(); }
     public Settings settings() { return settings; }

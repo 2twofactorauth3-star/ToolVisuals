@@ -2,14 +2,12 @@
  
 package ru.he3hauka.toolvisuals.mixin.optimization;
 
-import java.util.List;
-
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import java.util.List;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 import ru.he3hauka.toolvisuals.client.optimization.text.StableText;
 
 @Mixin(ComponentRenderUtils.class)

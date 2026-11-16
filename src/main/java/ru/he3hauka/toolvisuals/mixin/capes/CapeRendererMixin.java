@@ -6,7 +6,6 @@ import net.minecraft.world.entity.Avatar;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import ru.he3hauka.toolvisuals.client.cape.CapeClient;
 
 @Mixin(AvatarRenderer.class)

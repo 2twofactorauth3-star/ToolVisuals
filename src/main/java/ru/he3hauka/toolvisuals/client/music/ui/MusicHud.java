@@ -13,6 +13,7 @@ import ru.he3hauka.toolvisuals.client.music.MusicClient;
 import ru.he3hauka.toolvisuals.client.music.model.MediaAction;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSession;
 import ru.he3hauka.toolvisuals.client.music.model.MediaSnapshot;
+
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class MusicHud {

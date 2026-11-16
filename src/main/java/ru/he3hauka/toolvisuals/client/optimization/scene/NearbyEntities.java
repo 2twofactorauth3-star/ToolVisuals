@@ -1,10 +1,8 @@
 package ru.he3hauka.toolvisuals.client.optimization.scene;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 
 public final class NearbyEntities {

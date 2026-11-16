@@ -11,10 +11,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.connection.featured.FeaturedServer;
 import ru.he3hauka.toolvisuals.client.connection.featured.FeaturedServerBanner;
-import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 
 @Mixin(JoinMultiplayerScreen.class)
 public abstract class FeaturedServerScreenMixin extends Screen {

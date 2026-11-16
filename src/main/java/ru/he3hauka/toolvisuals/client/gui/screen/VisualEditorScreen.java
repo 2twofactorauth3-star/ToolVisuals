@@ -2,25 +2,25 @@ package ru.he3hauka.toolvisuals.client.gui.screen;
 
 import java.util.*;
 import java.util.function.*;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.gui.color.HexColorField;
-import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.input.GuiMovement;
 import ru.he3hauka.toolvisuals.client.gui.input.MovementScreen;
+import ru.he3hauka.toolvisuals.client.gui.layout.UiViewport;
 import ru.he3hauka.toolvisuals.client.gui.module.SettingsSaveIndicator;
 import ru.he3hauka.toolvisuals.client.gui.module.VisualsButton;
 import ru.he3hauka.toolvisuals.client.gui.render.UiFont;
 import ru.he3hauka.toolvisuals.client.gui.render.UiPaint;
 import ru.he3hauka.toolvisuals.client.gui.surface.UiPalette;
+import ru.he3hauka.toolvisuals.client.gui.widget.CenteredEditBox;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public abstract class VisualEditorScreen extends Screen implements MovementScreen {
     public final Screen parent;
@@ -41,11 +41,7 @@ public abstract class VisualEditorScreen extends Screen implements MovementScree
         var b=addWidget(new VisualsButton(px+x,py+y,w,h,label,icon!=null&&label.getString().isEmpty()?VisualsButton.Kind.ICON:VisualsButton.Kind.CHIP,icon,Component.empty(),action,selected));controls.add(b);return b;
     }
     protected EditBox field(int x,int y,int w,String value,int max,Consumer<String> responder) {
-        var f=addWidget(new EditBox(UiFont.get(),px+x,py+y,w,28,Component.empty()) {
-            @Override public void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float partial) {
-                g.pose().pushMatrix();g.pose().translate(0,UiFont.centeredTextOffset(getHeight()));super.extractWidgetRenderState(g,mx,my,partial);g.pose().popMatrix();
-            }
-        });f.setBordered(false);f.setTextShadow(false);f.setMaxLength(max);f.setValue(value);f.setResponder(responder);controls.add(f);return f;
+        var f=addWidget(new CenteredEditBox(UiFont.get(),px+x,py+y,w,28,Component.empty()));f.setBordered(false);f.setTextShadow(false);f.setMaxLength(max);f.setValue(value);f.setResponder(responder);controls.add(f);return f;
     }
     protected HexColorField hexField(int x,int y,int width,String value,Consumer<String> responder) {
         var field=addWidget(new HexColorField(px+x,py+y,width,32,Component.literal("HEX"),value,null));
@@ -73,7 +69,7 @@ public abstract class VisualEditorScreen extends Screen implements MovementScree
         float elapsed=Math.clamp((System.nanoTime()-lastFrame)/1_000_000_000f,0,.1f);lastFrame=System.nanoTime();
         g.pose().pushMatrix();g.pose().scale(scale,scale);
         UiPaint.shadow(g,px,py,frameWidth,frameHeight,12,1);UiPaint.rounded(g,px-1,py-1,frameWidth+2,frameHeight+2,13,palette.border);UiPaint.rounded(g,px,py,frameWidth,frameHeight,12,palette.panel);
-        int reserved=ToolVisualsClient.CONFIG.persistenceStatus()==ru.he3hauka.toolvisuals.client.storage.JsonFile.Status.READY?0:150;
+        int reserved=ToolVisualsClient.CONFIG.persistenceStatus()==JsonFile.Status.READY?0:150;
         UiPaint.baseline(g,UiPaint.fit(g,title,frameWidth-40-reserved,1.05f),px+20,UiPaint.textBaseline(g,py+12,28,1.05f),1.05f,palette.text,1);
         SettingsSaveIndicator.draw(g,ToolVisualsClient.CONFIG,px+frameWidth-160,py+12,140,palette,1);
         g.fill(px+20,py+49,px+frameWidth-20,py+50,palette.border);

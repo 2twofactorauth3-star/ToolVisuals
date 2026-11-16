@@ -1,11 +1,11 @@
 package ru.he3hauka.toolvisuals.client.cape.animation;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayDeque;
 import ru.he3hauka.toolvisuals.client.cape.CapeCanvas;
-import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
 public final class CapeAnimationDraft {
     private final List<CapeCanvas> frames=new ArrayList<>();

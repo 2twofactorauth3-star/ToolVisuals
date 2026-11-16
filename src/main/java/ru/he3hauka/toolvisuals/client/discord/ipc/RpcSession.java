@@ -1,11 +1,12 @@
 package ru.he3hauka.toolvisuals.client.discord.ipc;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.UUID;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.UUID;
 import ru.he3hauka.toolvisuals.client.discord.DiscordActivity;
 
 public final class RpcSession {
@@ -53,7 +54,7 @@ public final class RpcSession {
         if(pong!=null){enqueue(pong,now);pong=null;}
         else if(ready&&closing&&!clearSent){clearSent=true;command(null,now);}
         else if(ready&&!closing&&pendingNonce==null&&publicationDue(activity,now))command(activity,now);
-        else if(ready&&!closing&&pendingNonce==null&&heartbeat==null&&now-lastTraffic>=HEARTBEAT_INTERVAL){heartbeat=identity.getBytes(java.nio.charset.StandardCharsets.UTF_8);heartbeatSince=now;enqueue(new RpcFrame(RpcFrame.PING,heartbeat),now);}
+        else if(ready&&!closing&&pendingNonce==null&&heartbeat==null&&now-lastTraffic>=HEARTBEAT_INTERVAL){heartbeat=identity.getBytes(StandardCharsets.UTF_8);heartbeatSince=now;enqueue(new RpcFrame(RpcFrame.PING,heartbeat),now);}
         flush(now);return true;
     }
     private boolean publicationDue(DiscordActivity activity,long now){

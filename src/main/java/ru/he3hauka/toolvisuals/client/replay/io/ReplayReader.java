@@ -3,7 +3,6 @@ package ru.he3hauka.toolvisuals.client.replay.io;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.zip.Inflater;
-
 import ru.he3hauka.toolvisuals.client.storage.BoundedInputStream;
 
 public final class ReplayReader implements AutoCloseable {

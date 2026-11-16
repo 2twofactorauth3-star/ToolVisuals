@@ -1,18 +1,18 @@
 package ru.he3hauka.toolvisuals.client.render;
 
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
+import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+import ru.he3hauka.toolvisuals.client.render.hitboxes.DebugHitboxes;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -30,7 +30,7 @@ public final class CustomHitboxes {
     private CustomHitboxes() {}
 
     public static boolean visible(Minecraft client, ClientConfig config) {
-        return visible(config.active(ru.he3hauka.toolvisuals.client.module.VisualModule.CUSTOM_HITBOXES), ru.he3hauka.toolvisuals.client.render.hitboxes.DebugHitboxes.enabled(client));
+        return visible(config.active(VisualModule.CUSTOM_HITBOXES), DebugHitboxes.enabled(client));
     }
 
     public static boolean visible(boolean moduleEnabled, boolean vanillaEnabled) { return moduleEnabled && vanillaEnabled; }

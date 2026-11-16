@@ -1,15 +1,13 @@
 package ru.he3hauka.toolvisuals.client.waypoint;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import ru.he3hauka.toolvisuals.client.config.color.ColorStyle;
-import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
+import ru.he3hauka.toolvisuals.client.storage.JsonFile;
 
 public final class WaypointStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -37,10 +35,10 @@ public final class WaypointStore {
             this.style=ColorStyle.safe(style,0xb69aff);this.color=this.style.colors.getFirst();this.enabled=enabled;this.death=death;
         }
     }
-    private final ru.he3hauka.toolvisuals.client.storage.JsonFile file;
+    private final JsonFile file;
     private volatile List<Point> points = List.of();
     
-    public WaypointStore(Path path) { file=new ru.he3hauka.toolvisuals.client.storage.JsonFile(path); }
+    public WaypointStore(Path path) { file=new JsonFile(path); }
     public List<Point> entries(String context) { return points.stream().filter(p->p.context.equals(context)).toList(); }
     public void put(Point point) throws IOException {
         var next=new ArrayList<>(points);next.removeIf(p->p.id.equals(point.id));

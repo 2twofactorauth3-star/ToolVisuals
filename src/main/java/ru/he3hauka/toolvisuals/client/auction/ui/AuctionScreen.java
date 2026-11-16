@@ -1,19 +1,19 @@
 package ru.he3hauka.toolvisuals.client.auction.ui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.auction.*;
 import ru.he3hauka.toolvisuals.client.gui.animation.Motion;
@@ -65,9 +65,9 @@ public final class AuctionScreen extends Screen {
         dirty=false; pending=""; scrollTarget=0; scroll.snap(0);
     }
     private static final class FormWidget {
-        public final net.minecraft.client.gui.components.AbstractWidget widget;
+        public final AbstractWidget widget;
         public final int x,y;
-        FormWidget(net.minecraft.client.gui.components.AbstractWidget widget,int x,int y){this.widget=widget;this.x=x;this.y=y;}
+        FormWidget(AbstractWidget widget,int x,int y){this.widget=widget;this.x=x;this.y=y;}
     }
     private static final class Label {
         public final Component text; public final int x,y,width; public final float scale;
@@ -133,10 +133,10 @@ public final class AuctionScreen extends Screen {
         field.setBordered(false);field.setTextShadow(false);field.setMaxLength(max);
         field.setValue(value);field.setResponder(text->{responder.accept(text);changed();});addWidget(field);form.add(new FormWidget(field,x+9,y));return field;
     }
-    private VisualsButton formButton(int x,int y,int w,int h,String key,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,java.util.function.BooleanSupplier selected) {
+    private VisualsButton formButton(int x,int y,int w,int h,String key,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,BooleanSupplier selected) {
         var button=addWidget(new VisualsButton(0,0,w,h,tr(key),kind,icon,Component.empty(),action,selected));form.add(new FormWidget(button,x,y));return button;
     }
-    private VisualsButton control(int x,int y,int w,int h,String key,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,java.util.function.BooleanSupplier selected) {
+    private VisualsButton control(int x,int y,int w,int h,String key,VisualsButton.Kind kind,UiPaint.Icon icon,Runnable action,BooleanSupplier selected) {
         var button=addWidget(new VisualsButton(x,y,w,h,tr(key),kind,icon,Component.empty(),action,selected));controls.add(button);return button;
     }
     private void refreshProfiles() {

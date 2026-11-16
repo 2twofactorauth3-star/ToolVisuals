@@ -1,12 +1,13 @@
 package ru.he3hauka.toolvisuals.client.module;
 
+import java.util.Locale;
 import net.minecraft.network.chat.Component;
-
-import ru.he3hauka.toolvisuals.client.localization.UiI18n;
-import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 import ru.he3hauka.toolvisuals.client.input.tape.TapeAction;
 import ru.he3hauka.toolvisuals.client.input.tape.TapePlayback;
+import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.social.badge.BadgeLabels;
+import ru.he3hauka.toolvisuals.client.sound.SoundPreset;
+import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
@@ -20,6 +21,7 @@ public enum VisualSetting {
     ITEM_HIGHLIGHT_SLOT_OPACITY(ITEM_HIGHLIGHTS, 0, 1, .05, .35),
     ITEM_HIGHLIGHT_HAND_STRENGTH(ITEM_HIGHLIGHTS, .1, 2, .05, .9),
     ITEM_HIGHLIGHT_HAND_RADIUS(ITEM_HIGHLIGHTS, 1, 12, .5, 4.5),
+    ITEM_HIGHLIGHT_SHIMMER(ITEM_HIGHLIGHTS, true),
     TIME(WORLD_CUSTOMIZER, 0, "Server", "Day", "Sunset", "Night"),
     CLEAR_WEATHER(WORLD_CUSTOMIZER, true),
     SKY_TINT(WORLD_CUSTOMIZER, 0, "Natural", "Lavender", "Rose", "Azure", "Amber"),
@@ -125,13 +127,13 @@ public enum VisualSetting {
     TOTEM_RESET_DEATH(TOTEM_POP_COUNTER, true),
     TOTEM_COLOR(TOTEM_POP_COUNTER, 4, "Lavender", "Rose", "Azure", "Mint", "Amber", "White"),
     SOUND_HITS(SOUND_CUSTOMIZER, true),
-    SOUND_HIT_KIND(SOUND_CUSTOMIZER, 1, ru.he3hauka.toolvisuals.client.sound.SoundPreset.choices()),
+    SOUND_HIT_KIND(SOUND_CUSTOMIZER, 1, SoundPreset.choices()),
     SOUND_HIT_VOLUME(SOUND_CUSTOMIZER, 0, 1, .05, .5),
     SOUND_MODULES(SOUND_CUSTOMIZER, true),
-    SOUND_MODULE_KIND(SOUND_CUSTOMIZER, 0, ru.he3hauka.toolvisuals.client.sound.SoundPreset.choices()),
+    SOUND_MODULE_KIND(SOUND_CUSTOMIZER, 0, SoundPreset.choices()),
     SOUND_MODULE_VOLUME(SOUND_CUSTOMIZER, 0, 1, .05, .35),
     SOUND_NOTICES(SOUND_CUSTOMIZER, true),
-    SOUND_NOTICE_KIND(SOUND_CUSTOMIZER, 2, ru.he3hauka.toolvisuals.client.sound.SoundPreset.choices()),
+    SOUND_NOTICE_KIND(SOUND_CUSTOMIZER, 2, SoundPreset.choices()),
     SOUND_NOTICE_VOLUME(SOUND_CUSTOMIZER, 0, 1, .05, .45),
     SOUND_PITCH(SOUND_CUSTOMIZER, .5, 2, .05, 1),
     COOLDOWN_ICONS(COOLDOWN_HUD, true),
@@ -490,7 +492,7 @@ public enum VisualSetting {
     }
     VisualSetting(VisualModule module, Kind kind, double min, double max, double step, double initial, String[] choices) {
         this.module = module; this.kind = kind; this.min = min; this.max = max; this.step = step;
-        this.initial = initial; this.choices = choices; this.id = name().toLowerCase(java.util.Locale.ROOT);
+        this.initial = initial; this.choices = choices; this.id = name().toLowerCase(Locale.ROOT);
     }
     public double sanitize(double value) {
         if (!Double.isFinite(value)) return initial;
@@ -499,8 +501,8 @@ public enum VisualSetting {
     public Component label() { return UiI18n.tr("toolvisuals.setting." + id); }
     public Component formatted(double value) {
         if (kind == Kind.BOOLEAN) return UiI18n.tr(value > .5 ? "toolvisuals.ui.on" : "toolvisuals.ui.off");
-        if (kind == Kind.CHOICE) return UiI18n.tr("toolvisuals.choice." + choices[(int)sanitize(value)].toLowerCase(java.util.Locale.ROOT).replace(' ', '_'));
+        if (kind == Kind.CHOICE) return UiI18n.tr("toolvisuals.choice." + choices[(int)sanitize(value)].toLowerCase(Locale.ROOT).replace(' ', '_'));
         if (this == FOG_DISTANCE && value == 0) return UiI18n.tr("toolvisuals.choice.server");
-        return Component.literal(step >= 1 ? String.valueOf((int)value) : String.format(java.util.Locale.ROOT, "%.2f", value));
+        return Component.literal(step >= 1 ? String.valueOf((int)value) : String.format(Locale.ROOT, "%.2f", value));
     }
 }

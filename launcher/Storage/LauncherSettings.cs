@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ToolLauncher.Diagnostics;
 using ToolLauncher.Minecraft;
 using ToolLauncher.Core;
@@ -49,7 +50,7 @@ public sealed class SettingsStore
     {
         this.paths = paths; this.log = log; Memory = memory ?? MemoryBudget.Detect(); Memory.EnsureSupported(); ExistedOnStartup = File.Exists(paths.Settings);
         try { var loaded = AtomicJson.Read<LauncherSettings>(paths.Settings).Validate(); Current = loaded with { MemoryMiB = Memory.Clamp(loaded.MemoryMiB) }; }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Text.Json.JsonException or InvalidOperationException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException)
         {
             Current = new LauncherSettings { MemoryMiB = Memory.Clamp(4096) }; LoadError = error; log.Error("Read launcher settings; original file has been preserved", error);
         }

@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.optimization.diagnostics;
 
 import java.util.Locale;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 

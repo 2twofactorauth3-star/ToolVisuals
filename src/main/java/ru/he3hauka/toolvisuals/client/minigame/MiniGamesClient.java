@@ -1,21 +1,21 @@
 package ru.he3hauka.toolvisuals.client.minigame;
 
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.*;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.minigame.network.MiniGamePayload;
 import ru.he3hauka.toolvisuals.client.minigame.ui.MiniGameLibraryScreen;
 import ru.he3hauka.toolvisuals.client.minigame.ui.MiniGamePlayScreen;
+import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.minigame.GameKind;
 import ru.he3hauka.toolvisuals.minigame.GameRound;
 import ru.he3hauka.toolvisuals.minigame.session.GameReplica;
@@ -109,12 +109,12 @@ public final class MiniGamesClient {
         try { changed = replica.receive(message, System.nanoTime(), ToolVisualsClient.CONFIG.flag(MINIGAMES_INVITATIONS)); }
         catch (IllegalArgumentException invalid) { ClientErrors.report("Read synchronized minigame state", invalid); replica.leave(System.nanoTime()); return; }
         if (!changed) return;
-        if (message.code() == Code.INVITED) ChatMessages.send(MiniGameInvitation.message(message, ru.he3hauka.toolvisuals.client.social.SocialClient.name(message.first())));
+        if (message.code() == Code.INVITED) ChatMessages.send(MiniGameInvitation.message(message, SocialClient.name(message.first())));
         else if (message.code() == Code.MATCH && replica.round() != null) {
             solo = null; computer = null; observe(replica.round());
             if (previous == null) client.gui.setScreen(new MiniGamePlayScreen(null));
         } else if (message.code() != Code.WAITING && !(message.code() == Code.CLOSED && previousRoom == null && message.room().equals(NONE)))
-            ChatMessages.notice("minigames.result." + message.code().name().toLowerCase(java.util.Locale.ROOT));
+            ChatMessages.notice("minigames.result." + message.code().name().toLowerCase(Locale.ROOT));
     }
 
     private static void tick(Minecraft client) {

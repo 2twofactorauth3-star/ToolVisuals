@@ -1,11 +1,9 @@
 package ru.he3hauka.toolvisuals.relay.paper.placeholder;
 
 import java.util.Locale;
-
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.he3hauka.toolvisuals.relay.paper.presence.ClientStatus;
 
 public final class ToolVisualsExpansion extends PlaceholderExpansion implements AutoCloseable {

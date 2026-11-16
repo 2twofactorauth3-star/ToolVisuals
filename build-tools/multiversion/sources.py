@@ -270,7 +270,9 @@ def translate(text,version):
     text=text.replace('.setVisibleMessageFilter(ChatTabs::visible)', '.rescaleChat()')
     text=text.replace('.addClientSystemMessage(', '.addMessage(')
     text=text.replace('gui.screen()', 'Minecraft.getInstance().screen')
-    text=text.replace('String downloads = org.lwjgl.sdl.SDLFileSystem.SDL_GetUserFolder(org.lwjgl.sdl.SDLFileSystem.SDL_FOLDER_DOWNLOADS);','String downloads = ru.he3hauka.toolvisuals.client.compatibility.files.UserFolders.downloads().toString();')
+    downloads=r'String downloads\s*=\s*(?:org\.lwjgl\.sdl\.)?SDLFileSystem\.SDL_GetUserFolder\((?:org\.lwjgl\.sdl\.)?SDLFileSystem\.SDL_FOLDER_DOWNLOADS\);'
+    text,download_calls=re.subn(downloads,'String downloads = ru.he3hauka.toolvisuals.client.compatibility.files.UserFolders.downloads().toString();',text)
+    if download_calls:text=re.sub(r'(?m)^import org\.lwjgl\.sdl\.SDLFileSystem;\s*\n','',text)
     text=text.replace('pack.openMetadata()', 'pack.open()')
     text=text.replace('prepare8xTextOutline', 'drawInBatch8xOutline')
     text=text.replace('PlayerFaceRenderer.render(', 'PlayerFaceRenderer.draw(')

@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.client.optimization.diagnostics.report;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.capture.FreezeEvent;
 
 public final class DetailBudget {
@@ -18,7 +19,7 @@ public final class DetailBudget {
     }
     public String suppressed() {
         if(suppressed==0)return "";
-        String text="Подробности повторяющихся фризов объединены: "+suppressed+" событий; максимум="+String.format(java.util.Locale.ROOT,"%.2f",maximum/1e6)+" ms\n";
+        String text="Подробности повторяющихся фризов объединены: "+suppressed+" событий; максимум="+String.format(Locale.ROOT,"%.2f",maximum/1e6)+" ms\n";
         suppressed=maximum=0;return text;
     }
 }

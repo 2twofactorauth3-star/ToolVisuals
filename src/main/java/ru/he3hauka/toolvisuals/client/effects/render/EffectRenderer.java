@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.EffectTime;
 import ru.he3hauka.toolvisuals.client.effects.*;

@@ -1,8 +1,8 @@
 package ru.he3hauka.toolvisuals.client.optimization.items;
 
-import java.util.List;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.List;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer.Submit;
 import net.minecraft.client.renderer.item.ItemStackRenderState.FoilType;
 import net.minecraft.client.renderer.rendertype.RenderType;

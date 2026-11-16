@@ -2,6 +2,7 @@ package ru.he3hauka.toolvisuals.animation.network;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public final class RelayLimits {
     private final PacketBudget starts;
     private final PacketBudget deliveries;
     private final Map<UUID, PacketBudget> recipients = new HashMap<>();
-    private final java.util.LinkedHashSet<UUID> waiting = new java.util.LinkedHashSet<>();
+    private final LinkedHashSet<UUID> waiting = new LinkedHashSet<>();
     private int turnUsed;
     private final int recipientBurst,recipientRate;
 

@@ -10,12 +10,13 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.armor.ArmorTint;
 import ru.he3hauka.toolvisuals.client.armor.render.ArmorRenderTypes;
-import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.render.hitcolor.HitColors;
 
 @Mixin(EquipmentLayerRenderer.class)
@@ -26,7 +27,7 @@ public abstract class ArmorTintMixin {
         boolean fill=ArmorTint.filled(state);if(fill&&trim!=null)return;
         int tint=ArmorTint.color(state,stack);
         if(tint!=0&&trim==null){type=ArmorRenderTypes.renderType(type,fill);color=tint;}
-        if(trim!=null&&ArmorTint.hit(state))color=net.minecraft.util.ARGB.multiply(color,HitColors.modelTint(ToolVisualsClient.CONFIG));
+        if(trim!=null&&ArmorTint.hit(state))color=ARGB.multiply(color,HitColors.modelTint(ToolVisualsClient.CONFIG));
         original.call(collector,model,state,pose,type,light,overlay,color,trim,outline,crumbling);
     }
 }

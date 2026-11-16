@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -12,10 +11,11 @@ import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog;
 import ru.he3hauka.toolvisuals.client.effects.render.EffectPipeline;
 import ru.he3hauka.toolvisuals.client.effects.render.EffectRenderer;
+import ru.he3hauka.toolvisuals.client.hud.ExtraHud;
 import ru.he3hauka.toolvisuals.client.hud.target.VisualTarget;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.scene.NearbyEntities;
@@ -48,7 +48,7 @@ public final class WorldEffects {
             level=client.level;previous=null;grounded=false;ticks=0;HURT.clear();SEEN.clear();TIMELINE.clear();EffectRenderer.clear();
         }
         VisualTarget.tick(client);VisualWorld.tick(client);
-        if(client.player==null||level==null){ru.he3hauka.toolvisuals.client.hud.ExtraHud.reset();return;}
+        if(client.player==null||level==null){ExtraHud.reset();return;}
         if(client.isPaused())return;
         var config=ToolVisualsClient.CONFIG;
         var player=client.player;
@@ -68,7 +68,7 @@ public final class WorldEffects {
         }
         if(config.active(JUMP_CIRCLES)&&previous!=null&&grounded&&!player.onGround()&&player.getDeltaMovement().y>.08&&!player.isInWater()&&!player.getAbilities().flying){
             TIMELINE.jump(previous.add(0,.035,0),now,(int)config.value(CIRCLE_DURATION),config.number(CIRCLE_RADIUS),circleLimit);
-            ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(JUMP_CIRCLES,"jump_effect_requested","");
+            ModuleLog.action(JUMP_CIRCLES,"jump_effect_requested","");
         }
         if(config.active(TRAILS)&&previous!=null)TIMELINE.trail(previous,pos,now,(int)config.value(TRAIL_DENSITY));
         if(config.active(HIT_PARTICLES)||config.active(HIT_BUBBLES)){
@@ -79,7 +79,7 @@ public final class WorldEffects {
                 if(old==null||living.hurtTime<=old||living.hurtTime<5||bursts++>=8)continue;
                 if(entity!=player||config.flag(BUBBLE_SELF))VisualWorld.hit(living);
                 if(config.active(HIT_PARTICLES)&&(entity!=player||config.flag(HIT_SELF))){
-                    if(ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.active())ru.he3hauka.toolvisuals.client.diagnostics.ModuleLog.action(HIT_PARTICLES,"burst_requested","count="+(int)config.value(HIT_PARTICLE_COUNT));
+                    if(ModuleLog.active())ModuleLog.action(HIT_PARTICLES,"burst_requested","count="+(int)config.value(HIT_PARTICLE_COUNT));
                     var random=level.getRandom();
                     for(int i=0;i<config.value(HIT_PARTICLE_COUNT);i++)
                         TIMELINE.sprite(new EffectTimeline.Sprite(entity.position().add(0,entity.getBbHeight()*.6,0),

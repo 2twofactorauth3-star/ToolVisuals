@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
+
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
 @Mixin(LevelRenderer.class)

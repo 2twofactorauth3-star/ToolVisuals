@@ -1,6 +1,9 @@
 package ru.he3hauka.toolvisuals.client.hud.layout;
 
+import ru.he3hauka.toolvisuals.client.chat.ChatResizer;
+
+
 public interface ChatHudAccess {
-    ru.he3hauka.toolvisuals.client.chat.ChatResizer toolvisuals$chatResizer();
+    ChatResizer toolvisuals$chatResizer();
     HudDragging toolvisuals$hudDragging();
 }

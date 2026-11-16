@@ -1,16 +1,15 @@
 package ru.he3hauka.toolvisuals.relay.paper.minigame;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import java.util.logging.Level;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-
 import ru.he3hauka.toolvisuals.animation.network.PacketBudget;
 import ru.he3hauka.toolvisuals.minigame.network.MiniGameWire;
 import ru.he3hauka.toolvisuals.minigame.server.MiniGameHub;
@@ -82,7 +81,7 @@ public final class MiniGameRelay implements Listener, AutoCloseable {
                     }
                     if (endpoint.player.getListeningPluginChannels().contains(STATE_CHANNEL)) endpoint.player.sendPluginMessage(plugin, STATE_CHANNEL, MiniGameWire.encode(message));
                 }
-            } catch (RuntimeException error) { plugin.getLogger().log(java.util.logging.Level.WARNING, "Could not deliver a ToolVisuals minigame update", error); }
+            } catch (RuntimeException error) { plugin.getLogger().log(Level.WARNING, "Could not deliver a ToolVisuals minigame update", error); }
             finally {
                 endpoint.scheduled.set(false);
                 synchronized (endpoint) { if (!endpoint.outgoing.isEmpty() && running && endpoints.get(id) == endpoint) schedule(id, endpoint); }

@@ -1,7 +1,5 @@
 package ru.he3hauka.toolvisuals.client.diagnostics;
 
-import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
-
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,9 +14,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import org.slf4j.LoggerFactory;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.chat.message.ChatMessages;
 import ru.he3hauka.toolvisuals.client.config.ClientConfig;
+import ru.he3hauka.toolvisuals.client.diagnostics.error.ClientErrors;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 
@@ -101,7 +101,7 @@ public final class ModuleLog {
         current.finished.thenAccept(result->{
             try{appender.detach();}catch(RuntimeException error){ClientErrors.report("Detach module log capture",error);}
             synchronized(ModuleLog.class){if(session==current){session=null;snapshot=null;}}
-            if(result.failure()!=null)org.slf4j.LoggerFactory.getLogger("ToolVisuals").warn("Module diagnostic log could not be written",result.failure());
+            if(result.failure()!=null)LoggerFactory.getLogger("ToolVisuals").warn("Module diagnostic log could not be written",result.failure());
             client.execute(()->{
                 if(client.getConnection()!=current.connection||client.player==null)return;
                 if(result.failure()!=null)ChatMessages.notice("log.io_error",path(result.path()));

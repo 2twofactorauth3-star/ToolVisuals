@@ -1,10 +1,11 @@
 package ru.he3hauka.toolvisuals.client.cape;
 
+import java.util.ArrayList;
+import ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy;
 import ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign;
 
-import static ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign.*;
-
 import static ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.MAX_FRAMES;
+import static ru.he3hauka.toolvisuals.cosmetic.cape.CapeDesign.*;
 
 public final class CapePresets {
     public enum Kind { TOOLVISUALS, RUSSIA, KAZAKHSTAN, BELARUS, UKRAINE, SOLID, GRADIENT, STRIPES, PULSE, SHIMMER }
@@ -13,11 +14,11 @@ public final class CapePresets {
     private CapePresets(){}
     public static CapeDesign create(Kind kind,int primary,int secondary){
         if(kind==Kind.PULSE||kind==Kind.SHIMMER){
-            var base=create(Kind.TOOLVISUALS,primary,secondary);var frames=new java.util.ArrayList<CapeDesign>();
+            var base=create(Kind.TOOLVISUALS,primary,secondary);var frames=new ArrayList<CapeDesign>();
             for(int frame=0;frame<MAX_FRAMES;frame++){int[] pixels=base.pixels();for(int i=0;i<pixels.length;i++){
                 int y=i%FACE_PIXELS/WIDTH;float amount=kind==Kind.PULSE?(float)(.12+.32*(1+Math.sin(frame*Math.TAU/MAX_FRAMES))/2):Math.max(0,1-Math.abs(Math.floorMod(y+frame*HEIGHT/MAX_FRAMES,HEIGHT)-HEIGHT/2f)/7)*.65f;
                 pixels[i]=mix(pixels[i],kind==Kind.PULSE?0xff090518:0xfff4efff,amount);
-            }frames.add(new CapeDesign(pixels));}return new CapeDesign(frames,Math.min(DEFAULT_FPS,ru.he3hauka.toolvisuals.cosmetic.cape.CapeAnimationPolicy.MAX_FPS));
+            }frames.add(new CapeDesign(pixels));}return new CapeDesign(frames,Math.min(DEFAULT_FPS,CapeAnimationPolicy.MAX_FPS));
         }
         int[] pixels=new int[PIXELS];primary|=0xff000000;secondary|=0xff000000;
         for(var face:Face.values())for(int y=0;y<HEIGHT;y++)for(int x=0;x<WIDTH;x++){

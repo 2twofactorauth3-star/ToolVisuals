@@ -2,10 +2,10 @@ package ru.he3hauka.toolvisuals.client.hud.layout;
 
 import java.util.*;
 import java.util.function.Predicate;
-
 import ru.he3hauka.toolvisuals.client.config.*;
-import ru.he3hauka.toolvisuals.client.module.VisualSetting;
+import ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature;
 import ru.he3hauka.toolvisuals.client.hud.info.InfoHudPart;
+import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 public final class HudDragging {
     private static final HudElement[] PICK_ORDER={HudElement.ARMOR,HudElement.ARMOR_2,HudElement.ARMOR_3,HudElement.ARMOR_4,HudElement.MODULES,
@@ -19,7 +19,7 @@ public final class HudDragging {
         for(var element:PICK_ORDER){var box=bounds.get(element);if(box!=null&&eligible.test(element)&&box.contains(x,y))return element;}return null;
     }
     public static boolean enabled(HudElement element,ClientConfig config){
-        if(!config.available(ru.he3hauka.toolvisuals.client.connection.policy.ClientFeature.HUD_EDITOR))return false;
+        if(!config.available(ClientFeature.HUD_EDITOR))return false;
         if(!config.active(element.module))return false;
         var part=InfoHudPart.forElement(element);
         if(part!=null)return part.enabled(config)&&config.flag(part.separate);

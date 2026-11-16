@@ -1,13 +1,12 @@
 package ru.he3hauka.toolvisuals.client.connection.holyworld;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import com.google.gson.JsonObject;
-
 import ru.he3hauka.toolvisuals.client.connection.policy.FeatureCatalog;
 import ru.he3hauka.toolvisuals.client.storage.BoundedJson;
 
@@ -28,7 +27,7 @@ public final class HolyWorldProtocol {
         request.addProperty("method", "checkFeatures");
         var payload = new JsonObject();
         payload.addProperty("client", CLIENT_ID);
-        var features = new com.google.gson.JsonArray();
+        var features = new JsonArray();
         FeatureCatalog.IDS.forEach(features::add);
         payload.add("features", features);
         request.add("payload", payload);

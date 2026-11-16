@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.hud.layout;
 
 import java.util.Locale;
-
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 

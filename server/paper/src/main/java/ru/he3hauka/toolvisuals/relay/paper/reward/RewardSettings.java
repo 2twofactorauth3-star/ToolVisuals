@@ -1,6 +1,7 @@
 package ru.he3hauka.toolvisuals.relay.paper.reward;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public final class RewardSettings {
         }).toList();
         if (flushSeconds < 5 || flushSeconds > 300) throw new IllegalArgumentException("Invalid storage-flush-seconds");
         this.enabled = enabled;
-        this.id = id.toLowerCase(java.util.Locale.ROOT);
+        this.id = id.toLowerCase(Locale.ROOT);
         this.requiredMillis = requiredSeconds * 1000;
         this.flushSeconds = flushSeconds;
         this.usingText = usingText;

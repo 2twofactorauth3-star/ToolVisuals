@@ -2,10 +2,11 @@ package ru.he3hauka.toolvisuals.animation.social;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
 import ru.he3hauka.toolvisuals.animation.PairEmote;
+import ru.he3hauka.toolvisuals.animation.network.WireCatalog;
 
 public final class SocialProtocol {
     public static final String REQUEST_CHANNEL = "toolvisuals:social_request_v1";
@@ -37,7 +38,7 @@ public final class SocialProtocol {
         SENT(0), DECLINED(1), EXPIRED(2), UNAVAILABLE(3), BUSY(4), CANCELLED(5);
         public final int id;
         Outcome(int id){this.id=id;}
-        private static final java.util.Map<Integer,Outcome> IDS=ru.he3hauka.toolvisuals.animation.network.WireCatalog.index(values(),value->value.id);
+        private static final Map<Integer,Outcome> IDS=WireCatalog.index(values(),value->value.id);
     }
     public record Result(UUID id, Outcome outcome) implements State {
         public Result { Objects.requireNonNull(id); Objects.requireNonNull(outcome); }

@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.search;
 
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.client.config.*;
 import ru.he3hauka.toolvisuals.client.localization.UiI18n;
 import ru.he3hauka.toolvisuals.client.localization.UiLanguage;

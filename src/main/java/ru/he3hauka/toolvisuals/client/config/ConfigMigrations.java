@@ -1,29 +1,32 @@
 package ru.he3hauka.toolvisuals.client.config;
 
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-
+import java.util.List;
 import ru.he3hauka.toolvisuals.client.chat.layout.ChatSize;
 import ru.he3hauka.toolvisuals.client.config.color.ColorSettings;
+import ru.he3hauka.toolvisuals.client.hand.HandProperty;
 import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 final class ConfigMigrations {
-    static final java.util.List<VisualModule> DEFAULTS=java.util.List.of(VisualModule.OPTIMIZATION,VisualModule.AUTO_SPRINT,VisualModule.FAST_SHADERS,VisualModule.CLIENT_BADGE,VisualModule.CAPES,VisualModule.COSMETICS,VisualModule.EXTRA_ANIMATIONS,VisualModule.DEATH_ASCENSION,VisualModule.CRYSTAL_OPTIMIZER,VisualModule.APPLE_SKIN,VisualModule.BETTER_HUD,VisualModule.ZOOM,VisualModule.FULL_BRIGHT,VisualModule.BLOCK_HIGHLIGHT,VisualModule.INFO_HUD,VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.GPS,VisualModule.ITEM_HIGHLIGHTS);
+    static final List<VisualModule> DEFAULTS=List.of(VisualModule.OPTIMIZATION,VisualModule.AUTO_SPRINT,VisualModule.FAST_SHADERS,VisualModule.CLIENT_BADGE,VisualModule.CAPES,VisualModule.COSMETICS,VisualModule.EXTRA_ANIMATIONS,VisualModule.DEATH_ASCENSION,VisualModule.CRYSTAL_OPTIMIZER,VisualModule.APPLE_SKIN,VisualModule.BETTER_HUD,VisualModule.ZOOM,VisualModule.FULL_BRIGHT,VisualModule.BLOCK_HIGHLIGHT,VisualModule.INFO_HUD,VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.GPS,VisualModule.ITEM_HIGHLIGHTS);
     static final int VERSION=DEFAULTS.size();
     static final int CUSTOM_HAND_VERSION=1;
     private ConfigMigrations(){}
-    static java.util.EnumSet<VisualModule> defaultModules() {
-        var modules=java.util.EnumSet.copyOf(DEFAULTS);
-        modules.removeAll(java.util.List.of(VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.BETTER_HUD,VisualModule.BLOCK_HIGHLIGHT,VisualModule.APPLE_SKIN));
+    static EnumSet<VisualModule> defaultModules() {
+        var modules=EnumSet.copyOf(DEFAULTS);
+        modules.removeAll(List.of(VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.BETTER_HUD,VisualModule.BLOCK_HIGHLIGHT,VisualModule.APPLE_SKIN,VisualModule.ITEM_HIGHLIGHTS));
         return modules;
     }
     static void apply(ConfigSnapshot saved){
         if(saved.customHandVersion<CUSTOM_HAND_VERSION) {
             if(saved.values!=null) {
-                saved.values=new java.util.LinkedHashMap<>(saved.values);
-                for(var property:java.util.List.of(ru.he3hauka.toolvisuals.client.hand.HandProperty.X,
-                        ru.he3hauka.toolvisuals.client.hand.HandProperty.Y,ru.he3hauka.toolvisuals.client.hand.HandProperty.Z,
-                        ru.he3hauka.toolvisuals.client.hand.HandProperty.SCALE)) {
+                saved.values=new LinkedHashMap<>(saved.values);
+                for(var property:List.of(HandProperty.X,
+                        HandProperty.Y,HandProperty.Z,
+                        HandProperty.SCALE)) {
                     Double value=saved.values.get(property.right.id);
                     if(value!=null)saved.values.putIfAbsent(property.left.id,value);
                 }
@@ -36,7 +39,7 @@ final class ConfigMigrations {
             saved.customHandVersion=CUSTOM_HAND_VERSION;
         }
         if(saved.values!=null){
-            saved.values=new java.util.LinkedHashMap<>(saved.values);
+            saved.values=new LinkedHashMap<>(saved.values);
             Double width=saved.values.remove("better_hud_chat_width"),height=saved.values.remove("better_hud_chat_height");
             saved.values.remove("better_hud_chat_resize");
             if(saved.chatSize==null)saved.chatSize=new ChatSize(width==null?0:width,height==null?0:height);
@@ -50,7 +53,7 @@ final class ConfigMigrations {
             if(Double.valueOf(3).equals(saved.values.get(VisualSetting.TARGET_HUD_HOLD.id)))saved.values.remove(VisualSetting.TARGET_HUD_HOLD.id);
         }
         if(saved.moduleDefaultsVersion<13&&saved.values!=null){
-            for(var setting:java.util.List.of(VisualSetting.HEALTH_INDICATOR_HIGH_COLOR,VisualSetting.HEALTH_INDICATOR_MEDIUM_COLOR,VisualSetting.HEALTH_INDICATOR_LOW_COLOR)){
+            for(var setting:List.of(VisualSetting.HEALTH_INDICATOR_HIGH_COLOR,VisualSetting.HEALTH_INDICATOR_MEDIUM_COLOR,VisualSetting.HEALTH_INDICATOR_LOW_COLOR)){
                 Double value=saved.values.get(setting.id);
                 if(value!=null&&value>=0&&value<=5)saved.values.put(setting.id,(double)ColorSettings.PRESETS[value.intValue()]);
             }

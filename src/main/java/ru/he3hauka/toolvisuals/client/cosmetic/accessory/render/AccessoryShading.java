@@ -1,7 +1,6 @@
 package ru.he3hauka.toolvisuals.client.cosmetic.accessory.render;
 
 import java.util.*;
-
 import ru.he3hauka.toolvisuals.cosmetic.style.ColorPalette;
 
 final class AccessoryShading {

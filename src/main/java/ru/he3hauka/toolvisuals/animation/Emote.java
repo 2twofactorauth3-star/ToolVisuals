@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import ru.he3hauka.toolvisuals.animation.network.WireCatalog;
 
 import static ru.he3hauka.toolvisuals.animation.EmoteGroup.*;
 
@@ -29,7 +30,7 @@ public enum Emote {
 
     public static final int LEGACY_COUNT = 12;
     private static final Emote[] ALL = values();
-    private static final Map<Integer,Emote> BY_ID=ru.he3hauka.toolvisuals.animation.network.WireCatalog.index(ALL,value->value.id);
+    private static final Map<Integer,Emote> BY_ID=WireCatalog.index(ALL,value->value.id);
     private static final Map<EmoteGroup,List<Emote>> GROUPS = groups();
     public final int id,duration;
     public final String key;
