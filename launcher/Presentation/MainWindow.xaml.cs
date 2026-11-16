@@ -44,6 +44,7 @@ public partial class MainWindow : Window
     {
         this.services = services;
         InitializeComponent();
+        ConnectImageEvents();
         ConnectActivityEvents();
         MemorySlider.Minimum = MemoryBudget.MinimumMiB;
         MemorySlider.Maximum = services.Settings.Memory.MaximumMiB;

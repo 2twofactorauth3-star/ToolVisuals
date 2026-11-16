@@ -73,7 +73,7 @@
           <Grid x:Name="HomePage">
             <Grid.RowDefinitions><RowDefinition /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <Border x:Name="HeroSurface" CornerRadius="18" BorderBrush="#3A3D44" BorderThickness="1" RenderOptions.BitmapScalingMode="HighQuality">
-              <Border.Background><ImageBrush ImageSource="{StaticResource Landscape}" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" /></Border.Background>
+              <Border.Background><ImageBrush x:Name="HeroImageBrush" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" /></Border.Background>
               <Grid>
                 <Border CornerRadius="18">
                   <Border.Background><LinearGradientBrush StartPoint="0,0.6" EndPoint="0.9,0.6"><GradientStop Color="#8C0C1015" Offset="0" /><GradientStop Color="#000C1015" Offset="0.85" /></LinearGradientBrush></Border.Background>
