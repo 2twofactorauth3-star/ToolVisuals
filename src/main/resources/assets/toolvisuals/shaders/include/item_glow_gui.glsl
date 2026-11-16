@@ -22,5 +22,5 @@ void main() {
     if (alpha < 0.003) discard;
     float rim = smoothstep(0.18, 0.55, density);
     float brightness = max(vertexColor.r, max(vertexColor.g, vertexColor.b));
-    fragColor = vec4(mix(vertexColor.rgb, vec3(1.0), rim * 0.55 * brightness), alpha);
+    fragColor = vec4(mix(vertexColor.rgb, vec3(1.0), rim * 0.18 * brightness), alpha);
 }
