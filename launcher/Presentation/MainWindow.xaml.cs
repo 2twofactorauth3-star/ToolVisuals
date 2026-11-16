@@ -44,6 +44,7 @@ public partial class MainWindow : Window
     {
         this.services = services;
         InitializeComponent();
+        ConnectActivityEvents();
         MemorySlider.Minimum = MemoryBudget.MinimumMiB;
         MemorySlider.Maximum = services.Settings.Memory.MaximumMiB;
         VersionList.ItemsSource = GameTarget.All;
@@ -58,7 +59,7 @@ public partial class MainWindow : Window
             if (!windowClosed && page == "home" && !busy) await RefreshInstalledAsync();
         };
         Closing += OnClosing;
-        Closed += (_, _) => { windowClosed = true; search?.Cancel(); installedRead?.Cancel(); AccountImportOverlay.Cancel(); };
+        Closed += (_, _) => { windowClosed = true; UpdateWindowActivity(); search?.Cancel(); installedRead?.Cancel(); AccountImportOverlay.Cancel(); };
     }
     private GameTarget Selected() => VersionList.SelectedItem as GameTarget ?? throw new InvalidOperationException(LauncherLanguage.Get("selectFirst"));
     private void UpdateChrome()
@@ -97,7 +98,7 @@ public partial class MainWindow : Window
         NoticeBorder.Visibility = Visibility.Collapsed;
         using var progress = new LatestProgress<InstallProgress>(Dispatcher, ApplyProgress);
         operationProgress = progress;
-        InstallBar.IsIndeterminate = true; StatusText.Text = LauncherLanguage.Get("busy"); UpdateChrome();
+        progressIndeterminate = true; StatusText.Text = LauncherLanguage.Get("busy"); UpdateChrome();
         try { await action(cancellation.Token); }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { StatusText.Text = LauncherLanguage.Get("cancel"); }
         catch (GarbageCollectorException error) { services.Log.Error(name, error); Notice(GarbageCollectorInfo.Find(error.Collector).Name + ": " + LauncherLanguage.Get("gcUnavailable")); }
@@ -105,7 +106,7 @@ public partial class MainWindow : Window
         catch (Exception error) { services.Log.Error(name, error); Notice(LauncherLanguage.Get("error") + ": " + error.Message); }
         finally
         {
-            progress.Dispose(); operationProgress = null; operation = null; busy = false; InstallBar.IsIndeterminate = false; UpdateChrome();
+            progress.Dispose(); operationProgress = null; operation = null; busy = false; progressIndeterminate = false; UpdateChrome();
             if (closeRequested) { closeRequested = false; Close(); }
             else if (page is "installed" or "home") await RefreshInstalledAsync();
             else if (page == "mods") await SearchAsync();
@@ -116,7 +117,7 @@ public partial class MainWindow : Window
     {
         string stage = value.Stage switch { "java" => "javaDownload", "mods" => "modDownload", _ => value.Stage };
         StatusText.Text = LauncherLanguage.Get(stage) + (value.Total > 0 ? "  ·  " + value.Done + " / " + value.Total : "…");
-        InstallBar.IsIndeterminate = value.Total == 0; InstallBar.Value = value.Fraction * 100;
+        progressIndeterminate = value.Total == 0; InstallBar.Value = value.Fraction * 100; RefreshMotion();
     }
     private async void PlayClick(object sender, RoutedEventArgs e)
     {

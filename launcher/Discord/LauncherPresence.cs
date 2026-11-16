@@ -14,17 +14,25 @@ public sealed class LauncherPresence : IAsyncDisposable
     private readonly Func<LauncherSettings> settings;
     private readonly CancellationTokenSource shutdown = new();
     private readonly SemaphoreSlim writes = new(1);
+    private readonly SemaphoreSlim changes = new(0, 1);
+    private readonly Func<CancellationToken, Task<NamedPipeClientStream?>> connect;
     private readonly Task worker;
     private readonly long started = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     private volatile bool suspended;
     private int revision;
     public string Status { get; private set; } = "Waiting for Discord";
-    public LauncherPresence(LauncherLog log, Func<LauncherSettings> settings)
+    public LauncherPresence(LauncherLog log, Func<LauncherSettings> settings, Func<CancellationToken, Task<NamedPipeClientStream?>>? connect = null)
     {
-        this.log = log; this.settings = settings;
+        this.log = log; this.settings = settings; this.connect = connect ?? ConnectAsync;
         worker = Task.Run(RunAsync);
     }
-    public void Refresh() => Interlocked.Increment(ref revision);
+    public void Refresh()
+    {
+        Interlocked.Increment(ref revision);
+        try { changes.Release(); }
+        catch (SemaphoreFullException) { }
+        catch (ObjectDisposedException) { }
+    }
     public void Suspend(bool value) { suspended = value; Refresh(); }
     private async Task RunAsync()
     {
@@ -33,9 +41,9 @@ public sealed class LauncherPresence : IAsyncDisposable
             NamedPipeClientStream? pipe = null;
             try
             {
-                if (suspended) { Status = "Minecraft controls presence"; await Task.Delay(TimeSpan.FromSeconds(1), shutdown.Token); continue; }
-                pipe = await ConnectAsync(shutdown.Token);
-                if (pipe == null) { Status = "Discord is not running"; await Task.Delay(TimeSpan.FromSeconds(15), shutdown.Token); continue; }
+                if (suspended) { Status = "Minecraft controls presence"; await changes.WaitAsync(shutdown.Token); continue; }
+                pipe = await connect(shutdown.Token);
+                if (pipe == null) { Status = "Discord is not running"; await changes.WaitAsync(TimeSpan.FromSeconds(15), shutdown.Token); continue; }
                 await WriteAsync(pipe, 0, JsonSerializer.SerializeToUtf8Bytes(new { v = 1, client_id = ApplicationId }), shutdown.Token);
                 using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(shutdown.Token))
                 {
@@ -59,7 +67,7 @@ public sealed class LauncherPresence : IAsyncDisposable
                             await WriteAsync(pipe, 1, JsonSerializer.SerializeToUtf8Bytes(new { cmd = "SET_ACTIVITY", args = new { pid = Environment.ProcessId, activity }, nonce = Guid.NewGuid().ToString("N") }), shutdown.Token);
                             lastRevision = current; sent = DateTime.UtcNow;
                         }
-                        await Task.Delay(TimeSpan.FromSeconds(1), shutdown.Token);
+                        await WaitForChangeAsync(reader);
                     }
                     if (reader.IsCompleted) await reader;
                     if (!reader.IsFaulted && pipe.IsConnected)
@@ -77,9 +85,21 @@ public sealed class LauncherPresence : IAsyncDisposable
                 Status = "Reconnecting"; log.Error("Discord RPC session", error);
             }
             finally { pipe?.Dispose(); }
-            try { await Task.Delay(TimeSpan.FromSeconds(suspended ? 1 : 15), shutdown.Token); } catch (OperationCanceledException) when (shutdown.IsCancellationRequested) { break; }
+            try { if (!suspended) await changes.WaitAsync(TimeSpan.FromSeconds(15), shutdown.Token); } catch (OperationCanceledException) when (shutdown.IsCancellationRequested) { break; }
         }
         Status = "Stopped";
+    }
+    private async Task WaitForChangeAsync(Task reader)
+    {
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(shutdown.Token);
+        Task changed = changes.WaitAsync(TimeSpan.FromMinutes(1), cancellation.Token);
+        if (await Task.WhenAny(reader, changed) == reader)
+        {
+            cancellation.Cancel();
+            try { await changed; } catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+            await reader;
+        }
+        else await changed;
     }
     private object Activity(LauncherSettings preferences)
     {
@@ -140,6 +160,6 @@ public sealed class LauncherPresence : IAsyncDisposable
         await Task.Delay(120).ConfigureAwait(false);
         shutdown.Cancel();
         try { await worker.ConfigureAwait(false); } catch (OperationCanceledException) { }
-        writes.Dispose(); shutdown.Dispose();
+        writes.Dispose(); changes.Dispose(); shutdown.Dispose();
     }
 }

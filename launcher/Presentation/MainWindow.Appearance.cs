@@ -1,7 +1,5 @@
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using ToolLauncher.Minecraft;
-using ToolLauncher.Presentation.Operations;
 
 namespace ToolLauncher.Presentation;
 
@@ -26,9 +24,7 @@ public partial class MainWindow
         LaunchTitleGap.Height = new GridLength(home ? 20 : 0);
         LaunchDock.Padding = home ? new Thickness(24, 20, 24, 20) : new Thickness(18, 14, 18, 14);
         Resources["NavigationPadding"] = new Thickness(16, settings.CompactInterface ? 11 : 14, 16, settings.CompactInterface ? 11 : 14);
-        bool animate = settings.InterfaceAnimations && SystemParameters.ClientAreaAnimation;
-        HoverFeedback.SetEnabled(RootVisual, animate);
-        Resources["PopupMotion"] = animate ? PopupAnimation.Fade : PopupAnimation.None;
+        RefreshMotion();
         RefreshNavigation();
         ResizeHero(ActualHeight > 0 ? ActualHeight : Height);
     }
