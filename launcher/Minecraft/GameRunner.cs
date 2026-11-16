@@ -4,13 +4,18 @@ using System.Text.Json;
 using ToolLauncher.Accounts;
 using ToolLauncher.Core;
 using ToolLauncher.Storage;
+using ToolLauncher.Minecraft.GarbageCollection;
 
 namespace ToolLauncher.Minecraft;
 
 public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
 {
-    public GameSession Start(InstalledGame game, GameAccount account, LauncherSettings settings, ProfileLease lease)
+    public async Task<GameSession> StartAsync(InstalledGame game, GameAccount account, LauncherSettings settings, ProfileLease lease, CancellationToken token = default)
     {
+        settings.Validate();
+        var collector = settings.GarbageCollection.For(game.Target);
+        var plan = await GarbageCollectorRuntime.PrepareAsync(game.Java, collector, token).ConfigureAwait(false);
+        token.ThrowIfCancellationRequested();
         log.Protect(account.AccessToken);
         var variables = new Dictionary<string, string>
         {
@@ -29,17 +34,19 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
         for (int index = 0; index < jvm.Count; index++)
         {
             if (jvm[index] is "-cp" or "-classpath") { index++; continue; }
-            if (!jvm[index].StartsWith("-Xmx") && !jvm[index].StartsWith("-Xms")) info.ArgumentList.Add(jvm[index]);
+            if (!jvm[index].StartsWith("-Xmx") && !jvm[index].StartsWith("-Xms") && !GarbageCollectorRuntime.IsSelectionArgument(jvm[index])) info.ArgumentList.Add(jvm[index]);
         }
+        foreach (string argument in plan.Arguments) info.ArgumentList.Add(argument);
         info.ArgumentList.Add("@" + LaunchClasspath.WriteArguments(game.Profile, game.Classpath));
         info.ArgumentList.Add(game.Fabric.GetProperty("mainClass").GetString()!);
         foreach (string argument in LaunchRules.Arguments(game.Version.GetProperty("arguments").GetProperty("game"), variables)) info.ArgumentList.Add(argument);
         if (game.Fabric.TryGetProperty("arguments", out var fabricArgs) && fabricArgs.TryGetProperty("game", out var extras))
             foreach (string argument in LaunchRules.Arguments(extras, variables)) info.ArgumentList.Add(argument);
+        token.ThrowIfCancellationRequested();
         var process = Process.Start(info) ?? throw new IOException("Could not start Minecraft");
         try { lease.MarkGame(process); }
         catch { if (!process.HasExited) process.Kill(true); process.Dispose(); throw; }
-        log.Info("Started Minecraft " + game.Target.Minecraft + " PID=" + process.Id + " memory=" + settings.MemoryMiB + "MiB");
+        log.Info("Started Minecraft " + game.Target.Minecraft + " PID=" + process.Id + " memory=" + settings.MemoryMiB + "MiB gc=" + collector);
         return new(process, lease, log);
     }
 }

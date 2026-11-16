@@ -15,6 +15,7 @@ using ToolLauncher.Minecraft;
 using ToolLauncher.Storage;
 using ToolLauncher.Presentation.Accounts;
 using ToolLauncher.Accounts.Profiles;
+using ToolLauncher.Minecraft.GarbageCollection;
 
 namespace ToolLauncher.Presentation;
 
@@ -48,7 +49,7 @@ public partial class MainWindow : Window
         VersionList.ItemsSource = GameTarget.All;
         VersionList.SelectedItem = GameTarget.All.SingleOrDefault(target => target.Minecraft == services.Settings.Current.SelectedVersion);
         SearchInput.TextChanged += (_, _) => SearchPlaceholder.Visibility = SearchInput.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
-        PopulateSettings(); ConnectPreferenceEvents(); initializing = false; UpdateChrome();
+        ConnectGarbageCollectionEvents(); PopulateSettings(); ConnectPreferenceEvents(); initializing = false; UpdateChrome();
         AccountImportOverlay.SettingsChanged += (_, _) => { PopulateAccountSettings(); UpdateChrome(); };
         Loaded += async (_, _) =>
         {
@@ -64,6 +65,7 @@ public partial class MainWindow : Window
     {
         var settings = services.Settings.Current;
         RefreshAppearance();
+        RefreshCollectorSelection();
         LanguageButton.Content = settings.Language.ToUpperInvariant();
         RefreshAccountChoices();
         MemoryBudgetHint.Text = string.Format(LauncherLanguage.Get("memoryBudget"), (services.Settings.Memory.TotalMiB / 1024d).ToString("0.#"), (services.Settings.Memory.MaximumMiB / 1024d).ToString("0.#"));
@@ -98,6 +100,7 @@ public partial class MainWindow : Window
         InstallBar.IsIndeterminate = true; StatusText.Text = LauncherLanguage.Get("busy"); UpdateChrome();
         try { await action(cancellation.Token); }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { StatusText.Text = LauncherLanguage.Get("cancel"); }
+        catch (GarbageCollectorException error) { services.Log.Error(name, error); Notice(GarbageCollectorInfo.Find(error.Collector).Name + ": " + LauncherLanguage.Get("gcUnavailable")); }
         catch (ManualDownloadRequired manual) { Notice(manual.Message); OpenWebsite(manual.Website); }
         catch (Exception error) { services.Log.Error(name, error); Notice(LauncherLanguage.Get("error") + ": " + error.Message); }
         finally
@@ -133,7 +136,8 @@ public partial class MainWindow : Window
                 token.ThrowIfCancellationRequested();
                 services.Presence?.Suspend(true);
                 GameSession session;
-                try { session = await profileWork.RunAsync(cancellation => { cancellation.ThrowIfCancellationRequested(); return Task.FromResult(services.Runner.Start(installed, account, settings, lease)); }, token); }
+                if (settings.GarbageCollection.For(target) != GarbageCollector.Auto) StatusText.Text = LauncherLanguage.Get("gcChecking");
+                try { session = await profileWork.RunAsync(cancellation => services.Runner.StartAsync(installed, account, settings, lease, cancellation), token); }
                 catch { services.Presence?.Suspend(false); throw; }
                 lease = null; gameRunning = true;
                 gameCompletion = ObserveGameAsync(session);

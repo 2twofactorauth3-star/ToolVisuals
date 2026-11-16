@@ -25,6 +25,7 @@ public partial class MainWindow
         MemoryMiB = (int)MemorySlider.Value,
         Java21 = Java21Input.Text.Trim(),
         Java25 = Java25Input.Text.Trim(),
+        GarbageCollection = pendingGarbageCollection,
         AutomaticJava = AutoJavaCheck.IsChecked == true,
         MicrosoftClientId = MicrosoftIdInput.Text.Trim(),
         InterfaceAnimations = AnimationsCheck.IsChecked == true,
@@ -69,6 +70,7 @@ public partial class MainWindow
             AnimationsCheck.IsChecked = settings.InterfaceAnimations;
             CompactModeCheck.IsChecked = settings.CompactInterface;
             MinimizeOnLaunchCheck.IsChecked = settings.MinimizeOnLaunch;
+            PopulateGarbageCollection();
         }
         finally { populatingSettings = false; }
         UpdatePreferencesState();

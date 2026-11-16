@@ -3,6 +3,7 @@ using ToolLauncher.Diagnostics;
 using ToolLauncher.Minecraft;
 using ToolLauncher.Core;
 using ToolLauncher.Accounts.Profiles;
+using ToolLauncher.Minecraft.GarbageCollection;
 
 namespace ToolLauncher.Storage;
 
@@ -14,6 +15,7 @@ public sealed record LauncherSettings
     public int MemoryMiB { get; init; } = 4096;
     public string Java21 { get; init; } = "";
     public string Java25 { get; init; } = "";
+    public GarbageCollectionSettings GarbageCollection { get; init; } = new();
     public bool InterfaceAnimations { get; init; } = true;
     public bool CompactInterface { get; init; }
     public bool MinimizeOnLaunch { get; init; }
@@ -31,6 +33,7 @@ public sealed record LauncherSettings
         if (SelectedVersion != null) GameTarget.Find(SelectedVersion);
         if (Language is not ("ru" or "en")) throw new InvalidDataException("Unknown language");
         if (MemoryMiB < MemoryBudget.MinimumMiB) throw new InvalidDataException("Minecraft needs at least 1024 MiB of memory");
+        (GarbageCollection ?? throw new InvalidDataException("Garbage collector settings are empty")).Validate();
         if (SavedAccounts == null || SavedAccounts.Length > AccountLibrary.MaximumAccounts) throw new InvalidDataException("At most 256 accounts can be saved");
         foreach (var account in SavedAccounts) (account ?? throw new InvalidDataException("Saved account is empty")).Validate();
         if (SavedAccounts.Select(account => account.Identity).Distinct(StringComparer.Ordinal).Count() != SavedAccounts.Length) throw new InvalidDataException("Duplicate saved accounts");
@@ -50,7 +53,7 @@ public sealed class SettingsStore
     {
         this.paths = paths; this.log = log; Memory = memory ?? MemoryBudget.Detect(); Memory.EnsureSupported(); ExistedOnStartup = File.Exists(paths.Settings);
         try { var loaded = AtomicJson.Read<LauncherSettings>(paths.Settings).Validate(); Current = loaded with { MemoryMiB = Memory.Clamp(loaded.MemoryMiB) }; }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException)
+        catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or JsonException or InvalidOperationException)
         {
             Current = new LauncherSettings { MemoryMiB = Memory.Clamp(4096) }; LoadError = error; log.Error("Read launcher settings; original file has been preserved", error);
         }

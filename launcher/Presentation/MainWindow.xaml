@@ -280,6 +280,18 @@
                     <TextBlock x:Name="MemoryBudgetHint" Style="{StaticResource Hint}" />
                     <Button Content="{DynamicResource Text.resetMemory}" Click="RecommendedMemoryClick" HorizontalAlignment="Left" Style="{StaticResource Quiet}" Padding="0,8" />
                     <Border Height="1" Background="{StaticResource Line}" Margin="0,24" />
+                    <TextBlock Text="{DynamicResource Text.gcTitle}" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,10" />
+                    <TextBlock Text="{DynamicResource Text.gcProfileHint}" Style="{StaticResource Hint}" Margin="0,0,0,14" />
+                    <Grid>
+                      <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="16" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                      <TextBlock Text="{DynamicResource Text.gcProfile}" Style="{StaticResource Caption}" />
+                      <TextBlock Grid.Column="2" Text="{DynamicResource Text.gcTitle}" Style="{StaticResource Caption}" />
+                      <ComboBox x:Name="CollectorProfilePicker" Grid.Row="1" DisplayMemberPath="Minecraft" AutomationProperties.Name="{DynamicResource Text.gcProfile}" />
+                      <ComboBox x:Name="CollectorPicker" Grid.Row="1" Grid.Column="2" AutomationProperties.Name="{DynamicResource Text.gcTitle}" />
+                    </Grid>
+                    <Button Content="{DynamicResource Text.gcDetails}" Click="CollectorDetailsClick" HorizontalAlignment="Left" Style="{StaticResource Quiet}" Padding="0,8" />
+                    <Border Height="1" Background="{StaticResource Line}" Margin="0,24" />
                     <TextBlock Text="{DynamicResource Text.afterLaunch}" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,8" />
                     <CheckBox x:Name="MinimizeOnLaunchCheck" Content="{DynamicResource Text.minimizeOnLaunch}" />
                   </StackPanel>
