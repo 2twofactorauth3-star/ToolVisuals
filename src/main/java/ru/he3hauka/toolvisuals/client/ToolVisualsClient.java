@@ -80,6 +80,7 @@ import ru.he3hauka.toolvisuals.client.replay.capture.ReplayCapture;
 import ru.he3hauka.toolvisuals.client.replay.ui.ReplayLibraryScreen;
 import ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
 import ru.he3hauka.toolvisuals.client.session.SessionStats;
+import ru.he3hauka.toolvisuals.client.chat.reply.AutoGG;
 import ru.he3hauka.toolvisuals.client.social.PairedEmoteInput;
 import ru.he3hauka.toolvisuals.client.social.SocialClient;
 import ru.he3hauka.toolvisuals.client.social.presence.ClientListClient;
@@ -233,6 +234,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(AccessoryClient::tick);
         ClientTickEvents.END_CLIENT_TICK.register(ClientActions::tick);
         ClientTickEvents.END_CLIENT_TICK.register(SessionStats::tick);
+        ClientTickEvents.END_CLIENT_TICK.register(AutoGG::tick);
         ToolPresents.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(ToolPresents::tick);
         ClientTickEvents.END_CLIENT_TICK.register(ReplayCapture::tick);

@@ -26,6 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
 import ru.he3hauka.toolvisuals.client.animation.death.DeathAscension;
+import ru.he3hauka.toolvisuals.client.chat.reply.ReplyPresets;
 import ru.he3hauka.toolvisuals.client.animation.ui.EmoteWheelScreen;
 import ru.he3hauka.toolvisuals.client.armor.ui.ArmorSettingsScreen;
 import ru.he3hauka.toolvisuals.client.auction.ui.AuctionScreen;
@@ -593,6 +594,10 @@ public class VisualsScreen extends Screen implements MovementScreen {
         g.nextStratum(); UiPaint.rounded(g, x, y, w, 28, 6, palette.hover);
         UiPaint.baseline(g, text, x + 11, UiPaint.textBaseline(g, y, 28, .8f), .8f, palette.text, opacity);
     }
+    private Component replyHint(VisualSetting setting, int preset) {
+        if (setting != VisualSetting.AUTO_WIN_PRESET && setting != VisualSetting.AUTO_LOSE_PRESET) return Component.empty();
+        return Component.literal(ReplyPresets.message(setting == VisualSetting.AUTO_WIN_PRESET, preset, "Player"));
+    }
     private void showChoice(VisualSetting setting, AbstractWidget anchor) {
         if (expandedChoice == setting) { closeChoice(); return; }
         closeChoice(); expandedChoice = setting; popupWidth = paneWidth - 4;
@@ -602,7 +607,7 @@ public class VisualsScreen extends Screen implements MovementScreen {
         for (int i = 0; i < setting.choices.length; i++) {
             int index = i;
             popup.add(addWidget(new VisualsButton(popupX + 5, popupY + 5 + i * 30, popupWidth - 10, 30,
-                    setting.formatted(i), MENU, null, Component.empty(), () -> {
+                    setting.formatted(i), MENU, null, replyHint(setting, i), () -> {
                         config.setValue(setting, index); closeChoice(); if (crosshair() || setting == VisualSetting.FREE_LOOK_MODE||setting==VisualSetting.ZOOM_RANGE_MODE||setting==VisualSetting.DROP_MODE) refreshCrosshairRows();
                     }, () -> (int)config.value(setting) == index)));
         }

@@ -86,7 +86,9 @@ public enum VisualModule {
     KEYBINDS("Keybinds",ModuleCategory.PLAYER),
     VOICE_CHAT("VoiceChat",ModuleCategory.PLAYER),
     CRYSTAL_OPTIMIZER("CrystalOptimizer",ModuleCategory.PLAYER),
-    ITEM_HIGHLIGHTS("ItemHighlights",ModuleCategory.RENDER);
+    ITEM_HIGHLIGHTS("ItemHighlights",ModuleCategory.RENDER),
+    AUTO_WIN("AutoWin", ModuleCategory.PLAYER),
+    AUTO_LOSE("AutoLose", ModuleCategory.PLAYER);
 
     public final String title;
     public final String id;

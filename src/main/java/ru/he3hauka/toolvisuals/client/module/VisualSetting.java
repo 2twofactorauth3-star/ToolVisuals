@@ -12,6 +12,8 @@ import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
 public enum VisualSetting {
+    AUTO_WIN_PRESET(AUTO_WIN, 0, "AutoGG default", "AutoGG friendly", "AutoGG short", "AutoGG confident", "AutoGG playful"),
+    AUTO_LOSE_PRESET(AUTO_LOSE, 0, "AutoGG default", "AutoGG friendly", "AutoGG short", "AutoGG confident", "AutoGG playful"),
     ITEM_HIGHLIGHT_INVENTORY(ITEM_HIGHLIGHTS, true),
     ITEM_HIGHLIGHT_HOTBAR(ITEM_HIGHLIGHTS, true),
     ITEM_HIGHLIGHT_HANDS(ITEM_HIGHLIGHTS, true),

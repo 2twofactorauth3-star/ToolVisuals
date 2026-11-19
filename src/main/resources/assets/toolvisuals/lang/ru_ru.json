@@ -1926,5 +1926,14 @@
   "toolvisuals.setting.item_highlight_slot_opacity": "Плотность заливки",
   "toolvisuals.setting.item_highlight_hand_strength": "Яркость в руках",
   "toolvisuals.setting.item_highlight_hand_radius": "Размер в руках",
-  "toolvisuals.setting.item_highlight_shimmer": "Плавный перелив"
+  "toolvisuals.setting.item_highlight_shimmer": "Плавный перелив",
+  "toolvisuals.module.auto_win": "AutoGG: сообщение после смерти игрока от вашего недавнего подтверждённого урона. Пять пресетов, защита от повторов.",
+  "toolvisuals.module.auto_lose": "AutoGG: сообщение игроку, который вас убил. Без ответов на смерть от окружения. Пять пресетов, защита от повторов.",
+  "toolvisuals.setting.auto_win_preset": "Сообщение при победе",
+  "toolvisuals.setting.auto_lose_preset": "Сообщение при поражении",
+  "toolvisuals.choice.autogg_default": "Исходный",
+  "toolvisuals.choice.autogg_friendly": "Дружелюбный",
+  "toolvisuals.choice.autogg_short": "Короткий",
+  "toolvisuals.choice.autogg_confident": "Уверенный",
+  "toolvisuals.choice.autogg_playful": "Шутливый"
 }

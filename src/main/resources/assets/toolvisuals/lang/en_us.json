@@ -1926,5 +1926,14 @@
   "toolvisuals.setting.item_highlight_slot_opacity": "Slot opacity",
   "toolvisuals.setting.item_highlight_hand_strength": "Hand brightness",
   "toolvisuals.setting.item_highlight_hand_radius": "Hand glow size",
-  "toolvisuals.setting.item_highlight_shimmer": "Subtle shimmer"
+  "toolvisuals.setting.item_highlight_shimmer": "Subtle shimmer",
+  "toolvisuals.module.auto_win": "AutoGG: chat after a player dies following your recent confirmed damage. Five presets and duplicate protection.",
+  "toolvisuals.module.auto_lose": "AutoGG: reply to the player who killed you. Environmental deaths are ignored. Five presets and duplicate protection.",
+  "toolvisuals.setting.auto_win_preset": "Win message",
+  "toolvisuals.setting.auto_lose_preset": "Loss message",
+  "toolvisuals.choice.autogg_default": "Default",
+  "toolvisuals.choice.autogg_friendly": "Friendly",
+  "toolvisuals.choice.autogg_short": "Short",
+  "toolvisuals.choice.autogg_confident": "Confident",
+  "toolvisuals.choice.autogg_playful": "Playful"
 }
