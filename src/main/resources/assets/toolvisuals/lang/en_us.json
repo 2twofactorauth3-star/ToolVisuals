@@ -1943,5 +1943,7 @@
   "toolvisuals.choice.winter": "Winter",
   "toolvisuals.choice.summer": "Summer",
   "toolvisuals.choice.spring": "Spring",
-  "toolvisuals.choice.autumn": "Autumn"
+  "toolvisuals.choice.autumn": "Autumn",
+  "toolvisuals.setting.ambience_density": "Particle density",
+  "toolvisuals.setting.opt_network": "Krypton network optimizations"
 }

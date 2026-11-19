@@ -1943,5 +1943,7 @@
   "toolvisuals.choice.winter": "Зима",
   "toolvisuals.choice.summer": "Лето",
   "toolvisuals.choice.spring": "Весна",
-  "toolvisuals.choice.autumn": "Осень"
+  "toolvisuals.choice.autumn": "Осень",
+  "toolvisuals.setting.ambience_density": "Плотность частиц",
+  "toolvisuals.setting.opt_network": "Сетевые оптимизации Krypton"
 }

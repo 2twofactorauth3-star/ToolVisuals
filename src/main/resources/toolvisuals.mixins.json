@@ -154,7 +154,12 @@
     "potion.PotionLayerMixin",
     "optimization.StartupGraphicsMixin",
     "world.BiomeAmbienceMixin",
-    "world.AmbienceFogMixin"
+    "world.AmbienceFogMixin",
+    "optimization.network.VarIntMixin",
+    "optimization.network.Utf8StringMixin",
+    "optimization.network.FrameDecoderMixin",
+    "optimization.network.FrameEncoderMixin",
+    "optimization.network.CompressionEncoderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

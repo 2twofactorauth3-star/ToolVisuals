@@ -38,42 +38,43 @@ public final class Ambience {
             palette=next;
             if(sameWorld&&level!=null){level.clearTintCaches();client.levelExtractor.allChanged();}
         }
-        if(!enabled||client.isPaused()||!config.flag(VisualSetting.AMBIENCE_PARTICLES)||NoRender.hides(RenderOption.ALL_PARTICLES)||++ticks%4!=0)return;
+        if(!enabled||client.isPaused()||!config.flag(VisualSetting.AMBIENCE_PARTICLES)||NoRender.hides(RenderOption.ALL_PARTICLES)||++ticks%2!=0)return;
         var random=level.getRandom();var player=client.player;
         int radius=Math.min(12,Math.max(4,client.options.getEffectiveRenderDistance()*2));
-        for(int attempt=0;attempt<2;attempt++) {
+        float density=config.number(VisualSetting.AMBIENCE_DENSITY)*Season.intensity(next.strength);
+        int limit=next.season==Season.WINTER?2:1,spawned=0;
+        if(next.season==Season.SUMMER&&ticks%6!=0)return;
+        for(int attempt=0;attempt<4&&spawned<limit;attempt++) {
             double x=player.getX()+(random.nextDouble()*2-1)*radius,z=player.getZ()+(random.nextDouble()*2-1)*radius,y=player.getY()+2+random.nextDouble()*5;
             BlockPos pos=BlockPos.containing(x,y,z);
             if(!level.hasChunkAt(pos)||!level.canSeeSky(pos)||!level.getBlockState(pos).isAir())continue;
-            if(random.nextFloat()>next.strength)continue;
+            if(random.nextFloat()>=density)continue;
             var particle=switch(next.season){case WINTER->ParticleTypes.SNOWFLAKE;case SPRING->ParticleTypes.CHERRY_LEAVES;case AUTUMN->ParticleTypes.PALE_OAK_LEAVES;case SUMMER->ParticleTypes.SPORE_BLOSSOM_AIR;};
             level.addParticle(particle,x,y,z,.015,-.015,.008);
-            break;
+            spawned++;
         }
     }
     public static int vegetation(int color,boolean leaves) {
         Palette current=palette;
-        return current==null?color:Season.blend(color,leaves?current.season.leaves:current.season.grass,current.strength*(leaves?.82f:.58f));
+        return current==null?color:Season.blend(color,leaves?current.season.leaves:current.season.grass,Season.intensity(current.strength)*(leaves?1:.88f));
     }
     public static int sky(int color) {
         Palette current=palette;
         if(current==null)return color;
-        float daylight=Math.min(1,Math.max(color>>16&255,Math.max(color>>8&255,color&255))/180f);
-        return Season.blend(color,current.season.sky,current.strength*.24f*daylight*daylight);
+        float peak=Math.max(color>>16&255,Math.max(color>>8&255,color&255))/255f;
+        return Season.blend(color,current.season.sky,Season.atmosphere(current.strength,peak,.58f));
     }
     public static Vector3fc sky(Vector3fc color) {
         Palette current=palette;
         if(current==null)return color;
-        float daylight=Math.min(1,Math.max(color.x(),Math.max(color.y(),color.z()))*255/180);
-        float amount=current.strength*.24f*daylight*daylight;
+        float amount=Season.atmosphere(current.strength,Math.max(color.x(),Math.max(color.y(),color.z())),.58f);
         int tint=current.season.sky;
         return new Vector3f(color.x()+((tint>>16&255)/255f-color.x())*amount,color.y()+((tint>>8&255)/255f-color.y())*amount,color.z()+((tint&255)/255f-color.z())*amount);
     }
     public static void fog(Vector4f color) {
         Palette current=palette;
         if(current==null)return;
-        float daylight=Math.min(1,Math.max(color.x,Math.max(color.y,color.z))*255/180);
-        float amount=current.strength*.18f*daylight*daylight;
+        float amount=Season.atmosphere(current.strength,Math.max(color.x,Math.max(color.y,color.z)),.44f);
         int tint=current.season.fog;
         color.x+=((tint>>16&255)/255f-color.x)*amount;
         color.y+=((tint>>8&255)/255f-color.y)*amount;

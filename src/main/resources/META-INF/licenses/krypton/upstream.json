@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/astei/krypton",
+  "revision": "bc08466ff900d97b27bfabcde92005b4774717e8",
+  "archive_sha256": "15c30d1d00797d5f90a09bdf6d32d4c43b9ac473cd8d1c80f7c0b946e2af3c76",
+  "files": {
+    "src/main/java/me/steinborn/krypton/mixin/shared/network/microopt/VarIntMixin.java": "0a47b36ed6069397f3c52eed4aa0f01d40471bab71e789d244c433ebebcd0edd",
+    "src/main/java/me/steinborn/krypton/mixin/shared/network/microopt/Utf8StringMixin.java": "b9da10309954fa9e95e5281ad75762a3e06d812156d1ca833fe27516749220d6",
+    "src/main/java/me/steinborn/krypton/mixin/shared/network/pipeline/Varint21FrameDecoderMixin.java": "64df380d95e204caa3917792be87d6e813d9bed22955841fb54f66a11e90f188",
+    "src/main/java/me/steinborn/krypton/mod/shared/network/pipeline/MinecraftVarintPrepender.java": "ae7f76d36cc8f22f5670f368828e903683cdf76c827db11a88ace29dac4808a0",
+    "src/main/java/me/steinborn/krypton/mod/shared/network/util/VarIntUtil.java": "12751397d66fcb1dd50a869e3dac9b04b034ed198291740777263321f1f1e691"
+  }
+}

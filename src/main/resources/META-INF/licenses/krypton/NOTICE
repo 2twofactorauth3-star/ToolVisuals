@@ -1,0 +1,10 @@
+Krypton network adaptations in ToolVisuals
+Upstream: https://github.com/astei/krypton
+Pinned revision: bc08466ff900d97b27bfabcde92005b4774717e8
+Copyright Andrew Steinborn (tuxed) and Krypton contributors.
+License: LGPL-3.0; see LICENSE and the distributed COPYING.
+Derived algorithms: VarInt size/writing, UTF-8 encoding, 21-bit frame length decoding and retained-buffer frame prepending.
+ToolVisuals modifications: scoped opt-out and external-Krypton detection, native Minecraft adapters, strict fragmented frame validation, bounded framing, and JDK ByteBuffer-based outbound compression without packet-sized heap arrays.
+The upstream Velocity Native compression/encryption backend, server entity tracker and leak-detector changes are not included. Existing vanilla decompression and cryptography remain in place; pipeline names/order and local connections are preserved.
+Corresponding source: https://github.com/2twofactorauth3-star/ToolVisuals
+Krypton credits prior work from Velocity and Paper. The frame bit-packing adaptation retains references to Netty PR 14050 and Hacker's Delight, section 2-1, as documented in the pinned upstream Varint21FrameDecoderMixin.java. Sources: https://github.com/netty/netty/pull/14050 and https://velocitypowered.com/ and https://papermc.io/.
