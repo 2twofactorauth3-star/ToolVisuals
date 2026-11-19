@@ -24,6 +24,7 @@ import ru.he3hauka.toolvisuals.client.render.blockoverlay.BlockOverlay;
 import ru.he3hauka.toolvisuals.client.render.filter.NoFluid;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
 import ru.he3hauka.toolvisuals.client.world.VisualWorld;
+import ru.he3hauka.toolvisuals.client.world.ambience.Ambience;
 
 import static ru.he3hauka.toolvisuals.client.render.filter.RenderOption.*;
 
@@ -69,6 +70,7 @@ public abstract class LevelExtractorMixin {
                 sky.rainBrightness = 1;
             }
         }
+        state.skyRenderState.skyColor=Ambience.sky(state.skyRenderState.skyColor);
         if (NoRender.hides(RAIN)) state.weatherRenderState.rainColumns.clear();
         if (NoRender.hides(SNOW)) state.weatherRenderState.snowColumns.clear();
         if (NoRender.hides(CLOUDS)) state.cloudColor = 0;

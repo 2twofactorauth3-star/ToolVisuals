@@ -56,6 +56,7 @@ public final class ModuleSearch {
     }
     private static String aliases(VisualModule module) {
         return switch(module) {
+            case AMBIENCE -> "ambience atmosphere seasons winter summer spring autumn атмосфера сезоны зима лето весна осень";
             case AUTO_WIN,AUTO_LOSE -> "AutoGG auto gg autowin autolose авто гг автогг автолуз автовин победа поражение сообщение чат";
             case ITEM_HIGHLIGHTS -> "подсветка предметы ресурсы инвентарь хотбар руки свечение редкость золото item highlights glow rarity inventory hotbar hands resources";
             case GPS -> "gps гпс навигация метки координаты маршрут navigation coordinates markers target";

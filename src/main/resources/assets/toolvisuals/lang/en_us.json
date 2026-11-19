@@ -1935,5 +1935,13 @@
   "toolvisuals.choice.autogg_friendly": "Friendly",
   "toolvisuals.choice.autogg_short": "Short",
   "toolvisuals.choice.autogg_confident": "Confident",
-  "toolvisuals.choice.autogg_playful": "Playful"
+  "toolvisuals.choice.autogg_playful": "Playful",
+  "toolvisuals.module.ambience": "Seasonal atmosphere: natural sky and vegetation palettes, sparse outdoor particles. Client visuals only; server blocks and time stay unchanged.",
+  "toolvisuals.setting.ambience_season": "Season",
+  "toolvisuals.setting.ambience_strength": "Intensity",
+  "toolvisuals.setting.ambience_particles": "Seasonal particles",
+  "toolvisuals.choice.winter": "Winter",
+  "toolvisuals.choice.summer": "Summer",
+  "toolvisuals.choice.spring": "Spring",
+  "toolvisuals.choice.autumn": "Autumn"
 }

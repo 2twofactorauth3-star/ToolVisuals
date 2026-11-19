@@ -1935,5 +1935,13 @@
   "toolvisuals.choice.autogg_friendly": "Дружелюбный",
   "toolvisuals.choice.autogg_short": "Короткий",
   "toolvisuals.choice.autogg_confident": "Уверенный",
-  "toolvisuals.choice.autogg_playful": "Шутливый"
+  "toolvisuals.choice.autogg_playful": "Шутливый",
+  "toolvisuals.module.ambience": "Сезонная атмосфера: естественные оттенки неба и растительности, редкие частицы под открытым небом. Только визуально; блоки и время сервера не меняются.",
+  "toolvisuals.setting.ambience_season": "Время года",
+  "toolvisuals.setting.ambience_strength": "Интенсивность",
+  "toolvisuals.setting.ambience_particles": "Сезонные частицы",
+  "toolvisuals.choice.winter": "Зима",
+  "toolvisuals.choice.summer": "Лето",
+  "toolvisuals.choice.spring": "Весна",
+  "toolvisuals.choice.autumn": "Осень"
 }

@@ -88,7 +88,8 @@ public enum VisualModule {
     CRYSTAL_OPTIMIZER("CrystalOptimizer",ModuleCategory.PLAYER),
     ITEM_HIGHLIGHTS("ItemHighlights",ModuleCategory.RENDER),
     AUTO_WIN("AutoWin", ModuleCategory.PLAYER),
-    AUTO_LOSE("AutoLose", ModuleCategory.PLAYER);
+    AUTO_LOSE("AutoLose", ModuleCategory.PLAYER),
+    AMBIENCE("Ambience", ModuleCategory.WORLD);
 
     public final String title;
     public final String id;

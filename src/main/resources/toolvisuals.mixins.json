@@ -152,7 +152,9 @@
     "potion.PotionStateMixin",
     "potion.PotionModelMixin",
     "potion.PotionLayerMixin",
-    "optimization.StartupGraphicsMixin"
+    "optimization.StartupGraphicsMixin",
+    "world.BiomeAmbienceMixin",
+    "world.AmbienceFogMixin"
   ],
   "injectors": {
     "defaultRequire": 1

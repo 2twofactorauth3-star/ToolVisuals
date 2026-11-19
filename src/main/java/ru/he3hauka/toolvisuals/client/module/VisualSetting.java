@@ -12,6 +12,9 @@ import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
 public enum VisualSetting {
+    AMBIENCE_SEASON(AMBIENCE, 0, "Winter", "Summer", "Spring", "Autumn"),
+    AMBIENCE_STRENGTH(AMBIENCE, 0, 1, .05, .7),
+    AMBIENCE_PARTICLES(AMBIENCE, true),
     AUTO_WIN_PRESET(AUTO_WIN, 0, "AutoGG default", "AutoGG friendly", "AutoGG short", "AutoGG confident", "AutoGG playful"),
     AUTO_LOSE_PRESET(AUTO_LOSE, 0, "AutoGG default", "AutoGG friendly", "AutoGG short", "AutoGG confident", "AutoGG playful"),
     ITEM_HIGHLIGHT_INVENTORY(ITEM_HIGHLIGHTS, true),
