@@ -3,7 +3,7 @@ package ru.he3hauka.toolvisuals.client.auction;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.random.RandomGenerator;
+import java.util.Random;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.replay.playback.ReplayScope;
 
 public final class AuctionHelper {
-    private static final AuctionRunner RUNNER = new AuctionRunner(new MinecraftEnvironment(),RandomGenerator.getDefault());
+    private static final AuctionRunner RUNNER = new AuctionRunner(new MinecraftEnvironment(),new Random());
     private static AuctionRecording recording;
     private static Object recordConnection;
     private static boolean internal;

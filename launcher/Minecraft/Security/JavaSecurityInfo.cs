@@ -25,10 +25,13 @@ public sealed record JavaSecurityInfo(string Version, string Vendor, int Major, 
             17 => new(17, 0, 21, 1), 21 => new(21, 0, 13, 1),
             25 => new(25, 0, 5, 1), 27 => new(27, 0, 1, 1), _ => null
         };
+        bool microsoft = vendor.Equals("Microsoft", StringComparison.OrdinalIgnoreCase)
+            || vendor.Equals("Microsoft Corporation", StringComparison.OrdinalIgnoreCase);
+        bool temurin = vendor.Contains("Eclipse Adoptium", StringComparison.OrdinalIgnoreCase);
         bool knownVendor = vendor.Contains("Oracle", StringComparison.OrdinalIgnoreCase)
-            || vendor.Contains("Eclipse Adoptium", StringComparison.OrdinalIgnoreCase);
+            || temurin || (microsoft && actual.Major is 17 or 21 or 25);
         bool patched = knownVendor && minimum != null && actual >= minimum;
-        if (patched && vendor.Contains("Eclipse Adoptium", StringComparison.OrdinalIgnoreCase) && actual == minimum)
+        if (patched && (temurin || microsoft) && actual == minimum)
         {
             var build = Regex.Match(version, @"\+(\d+)");
             patched = build.Success && int.TryParse(build.Groups[1].Value, out int number) && number >= (actual.Major == 27 ? 4 : 2);

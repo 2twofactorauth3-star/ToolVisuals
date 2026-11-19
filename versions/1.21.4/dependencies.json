@@ -82,12 +82,12 @@
   {
     "minecraft": "1.21.4",
     "project": "simple-voice-chat",
-    "id": "8kxVjTds",
-    "version": "fabric-1.21.4-2.6.22",
-    "file": "voicechat-fabric-1.21.4-2.6.22.jar",
-    "bytes": 5376736,
-    "sha512": "15d6e620297f662c5719202e620eff22b86492196069fe05ccb1ce6f0ec8a1ab618035082271e4e1aef367b189b8a10b1a247188a1ca5a8bb89c588d7b6213a6",
-    "url": "https://cdn.modrinth.com/data/9eGKb6K1/versions/8kxVjTds/voicechat-fabric-1.21.4-2.6.22.jar"
+    "id": "d6MsGgjW",
+    "version": "fabric-1.21.4-2.6.27",
+    "file": "voicechat-fabric-1.21.4-2.6.27.jar",
+    "bytes": 5396254,
+    "sha512": "5ebbe27c1e39cb975afb6bd7cb370a35a28de310a9b015944a5c48ddd530edf992509460898a579115a62fb342645072789007748bc5c9862b69f8b84c463580",
+    "url": "https://cdn.modrinth.com/data/9eGKb6K1/versions/d6MsGgjW/voicechat-fabric-1.21.4-2.6.27.jar"
   },
   {
     "minecraft": "1.21.4",
