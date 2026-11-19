@@ -12,5 +12,5 @@ import ru.he3hauka.toolvisuals.client.optimization.network.PacketFrameEncoder;
 @Mixin(Connection.class)
 public abstract class FrameEncoderMixin {
     @Inject(method="createFrameEncoder",at=@At("RETURN"),cancellable=true)
-    private static void toolvisuals$encoder(boolean local,CallbackInfoReturnable<ChannelOutboundHandler> callback){if(!local&&NetworkOptimizations.enabled())callback.setReturnValue(PacketFrameEncoder.INSTANCE);}
+    private static void toolvisuals$encoder(boolean local,CallbackInfoReturnable<ChannelOutboundHandler> callback){if(!local&&!NetworkOptimizations.external())callback.setReturnValue(PacketFrameEncoder.INSTANCE);}
 }

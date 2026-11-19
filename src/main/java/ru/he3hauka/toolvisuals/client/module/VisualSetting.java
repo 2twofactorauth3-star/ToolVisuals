@@ -12,6 +12,11 @@ import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
 public enum VisualSetting {
+    KRYPTON_STATISTICS(KRYPTON_OPTIMIZATION, false),
+    KRYPTON_X(KRYPTON_OPTIMIZATION, 0, 100, 1, 2),
+    KRYPTON_Y(KRYPTON_OPTIMIZATION, 0, 100, 1, 45),
+    KRYPTON_SCALE(KRYPTON_OPTIMIZATION, .7, 1.5, .05, 1),
+    KRYPTON_WHEEL_RESIZE(KRYPTON_OPTIMIZATION, true),
     AMBIENCE_SEASON(AMBIENCE, 0, "Winter", "Summer", "Spring", "Autumn"),
     AMBIENCE_STRENGTH(AMBIENCE, 0, 1, .05, .7),
     AMBIENCE_PARTICLES(AMBIENCE, true),
@@ -254,7 +259,6 @@ public enum VisualSetting {
     OPT_HIDDEN_FACES(OPTIMIZATION, true),
     OPT_STATIC_BLOCK_ENTITIES(OPTIMIZATION, true),
     OPT_CHUNK_BUDGET(OPTIMIZATION, true),
-    OPT_NETWORK(OPTIMIZATION, true),
     OPT_HIDE_PRECIPITATION(OPTIMIZATION, true),
     OPT_HIDE_EXPLOSIONS(OPTIMIZATION, true),
     OPT_HIDE_SMOKE(OPTIMIZATION, true),

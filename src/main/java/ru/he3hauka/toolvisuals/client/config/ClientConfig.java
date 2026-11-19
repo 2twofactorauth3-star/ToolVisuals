@@ -468,6 +468,7 @@ public final class ClientConfig {
         saved.chatSize=chatSize;
         saved.hidden = new LinkedHashSet<>(); saved.modules = new LinkedHashSet<>(); saved.moduleDefaultsVersion = ConfigMigrations.VERSION;
         saved.customHandVersion=ConfigMigrations.CUSTOM_HAND_VERSION;
+        saved.kryptonModuleMigrated=true;
         for (VisualModule module : modules) saved.modules.add(module.id);
         saved.values = new LinkedHashMap<>(); saved.hudPositions = new LinkedHashMap<>();
         saved.hudScales=new LinkedHashMap<>();hudScales.forEach((element,scale)->saved.hudScales.put(element.id,scale));

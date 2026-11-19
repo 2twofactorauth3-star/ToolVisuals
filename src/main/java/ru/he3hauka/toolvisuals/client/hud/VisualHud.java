@@ -26,6 +26,7 @@ import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.music.ui.MusicHud;
 import ru.he3hauka.toolvisuals.client.nameprotect.NameProtect;
 import ru.he3hauka.toolvisuals.client.optimization.Optimizations;
+import ru.he3hauka.toolvisuals.client.optimization.network.ui.KryptonHud;
 import ru.he3hauka.toolvisuals.client.potion.ui.BuffTrackerHud;
 import ru.he3hauka.toolvisuals.client.presents.ui.PresentsHud;
 import ru.he3hauka.toolvisuals.client.render.filter.NoRender;
@@ -64,6 +65,7 @@ public final class VisualHud {
         if (HudPlacement.show(FRIENDS_LIST)) FriendsListHud.draw(graphics,palette);
         if (HudPlacement.show(CLIENT_LIST)) ClientListHud.draw(graphics,palette);
         if (HudPlacement.show(SESSION_STATS)) SessionStatsHud.draw(graphics,palette);
+        if (HudPlacement.show(KRYPTON_OPTIMIZATION)) KryptonHud.draw(graphics,palette);
         if (HudPlacement.show(MUSIC_HUD)) MusicHud.draw(graphics,palette);
         if (HudPlacement.show(INVENTORY_HUD)) InventoryHud.draw(graphics, palette);
         if (HudPlacement.show(INFO_HUD)) {

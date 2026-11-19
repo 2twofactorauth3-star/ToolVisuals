@@ -10,7 +10,7 @@ import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 public final class HudDragging {
     private static final HudElement[] PICK_ORDER={HudElement.ARMOR,HudElement.ARMOR_2,HudElement.ARMOR_3,HudElement.ARMOR_4,HudElement.MODULES,
             HudElement.INFO_BRAND,HudElement.INFO_PING,HudElement.INFO_FPS,HudElement.INFO_BPS,HudElement.INFO_CLOCK,HudElement.INFO_COORDINATES,
-            HudElement.MUSIC,HudElement.INFO,HudElement.INVENTORY,HudElement.POTIONS,HudElement.BUFFS,HudElement.COOLDOWNS,HudElement.FRIENDS,HudElement.CLIENTS,HudElement.SESSION,HudElement.KEYS,HudElement.HIT_HEALTH,HudElement.TARGET,HudElement.BOSSES,HudElement.PRESENTS};
+            HudElement.MUSIC,HudElement.INFO,HudElement.INVENTORY,HudElement.POTIONS,HudElement.BUFFS,HudElement.COOLDOWNS,HudElement.FRIENDS,HudElement.CLIENTS,HudElement.SESSION,HudElement.KEYS,HudElement.HIT_HEALTH,HudElement.TARGET,HudElement.BOSSES,HudElement.PRESENTS,HudElement.KRYPTON};
     private final Map<HudElement,HudPosition> pending=new EnumMap<>(HudElement.class);
     private HudElement selected;
     private HudPlacement.Bounds box;
@@ -19,6 +19,7 @@ public final class HudDragging {
         for(var element:PICK_ORDER){var box=bounds.get(element);if(box!=null&&eligible.test(element)&&box.contains(x,y))return element;}return null;
     }
     public static boolean enabled(HudElement element,ClientConfig config){
+        if(element==HudElement.KRYPTON&&!config.flag(VisualSetting.KRYPTON_STATISTICS))return false;
         if(!config.available(ClientFeature.HUD_EDITOR))return false;
         if(!config.active(element.module))return false;
         var part=InfoHudPart.forElement(element);

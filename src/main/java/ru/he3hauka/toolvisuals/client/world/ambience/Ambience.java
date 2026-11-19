@@ -3,8 +3,9 @@ package ru.he3hauka.toolvisuals.client.world.ambience;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ParticleStatus;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector4f;
@@ -38,20 +39,25 @@ public final class Ambience {
             palette=next;
             if(sameWorld&&level!=null){level.clearTintCaches();client.levelExtractor.allChanged();}
         }
-        if(!enabled||client.isPaused()||!config.flag(VisualSetting.AMBIENCE_PARTICLES)||NoRender.hides(RenderOption.ALL_PARTICLES)||++ticks%2!=0)return;
+        boolean particlesEnabled=enabled&&config.flag(VisualSetting.AMBIENCE_PARTICLES)&&strength>0&&config.number(VisualSetting.AMBIENCE_DENSITY)>0
+                &&!NoRender.hides(RenderOption.ALL_PARTICLES)&&client.options.particles().get()!=ParticleStatus.MINIMAL;
+        SeasonParticles.tick(client.level,season,client.level==null?0:client.level.getGameTime(),particlesEnabled);
+        if(!particlesEnabled||client.isPaused()||++ticks%2!=0||SeasonParticles.full())return;
+        var camera=client.getCameraEntity();
         var random=level.getRandom();var player=client.player;
         int radius=Math.min(12,Math.max(4,client.options.getEffectiveRenderDistance()*2));
         float density=config.number(VisualSetting.AMBIENCE_DENSITY)*Season.intensity(next.strength);
+        if(client.options.particles().get()==ParticleStatus.DECREASED)density*=.5f;
         int limit=next.season==Season.WINTER?2:1,spawned=0;
         if(next.season==Season.SUMMER&&ticks%6!=0)return;
-        for(int attempt=0;attempt<4&&spawned<limit;attempt++) {
+        for(int attempt=0;attempt<4&&spawned<limit&&!SeasonParticles.full();attempt++) {
             double x=player.getX()+(random.nextDouble()*2-1)*radius,z=player.getZ()+(random.nextDouble()*2-1)*radius,y=player.getY()+2+random.nextDouble()*5;
             BlockPos pos=BlockPos.containing(x,y,z);
+            if(camera!=null){double dx=x-camera.getX(),dy=y-camera.getEyeY(),dz=z-camera.getZ();if(dx*dx+dy*dy+dz*dz<16)continue;}
             if(!level.hasChunkAt(pos)||!level.canSeeSky(pos)||!level.getBlockState(pos).isAir())continue;
             if(random.nextFloat()>=density)continue;
-            var particle=switch(next.season){case WINTER->ParticleTypes.SNOWFLAKE;case SPRING->ParticleTypes.CHERRY_LEAVES;case AUTUMN->ParticleTypes.PALE_OAK_LEAVES;case SUMMER->ParticleTypes.SPORE_BLOSSOM_AIR;};
-            level.addParticle(particle,x,y,z,.015,-.015,.008);
-            spawned++;
+            SeasonParticles.spawn(new Vec3(x,y,z),level.getGameTime(),random.nextFloat());spawned++;
+
         }
     }
     public static int vegetation(int color,boolean leaves) {

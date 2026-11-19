@@ -20,6 +20,7 @@ final class ConfigSnapshot {
     public Set<String> modules;
     public int moduleDefaultsVersion;
     public int customHandVersion;
+    public boolean kryptonModuleMigrated;
     public Map<String, Double> values;
     public Map<String, HudPosition> hudPositions;
     public Map<String, Double> hudScales;

@@ -1945,5 +1945,19 @@
   "toolvisuals.choice.spring": "Spring",
   "toolvisuals.choice.autumn": "Autumn",
   "toolvisuals.setting.ambience_density": "Particle density",
-  "toolvisuals.setting.opt_network": "Krypton network optimizations"
+  "toolvisuals.module.krypton_optimization": "Krypton networking: efficient packet processing with fewer copies. The optional panel compares the same data with vanilla Minecraft; it does not promise lower bandwidth or ping.",
+  "toolvisuals.setting.krypton_statistics": "Show statistics and chart",
+  "toolvisuals.setting.krypton_x": "Horizontal position",
+  "toolvisuals.setting.krypton_y": "Vertical position",
+  "toolvisuals.setting.krypton_scale": "Statistics scale",
+  "toolvisuals.setting.krypton_wheel_resize": "Resize with mouse wheel",
+  "toolvisuals.krypton.sent": "Sent with Krypton",
+  "toolvisuals.krypton.vanilla": "Without Krypton (estimated)",
+  "toolvisuals.krypton.saving": "Traffic saved",
+  "toolvisuals.krypton.copies": "Frame copies avoided",
+  "toolvisuals.krypton.frames": "Frames sent",
+  "toolvisuals.krypton.scope": "Since measurement began · excludes TCP/IP",
+  "toolvisuals.krypton.waiting": "Waiting for a server connection",
+  "toolvisuals.krypton.external": "Managed by external Krypton",
+  "toolvisuals.hud.element.krypton": "Krypton statistics"
 }

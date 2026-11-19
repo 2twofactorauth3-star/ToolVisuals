@@ -11,29 +11,35 @@ import ru.he3hauka.toolvisuals.client.animation.EffectTime;
 import ru.he3hauka.toolvisuals.client.effects.*;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor;
+import ru.he3hauka.toolvisuals.client.world.ambience.SeasonParticles;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
 public final class EffectRenderer {
-    private static volatile EffectGeometry.Frame frame;
+    private record RenderFrame(EffectGeometry.Frame effects,SeasonParticles.Snapshot seasons) {}
+    private static volatile RenderFrame frame;
     private EffectRenderer() {}
     public static void clear(){frame=null;}
     public static void extract(LevelRenderState state,EffectTimeline timeline){
         var client=Minecraft.getInstance();
         var effects=timeline.snapshot(client.player.getPosition(state.worldPartialTicks),EffectTime.at(state.gameTime-1,state.worldPartialTicks));
-        if(effects.empty()){frame=null;return;}
+        var seasons=SeasonParticles.snapshot();
+        if(effects.empty()&&seasons.sprites().length==0){frame=null;return;}
         var config=ToolVisualsClient.CONFIG;
         Vec3 right=new Vec3(new Vector3f(1,0,0).rotate(state.cameraRenderState.orientation));
         Vec3 up=new Vec3(new Vector3f(0,1,0).rotate(state.cameraRenderState.orientation));
-        frame=new EffectGeometry.Frame(effects,EffectTime.at(state.gameTime,state.worldPartialTicks),state.cameraRenderState.pos,right,up,
+        frame=new RenderFrame(new EffectGeometry.Frame(effects,EffectTime.at(state.gameTime,state.worldPartialTicks),state.cameraRenderState.pos,right,up,
                 config.color(CIRCLE_COLOR),config.color(TRAIL_COLOR),config.color(AMBIENT_COLOR),config.color(HIT_PARTICLE_COLOR),
-                config.number(CIRCLE_WIDTH),config.number(CIRCLE_GLOW),config.number(TRAIL_SIZE),(int)config.value(TRAIL_DURATION),Math.max(EffectBudget.quality(),FrameMonitor.detail()));
+                config.number(CIRCLE_WIDTH),config.number(CIRCLE_GLOW),config.number(TRAIL_SIZE),(int)config.value(TRAIL_DURATION),Math.max(EffectBudget.quality(),FrameMonitor.detail())),seasons);
     }
     public static void submit(SubmitNodeCollector collector){
         var current=frame;if(current==null)return;
         collector.submitCustomGeometry(new PoseStack(),EffectPipeline.TYPE,(matrix,vertices)->{
             long started=Diagnostics.start(Diagnostics.Section.WORLD_SUBMIT);
-            try{EffectGeometry.emit(current,(x,y,z,color)->vertices.addVertex(matrix,x,y,z).setColor(color));}
+            try{
+                EffectGeometry.VertexSink sink=(x,y,z,color)->vertices.addVertex(matrix,x,y,z).setColor(color);
+                EffectGeometry.emit(current.effects,sink);EffectGeometry.emitSeason(current.effects,current.seasons.sprites(),current.seasons.color(),sink);
+            }
             finally{Diagnostics.end(Diagnostics.Section.WORLD_SUBMIT,started);}
         });
     }

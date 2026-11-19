@@ -1945,5 +1945,19 @@
   "toolvisuals.choice.spring": "Весна",
   "toolvisuals.choice.autumn": "Осень",
   "toolvisuals.setting.ambience_density": "Плотность частиц",
-  "toolvisuals.setting.opt_network": "Сетевые оптимизации Krypton"
+  "toolvisuals.module.krypton_optimization": "Сетевые оптимизации Krypton: эффективная обработка пакетов и меньше копирований. Панель сравнивает объём тех же данных с обычным Minecraft; это не обещание уменьшения трафика или пинга.",
+  "toolvisuals.setting.krypton_statistics": "Показывать статистику и диаграмму",
+  "toolvisuals.setting.krypton_x": "Положение по горизонтали",
+  "toolvisuals.setting.krypton_y": "Положение по вертикали",
+  "toolvisuals.setting.krypton_scale": "Масштаб статистики",
+  "toolvisuals.setting.krypton_wheel_resize": "Масштаб колёсиком",
+  "toolvisuals.krypton.sent": "Отправлено с Krypton",
+  "toolvisuals.krypton.vanilla": "Без Krypton (расчёт)",
+  "toolvisuals.krypton.saving": "Экономия трафика",
+  "toolvisuals.krypton.copies": "Предотвращено копирований кадров",
+  "toolvisuals.krypton.frames": "Отправлено кадров",
+  "toolvisuals.krypton.scope": "С начала измерения · без TCP/IP",
+  "toolvisuals.krypton.waiting": "Ожидание подключения к серверу",
+  "toolvisuals.krypton.external": "Управляется внешним модом Krypton",
+  "toolvisuals.hud.element.krypton": "Статистика Krypton"
 }

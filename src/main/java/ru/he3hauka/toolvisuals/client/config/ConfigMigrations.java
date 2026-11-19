@@ -18,6 +18,7 @@ final class ConfigMigrations {
     static EnumSet<VisualModule> defaultModules() {
         var modules=EnumSet.copyOf(DEFAULTS);
         modules.removeAll(List.of(VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.BETTER_HUD,VisualModule.BLOCK_HIGHLIGHT,VisualModule.APPLE_SKIN,VisualModule.ITEM_HIGHLIGHTS));
+        modules.add(VisualModule.KRYPTON_OPTIMIZATION);
         return modules;
     }
     static void apply(ConfigSnapshot saved){
@@ -47,6 +48,11 @@ final class ConfigMigrations {
         var modules=new LinkedHashSet<String>();if(saved.modules!=null)modules.addAll(saved.modules);
         var enabledDefaults=defaultModules();
         for(int index=0;index<DEFAULTS.size();index++)if(saved.moduleDefaultsVersion<index+1&&enabledDefaults.contains(DEFAULTS.get(index)))modules.add(DEFAULTS.get(index).id);
+        if(!saved.kryptonModuleMigrated){
+            Double legacy=saved.values==null?null:saved.values.remove("opt_network");
+            if(modules.contains(VisualModule.OPTIMIZATION.id)&&(legacy==null||Double.isFinite(legacy)&&legacy>.5))modules.add(VisualModule.KRYPTON_OPTIMIZATION.id);
+            saved.kryptonModuleMigrated=true;
+        }
         saved.modules=modules;
         if(saved.moduleDefaultsVersion<3&&saved.values!=null){
             saved.values.remove(VisualSetting.CHUNK_ANIMATION_UPDATES.id);

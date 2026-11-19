@@ -13,6 +13,9 @@ public final class EffectGeometry {
         for(var sprite:frame.effects.ambient())sprite(frame,sprite,frame.ambientColor,sink);
         for(var sprite:frame.effects.hits())sprite(frame,sprite,frame.hitColor,sink);
     }
+    public static void emitSeason(Frame frame,EffectTimeline.Sprite[] sprites,int color,VertexSink sink){
+        for(var sprite:sprites)sprite(frame,sprite,color,3,sink);
+    }
     public static double progress(double now,double started,int duration){return Math.clamp((now-started)/Math.max(1,duration),0,1);}
     public static double circleOpacity(double progress){return Math.min(1,progress*8)*Math.pow(1-progress,1.5);}
     private static int tint(int rgb,double opacity){return Math.clamp((int)Math.round(opacity*255),0,255)<<24|rgb&0xffffff;}
@@ -70,14 +73,29 @@ public final class EffectGeometry {
     }
     private static void point(VertexSink sink,Vec3 at,Vec3 side,double scale,int color){vertex(sink,at.x+side.x*scale,at.y+side.y*scale,at.z+side.z*scale,color);}
     private static void sprite(Frame frame,EffectTimeline.Sprite sprite,int color,VertexSink sink){
+        sprite(frame,sprite,color,0,sink);
+    }
+    private static void sprite(Frame frame,EffectTimeline.Sprite sprite,int color,double near,VertexSink sink){
         double age=Math.max(0,frame.time-sprite.started()),t=progress(frame.time,sprite.started(),sprite.duration());
         if(t>=1)return;
         double opacity=Math.min(1,age/2)*Math.pow(1-t,1.4),travel=(1-Math.pow(.96,age))/.04;
         double gravity=sprite.hit()?.0008:0;
         Vec3 at=sprite.origin().add(sprite.velocity().scale(travel)).add(Math.sin(age*.07+sprite.phase())*.035,-gravity*age*age,0).subtract(frame.camera);
+        if(near>0){double distance=at.length();if(distance<=near)return;opacity*=Math.min(1,(distance-near)/2);}
         double radius=sprite.size()*(.6+.4*Math.sin(Math.PI*t)),angle=sprite.phase()+age*(sprite.kind()==1?.035:.012);
         double cosine=Math.cos(angle),sine=Math.sin(angle);
-        if(sprite.kind()==2){
+        if(sprite.kind()==4||sprite.kind()==5){
+            int segments=8,center=tint(pale(color),opacity*.85),edge=tint(color,opacity*.2);
+            for(int i=0;i<segments;i++){
+                double a=i*Math.PI*2/segments,b=(i+1)*Math.PI*2/segments;
+                double ax=Math.cos(a)*radius*(sprite.kind()==4?.5:.8),ay=Math.sin(a)*radius;
+                double bx=Math.cos(b)*radius*(sprite.kind()==4?.5:.8),by=Math.sin(b)*radius;
+                billboard(frame,at,0,0,center,sink);
+                billboard(frame,at,ax*cosine-ay*sine,ax*sine+ay*cosine,edge,sink);
+                billboard(frame,at,bx*cosine-by*sine,bx*sine+by*cosine,edge,sink);
+                billboard(frame,at,0,0,center,sink);
+            }
+        }else if(sprite.kind()==2){
             for(int i=0;i<3;i++){
                 double theta=angle+i*Math.PI/3,dx=Math.cos(theta)*radius,dy=Math.sin(theta)*radius;
                 billboardQuad(frame,at,-dx-dy*.045,-dy+dx*.045,dx-dy*.045,dy+dx*.045,dx+dy*.045,dy-dx*.045,-dx+dy*.045,-dy-dx*.045,tint(color,opacity*.8),sink);

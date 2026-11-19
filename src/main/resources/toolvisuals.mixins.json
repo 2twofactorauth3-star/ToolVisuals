@@ -159,7 +159,8 @@
     "optimization.network.Utf8StringMixin",
     "optimization.network.FrameDecoderMixin",
     "optimization.network.FrameEncoderMixin",
-    "optimization.network.CompressionEncoderMixin"
+    "optimization.network.CompressionEncoderMixin",
+    "optimization.network.ConnectionChannelAccess"
   ],
   "injectors": {
     "defaultRequire": 1

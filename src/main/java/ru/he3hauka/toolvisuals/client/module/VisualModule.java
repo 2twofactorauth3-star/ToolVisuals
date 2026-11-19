@@ -89,7 +89,8 @@ public enum VisualModule {
     ITEM_HIGHLIGHTS("ItemHighlights",ModuleCategory.RENDER),
     AUTO_WIN("AutoWin", ModuleCategory.PLAYER),
     AUTO_LOSE("AutoLose", ModuleCategory.PLAYER),
-    AMBIENCE("Ambience", ModuleCategory.WORLD);
+    AMBIENCE("Ambience", ModuleCategory.WORLD),
+    KRYPTON_OPTIMIZATION("KryptonOptimization", ModuleCategory.RENDER);
 
     public final String title;
     public final String id;
