@@ -5,6 +5,8 @@ using ToolLauncher.Accounts;
 using ToolLauncher.Core;
 using ToolLauncher.Storage;
 using ToolLauncher.Minecraft.GarbageCollection;
+using ToolLauncher.Minecraft.Runtime;
+using ToolLauncher.Minecraft.Security;
 
 namespace ToolLauncher.Minecraft;
 
@@ -15,6 +17,7 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
         settings.Validate();
         var collector = settings.GarbageCollection.For(game.Target);
         var plan = await GarbageCollectorRuntime.PrepareAsync(game.Java, collector, token).ConfigureAwait(false);
+        var protection = await JavaSecurityRuntime.PrepareAsync(game.Java, token).ConfigureAwait(false);
         token.ThrowIfCancellationRequested();
         log.Protect(account.AccessToken);
         var variables = new Dictionary<string, string>
@@ -26,7 +29,8 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
             ["natives_directory"] = game.Natives, ["launcher_name"] = "ToolLauncher", ["launcher_version"] = LauncherBuild.Version, ["classpath"] = game.Classpath,
             ["classpath_separator"] = Path.PathSeparator.ToString(), ["library_directory"] = Path.Combine(paths.Cache, "libraries"), ["resolution_width"] = "1280", ["resolution_height"] = "720"
         };
-        var info = new ProcessStartInfo(game.Java) { WorkingDirectory = game.Profile, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
+        var info = JavaProcess.StartInfo(game.Java);
+        info.WorkingDirectory = game.Profile;
         info.ArgumentList.Add("-Xms512M"); info.ArgumentList.Add("-Xmx" + settings.MemoryMiB + "M");
         var jvm = new List<string>();
         foreach (var metadata in new[] { game.Version, game.Fabric })
@@ -34,9 +38,10 @@ public sealed class GameRunner(LauncherPaths paths, LauncherLog log)
         for (int index = 0; index < jvm.Count; index++)
         {
             if (jvm[index] is "-cp" or "-classpath") { index++; continue; }
-            if (!jvm[index].StartsWith("-Xmx") && !jvm[index].StartsWith("-Xms") && !GarbageCollectorRuntime.IsSelectionArgument(jvm[index])) info.ArgumentList.Add(jvm[index]);
+            if (!jvm[index].StartsWith("-Xmx") && !jvm[index].StartsWith("-Xms") && !GarbageCollectorRuntime.IsSelectionArgument(jvm[index]) && !JavaSecurityRuntime.IsSecurityArgument(jvm[index])) info.ArgumentList.Add(jvm[index]);
         }
         foreach (string argument in plan.Arguments) info.ArgumentList.Add(argument);
+        foreach (string argument in protection) info.ArgumentList.Add(argument);
         info.ArgumentList.Add("@" + LaunchClasspath.WriteArguments(game.Profile, game.Classpath));
         info.ArgumentList.Add(game.Fabric.GetProperty("mainClass").GetString()!);
         foreach (string argument in LaunchRules.Arguments(game.Version.GetProperty("arguments").GetProperty("game"), variables)) info.ArgumentList.Add(argument);

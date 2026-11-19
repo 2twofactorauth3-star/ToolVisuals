@@ -105,6 +105,7 @@
 !/launcher/Presentation/*.xaml
 !/launcher/Presentation/Accounts/*.xaml
 !/launcher/Presentation/GarbageCollection/*.xaml
+!/launcher/Presentation/Security/*.xaml
 !/launcher/ToolLauncher.csproj
 !/launcher/app.manifest
 !/launcher/build.py

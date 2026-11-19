@@ -1,0 +1,22 @@
+<Window x:Class="ToolLauncher.Presentation.Security.JavaSecurityDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="560" SizeToContent="Height" MaxHeight="650" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Foreground="#F5F3FA" FontFamily="Segoe UI" FontSize="16" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Grayscale" Icon="/ToolLauncher;component/Assets/ToolVisuals.Executable.ico">
+  <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="16" Padding="26,24">
+    <Grid KeyboardNavigation.TabNavigation="Cycle">
+      <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+      <StackPanel Margin="0,0,0,18">
+        <TextBlock Text="CVE-2026-114938 · Java4Shell" Foreground="{StaticResource Muted}" FontSize="14" />
+        <TextBlock Text="{DynamicResource Text.javaSecurityTitle}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,6,0,0" />
+      </StackPanel>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="350">
+        <StackPanel>
+          <TextBlock Text="{DynamicResource Text.javaSecurityDescription}" TextWrapping="Wrap" LineHeight="24" />
+          <Border Background="{StaticResource InputFill}" CornerRadius="10" Padding="14,12" Margin="0,16,0,16"><TextBlock x:Name="RuntimeText" TextWrapping="Wrap" FontSize="14" LineHeight="21" /></Border>
+          <TextBlock Text="{DynamicResource Text.javaSecurityFallback}" TextWrapping="Wrap" Foreground="{StaticResource Muted}" FontSize="14" LineHeight="21" />
+        </StackPanel>
+      </ScrollViewer>
+      <StackPanel Grid.Row="2" Margin="0,20,0,0">
+        <Button x:Name="UpdateButton" Content="{DynamicResource Text.javaSecurityUpdate}" Style="{StaticResource Primary}" Click="UpdateClick" MinHeight="44" />
+        <Button Content="{DynamicResource Text.javaSecurityDecline}" Style="{StaticResource Quiet}" Click="DeclineClick" Margin="0,6,0,0" MinHeight="40" />
+      </StackPanel>
+    </Grid>
+  </Border>
+</Window>

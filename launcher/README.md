@@ -24,8 +24,10 @@ Windows-лаунчер для Minecraft 26.3, 1.21.11 и 1.21.4. Все три �
 python launcher/build.py
 ```
 
-Результат: `build/libs/ToolLauncher-1.3.10-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
+Результат: `build/libs/ToolLauncher-1.3.11-win-x64.exe`. .NET входит в готовый EXE. Разработка без упаковки: `python launcher/build.py --development`.
 
 EXE сохраняет все три клиентских JAR внутри одного файла без внутреннего сжатия сборок .NET: файл больше, зато загрузчику не нужно держать их распакованную копию в приватной памяти процесса. При сворачивании дерево интерфейса скрывается и восстанавливается без пересоздания; анимации прогресса и подсветки приостанавливаются у неактивного окна. Загрузки и наблюдение за игрой продолжаются. Discord RPC ожидает изменения состояния и ответы соединения вместо ежесекундного опроса; при отсутствии Discord повторное обнаружение остаётся ограниченным по частоте.
 
 Фон главной — игровой кадр Minecraft от Xbox México (CC BY 3.0). Источник и лицензия: [launcher/licenses/minecraft-scene.txt](licenses/minecraft-scene.txt). Изображение декодируется под размер области и DPI монитора, сохраняя нужное разрешение при увеличении окна; изменения размера объединяются коротким одноразовым таймером. У свёрнутого главного окна графический контекст переключается в программный режим, а перед восстановлением возвращается стандартное аппаратное ускорение. Исходные JPG и значки не изменяются.
+
+Java4Shell protection: Java is checked on startup and before game launch. Update installs the latest fixed Temurin 21/25 into the launcher data directory; system Java is preserved. Declining enforces and verifies -XX:-UseBASE64Intrinsics before every unpatched/unknown-runtime launch. Conflicting metadata flags and Java option environment variables cannot override this protection in launcher-created child processes. Unsupported or ineffective mitigation blocks launch. Java 21.0.13.1 and 25.0.5.1 are the known fixed baselines for Oracle/Temurin; unknown vendors and early-access versions retain mitigation. Downloads preserve TLS and SHA-256 checks, validate the extracted runtime before replacement and retain the previous managed runtime.

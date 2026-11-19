@@ -57,6 +57,7 @@ public partial class MainWindow : Window
         {
             if (services.Settings.LoadError != null) Notice(services.Settings.LoadError.Message + "\n" + services.Paths.Settings);
             if (services.Settings.LoadError == null && !services.Settings.Current.AccountImportCompleted) await AccountImportOverlay.OpenAsync(services);
+            if (!windowClosed && services.Settings.LoadError == null) await RunAsync("Check Java security", token => CheckJavaSecurityAsync(null, token));
             if (!windowClosed && page == "home" && !busy) await RefreshInstalledAsync();
         };
         Closing += OnClosing;
@@ -127,6 +128,7 @@ public partial class MainWindow : Window
         {
             if (PreferencesChanged()) SavePreferences();
             GameTarget target = Selected();
+            await CheckJavaSecurityAsync(target, token);
             ProfileLease? lease = ProfileLease.Acquire(services.Paths.Profile(target.Minecraft));
             try
             {
@@ -135,6 +137,10 @@ public partial class MainWindow : Window
                 var settings = services.Settings.Current;
                 var progress = Progress();
                 InstalledGame installed = await profileWork.RunAsync(cancellation => services.Installer.PrepareAsync(target, settings, progress, cancellation), token);
+                await CheckJavaSecurityAsync(target, token);
+                settings = services.Settings.Current;
+                string? checkedJava = await profileWork.RunAsync(cancellation => new JavaRuntime(services.Paths, services.Remote, services.Log).FindInstalledAsync(target, settings, cancellation), token);
+                installed = installed with { Java = checkedJava ?? throw new InvalidDataException("Java disappeared before launch") };
                 token.ThrowIfCancellationRequested();
                 services.Presence?.Suspend(true);
                 GameSession session;
