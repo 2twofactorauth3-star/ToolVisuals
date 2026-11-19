@@ -1959,5 +1959,8 @@
   "toolvisuals.krypton.scope": "Since measurement began · excludes TCP/IP",
   "toolvisuals.krypton.waiting": "Waiting for a server connection",
   "toolvisuals.krypton.external": "Managed by external Krypton",
-  "toolvisuals.hud.element.krypton": "Krypton statistics"
+  "toolvisuals.hud.element.krypton": "Krypton statistics",
+  "toolvisuals.module.tick_sync": "Aligns the client tick phase after stable incoming packet bursts without accelerating ticks. Suspends on jitter, low FPS or nonstandard server tick rates. PvP gains are not guaranteed.",
+  "toolvisuals.setting.tick_sync_margin": "Packet margin, ms",
+  "toolvisuals.setting.tick_sync_max_shift": "Maximum phase shift, ms"
 }

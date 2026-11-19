@@ -56,6 +56,7 @@ public final class ModuleSearch {
     }
     private static String aliases(VisualModule module) {
         return switch(module) {
+            case TICK_SYNC -> "ticksync tick sync synchronization timing packets тики тиксинк синхронизация пакеты задержка пвп";
             case KRYPTON_OPTIMIZATION -> "krypton optimization network packets traffic statistics криптон сеть пакеты трафик статистика оптимизация";
             case AMBIENCE -> "ambience atmosphere seasons winter summer spring autumn атмосфера сезоны зима лето весна осень";
             case AUTO_WIN,AUTO_LOSE -> "AutoGG auto gg autowin autolose авто гг автогг автолуз автовин победа поражение сообщение чат";

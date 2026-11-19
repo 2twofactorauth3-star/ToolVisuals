@@ -1959,5 +1959,8 @@
   "toolvisuals.krypton.scope": "С начала измерения · без TCP/IP",
   "toolvisuals.krypton.waiting": "Ожидание подключения к серверу",
   "toolvisuals.krypton.external": "Управляется внешним модом Krypton",
-  "toolvisuals.hud.element.krypton": "Статистика Krypton"
+  "toolvisuals.hud.element.krypton": "Статистика Krypton",
+  "toolvisuals.module.tick_sync": "Смещает фазу клиентского тика после прихода пакетов при стабильном потоке. Без ускорения тиков; при нестабильности, низком FPS и изменённом TPS не вмешивается. Польза в PvP не гарантируется.",
+  "toolvisuals.setting.tick_sync_margin": "Запас после пакетов, мс",
+  "toolvisuals.setting.tick_sync_max_shift": "Максимальный сдвиг, мс"
 }

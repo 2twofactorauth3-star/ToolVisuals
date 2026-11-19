@@ -90,7 +90,8 @@ public enum VisualModule {
     AUTO_WIN("AutoWin", ModuleCategory.PLAYER),
     AUTO_LOSE("AutoLose", ModuleCategory.PLAYER),
     AMBIENCE("Ambience", ModuleCategory.WORLD),
-    KRYPTON_OPTIMIZATION("KryptonOptimization", ModuleCategory.RENDER);
+    KRYPTON_OPTIMIZATION("KryptonOptimization", ModuleCategory.RENDER),
+    TICK_SYNC("TickSync", ModuleCategory.PLAYER);
 
     public final String title;
     public final String id;

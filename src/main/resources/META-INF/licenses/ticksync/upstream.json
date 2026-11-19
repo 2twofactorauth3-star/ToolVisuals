@@ -1,0 +1,17 @@
+{
+  "revision": "e2617212ec5c97c9a2b726d6553d1a5a8bf954b3",
+  "sha256": "682cea35dcd0683e827794beef70c40066ea450a9b3d3d205e86e2b9be06c5e7",
+  "repository": "https://github.com/LogGamja/TickSync",
+  "sources": {
+    "src/main/java/loggamja/sync/TickSyncConfig.java": "bc0eab951c19a21bb907c139b1596ff7c47dbf370448812d11fdcfb50038b2db",
+    "src/main/java/loggamja/sync/TickSyncHUDManager.java": "0d8786966dded12e0288bf51dda8b3b076ca0fb8cd2e63f4f345c502197b0f9c",
+    "src/main/java/loggamja/sync/TickSyncMain.java": "ce0adf29a52beac9ad3b31aff48db81db4b2719e840266491f0ecabfbe60fa0a",
+    "src/main/java/loggamja/sync/TickSyncOptionTable.java": "12d43fb1c2103c1b5e4153b26b7ac633c293e93c8e0635d319c8d8ab23bbf4e8",
+    "src/main/java/loggamja/sync/TickSyncSetting.java": "d2a33beb0e10ed13b0541233707b8c36d9519a3cec67a11a4e4319d062ea41ad",
+    "src/main/java/loggamja/sync/api/TickSyncAPI.java": "868add9a9abb4a92cedb86a71bc59fd5939a1015f3f9ff34447cd1d5d5863b3d",
+    "src/main/java/loggamja/sync/mixin/ClientPlayNetworkHandlerMixin.java": "5011953e2be6fad3d5c4eaafa7c00c4241d046e7a5bfb10c8d675a7bfa5fa72b",
+    "src/main/java/loggamja/sync/mixin/GameMenuScreenMixin.java": "e171191274848d34c756d312e4d8f0b81501958000460e96874f9c0e38bf1441",
+    "src/main/java/loggamja/sync/mixin/InGameHudMixin.java": "edf4c9db686b1542d5bc73a36f6101f55ba30537a228e8283a1bff54ed6dfaee",
+    "src/main/java/loggamja/sync/mixin/MinecraftClientMixin.java": "72591d338106b164a600d9274f50e3bacdbb94d3583703df0ee84c204df0d2eb"
+  }
+}

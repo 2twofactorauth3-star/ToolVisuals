@@ -51,7 +51,7 @@ public final class Ambience {
         int limit=next.season==Season.WINTER?2:1,spawned=0;
         if(next.season==Season.SUMMER&&ticks%6!=0)return;
         for(int attempt=0;attempt<4&&spawned<limit&&!SeasonParticles.full();attempt++) {
-            double x=player.getX()+(random.nextDouble()*2-1)*radius,z=player.getZ()+(random.nextDouble()*2-1)*radius,y=player.getY()+2+random.nextDouble()*5;
+            double x=player.getX()+(random.nextDouble()*2-1)*radius,z=player.getZ()+(random.nextDouble()*2-1)*radius,y=player.getEyeY()+.5+random.nextDouble()*4;
             BlockPos pos=BlockPos.containing(x,y,z);
             if(camera!=null){double dx=x-camera.getX(),dy=y-camera.getEyeY(),dz=z-camera.getZ();if(dx*dx+dy*dy+dz*dz<16)continue;}
             if(!level.hasChunkAt(pos)||!level.canSeeSky(pos)||!level.getBlockState(pos).isAir())continue;

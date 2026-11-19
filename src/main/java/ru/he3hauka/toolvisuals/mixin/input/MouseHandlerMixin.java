@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.input.bindings.HeldBindings;
 import ru.he3hauka.toolvisuals.client.camera.FreeLook;
 import ru.he3hauka.toolvisuals.client.items.dropprotect.DropInput;
 import ru.he3hauka.toolvisuals.client.keybinds.Keybinds;
@@ -31,6 +32,7 @@ public abstract class MouseHandlerMixin {
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$openMenu(long window, MouseButtonInfo button, int action, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
+        if(window==client.getWindow().handle())HeldBindings.mouse(ToolVisualsClient.zoomKey,new MouseButtonEvent(0,0,button),action);
         if(action==InputConstants.PRESS&&window==client.getWindow().handle())DropInput.mousePressed(client,new MouseButtonEvent(0,0,button));
         if(action==InputConstants.PRESS&&window==client.getWindow().handle())Keybinds.press(InputConstants.Type.MOUSE.getOrCreate(button.button()));
         if (action == InputConstants.PRESS && window == client.getWindow().handle()

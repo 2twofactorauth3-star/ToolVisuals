@@ -1,0 +1,5 @@
+Tick phase alignment inspired by Tick Sync by LogGamja.
+Copyright (c) 2026 LogGamja. MIT license, see LICENSE.
+Pinned upstream revision e2617212ec5c97c9a2b726d6553d1a5a8bf954b3.
+ToolVisuals uses a bounded positive phase correction with primitive sample storage and atomic packet arrival observations. No fast-sync acceleration, server tick-rate mutation, upstream HUD or configuration implementation is included.
+Corresponding source: https://github.com/2twofactorauth3-star/ToolVisuals

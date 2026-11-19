@@ -160,7 +160,9 @@
     "optimization.network.FrameDecoderMixin",
     "optimization.network.FrameEncoderMixin",
     "optimization.network.CompressionEncoderMixin",
-    "optimization.network.ConnectionChannelAccess"
+    "optimization.network.ConnectionChannelAccess",
+    "optimization.ticksync.TickSyncClientMixin",
+    "optimization.ticksync.TickSyncPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

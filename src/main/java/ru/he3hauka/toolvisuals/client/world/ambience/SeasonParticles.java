@@ -20,9 +20,9 @@ public final class SeasonParticles {
     public static void spawn(Vec3 position,long time,float variation){
         if(season==null||world==null)return;
         int kind=switch(season){case WINTER->2;case SUMMER->0;case SPRING->5;case AUTUMN->4;};
-        float size=switch(season){case WINTER->.04f;case SUMMER->.025f;case SPRING->.035f;case AUTUMN->.055f;};
-        Vec3 velocity=season==Season.SUMMER?new Vec3(.008,.004,.003):new Vec3(.012,-.035,.006);
-        TIMELINE.sprite(new EffectTimeline.Sprite(position,velocity,time,80,size*(1+variation*.4f),kind,variation*6.283185f,false),64);
+        float size=switch(season){case WINTER->.075f;case SUMMER->.025f;case SPRING->.065f;case AUTUMN->.08f;};
+        Vec3 velocity=season==Season.SUMMER?new Vec3(.008,.004,.003):new Vec3(.009,-.034,.004);
+        TIMELINE.sprite(new EffectTimeline.Sprite(position,velocity,time,season==Season.SUMMER?140:season==Season.AUTUMN?120:100,size*(.85f+variation*.3f),kind,variation*6.283185f,false),64);
     }
     public static Snapshot snapshot(){
         if(TIMELINE.spriteCount()==0)return EMPTY;

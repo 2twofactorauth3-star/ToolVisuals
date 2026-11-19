@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.he3hauka.toolvisuals.client.ToolVisualsClient;
+import ru.he3hauka.toolvisuals.client.input.bindings.HeldBindings;
 import ru.he3hauka.toolvisuals.client.animation.ui.EmoteWheelScreen;
 import ru.he3hauka.toolvisuals.client.items.dropprotect.DropInput;
 import ru.he3hauka.toolvisuals.client.keybinds.Keybinds;
@@ -18,6 +19,7 @@ public abstract class KeyboardHandlerMixin {
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     private void toolvisuals$openMenu(long window, int action, KeyEvent event, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
+        if(window==client.getWindow().handle())HeldBindings.key(ToolVisualsClient.zoomKey,event,action);
         if(action==InputConstants.PRESS&&window==client.getWindow().handle())DropInput.keyPressed(client,event);
         if(action==InputConstants.PRESS&&window==client.getWindow().handle())Keybinds.press(InputConstants.getKey(event));
         if(action==InputConstants.PRESS&&window==client.getWindow().handle()&&client.gui.screen() instanceof EmoteWheelScreen wheel&&event.key()>=InputConstants.KEY_F1&&event.key()<=InputConstants.KEY_F12){wheel.keyPressed(event);ci.cancel();return;}

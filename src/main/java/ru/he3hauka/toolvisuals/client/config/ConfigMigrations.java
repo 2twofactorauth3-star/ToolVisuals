@@ -11,7 +11,7 @@ import ru.he3hauka.toolvisuals.client.module.VisualModule;
 import ru.he3hauka.toolvisuals.client.module.VisualSetting;
 
 final class ConfigMigrations {
-    static final List<VisualModule> DEFAULTS=List.of(VisualModule.OPTIMIZATION,VisualModule.AUTO_SPRINT,VisualModule.FAST_SHADERS,VisualModule.CLIENT_BADGE,VisualModule.CAPES,VisualModule.COSMETICS,VisualModule.EXTRA_ANIMATIONS,VisualModule.DEATH_ASCENSION,VisualModule.CRYSTAL_OPTIMIZER,VisualModule.APPLE_SKIN,VisualModule.BETTER_HUD,VisualModule.ZOOM,VisualModule.FULL_BRIGHT,VisualModule.BLOCK_HIGHLIGHT,VisualModule.INFO_HUD,VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.GPS,VisualModule.ITEM_HIGHLIGHTS);
+    static final List<VisualModule> DEFAULTS=List.of(VisualModule.OPTIMIZATION,VisualModule.AUTO_SPRINT,VisualModule.FAST_SHADERS,VisualModule.CLIENT_BADGE,VisualModule.CAPES,VisualModule.COSMETICS,VisualModule.EXTRA_ANIMATIONS,VisualModule.DEATH_ASCENSION,VisualModule.CRYSTAL_OPTIMIZER,VisualModule.APPLE_SKIN,VisualModule.BETTER_HUD,VisualModule.ZOOM,VisualModule.FULL_BRIGHT,VisualModule.BLOCK_HIGHLIGHT,VisualModule.INFO_HUD,VisualModule.DROP_PROTECT,VisualModule.SHULKER_TOOLTIP,VisualModule.GPS,VisualModule.ITEM_HIGHLIGHTS,VisualModule.TICK_SYNC);
     static final int VERSION=DEFAULTS.size();
     static final int CUSTOM_HAND_VERSION=1;
     private ConfigMigrations(){}

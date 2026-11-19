@@ -81,6 +81,7 @@ import ru.he3hauka.toolvisuals.client.replay.ui.ReplayLibraryScreen;
 import ru.he3hauka.toolvisuals.client.replay.ui.ReplayViewerScreen;
 import ru.he3hauka.toolvisuals.client.session.SessionStats;
 import ru.he3hauka.toolvisuals.client.optimization.network.NetworkTelemetry;
+import ru.he3hauka.toolvisuals.client.optimization.ticksync.TickSync;
 import ru.he3hauka.toolvisuals.client.chat.reply.AutoGG;
 import ru.he3hauka.toolvisuals.client.world.ambience.Ambience;
 import ru.he3hauka.toolvisuals.client.social.PairedEmoteInput;
@@ -184,6 +185,7 @@ public final class ToolVisualsClient implements ClientModInitializer {
         ShulkerTooltips.initialize();
         ClientTickEvents.END_CLIENT_TICK.register(client -> Optimizations.update(CONFIG));
         ClientTickEvents.END_CLIENT_TICK.register(NetworkTelemetry::tick);
+        ClientTickEvents.START_CLIENT_TICK.register(TickSync::tick);
         ClientTickEvents.END_CLIENT_TICK.register(TerrainSettings::tick);
         WorldEffects.initialize();
         Gps.initialize();

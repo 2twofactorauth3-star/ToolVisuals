@@ -12,6 +12,8 @@ import ru.he3hauka.toolvisuals.client.zoom.TimedZoom;
 import static ru.he3hauka.toolvisuals.client.module.VisualModule.*;
 
 public enum VisualSetting {
+    TICK_SYNC_MARGIN(TICK_SYNC, 4, 20, 1, 8),
+    TICK_SYNC_MAX_SHIFT(TICK_SYNC, 5, 40, 1, 35),
     KRYPTON_STATISTICS(KRYPTON_OPTIMIZATION, false),
     KRYPTON_X(KRYPTON_OPTIMIZATION, 0, 100, 1, 2),
     KRYPTON_Y(KRYPTON_OPTIMIZATION, 0, 100, 1, 45),

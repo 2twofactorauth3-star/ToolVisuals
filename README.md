@@ -7,9 +7,9 @@
 
 | Minecraft | Java | Fabric Loader | Клиентский JAR |
 | --- | --- | --- | --- |
-| 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4.13+fabric-26.3.jar |
-| 1.21.11 | 21 | 0.19.2+ | ToolVisuals-1.4.13+fabric-1.21.11.jar |
-| 1.21.4 | 21 | 0.17.2+ | ToolVisuals-1.4.13+fabric-1.21.4.jar |
+| 26.3 | 25 | 0.19.5+ | ToolVisuals-1.4.14+fabric-26.3.jar |
+| 1.21.11 | 21 | 0.19.2+ | ToolVisuals-1.4.14+fabric-1.21.11.jar |
+| 1.21.4 | 21 | 0.17.2+ | ToolVisuals-1.4.14+fabric-1.21.4.jar |
 
 Исправлена инициализация AuctionHelper на Java без модуля `jdk.random`: используется стандартный `java.util.Random`. В нативных клиентах 1.21.4 и 1.21.11 встроенный Simple Voice Chat обновлён до 2.6.27 с Voice Chat API 2.6.27, устраняя конфликт версий API с Flashback 0.39.10.
 
@@ -17,7 +17,7 @@ Ambience (World) — четыре визуальных сезона: Зима, �
 
 Исправлен краш NoRender/WorldCustomizer Fog на 1.21.11: обработчик учитывает настоящий результат Vector4f и меняет FogData до чтения параметров для GPU.
 
-Ambience 1.4.13 усиливает сезонные палитры при сохранённых значениях интенсивности: более заметный зимний иней, насыщенная летняя зелень, свежие весенние оттенки и оранжевая осенняя листва. Добавлена плотность частиц; зимние снежинки появляются чаще. Ночная темнота, нулевая интенсивность и выключенное состояние сохраняются.
+Ambience 1.4.14 усиливает сезонные палитры при сохранённых значениях интенсивности: более заметный зимний иней, насыщенная летняя зелень, свежие весенние оттенки и оранжевая осенняя листва. Добавлена плотность частиц; зимние снежинки появляются чаще. Ночная темнота, нулевая интенсивность и выключенное состояние сохраняются.
 
 KryptonOptimization — отдельный модуль с независимым выключателем и отключаемой перемещаемой панелью статистики. Встроены адаптированные алгоритмы VarInt/UTF-8, разбора входящих кадров и отправки заголовка с сохранённым буфером тела без копирования. Исходящее zlib-сжатие использует JDK ByteBuffer без массива размером с пакет. Существующая декомпрессия Minecraft уже использует прямые буферы; шифрование, порядок и имена Netty-обработчиков не заменяются. Локальные соединения сохраняют свой кодек. При наличии отдельного Krypton встроенные замены отключаются. Переключение модуля действует без переподключения; статистика по умолчанию выключена. Native-бэкенд Velocity, серверные оптимизации и отключение проверки утечек не переносились. Это не обещание меньшего пинга или большего FPS. Лицензия и авторство Krypton сохранены в META-INF/licenses/krypton.
 
@@ -208,3 +208,7 @@ Windows-помощник MusicHUD собирается командой `python 
 Предложения и обновления: [t.me/toolvisuals](https://t.me/toolvisuals). Разработка: [t.me/hplugin](https://t.me/hplugin).
 
 KryptonOptimization now has independent controls and optional statistics (off by default). Counters reset on reconnect or after restarting measurement, exclude TCP/IP headers and failed writes, and count only this client’s outgoing data. The vanilla comparison uses byte-equivalence of the same packets, not an extra compression pass. Seasonal Ambience uses custom snowflakes, warm leaves, petals and motes in the shared depth-tested effect batch, with a 64-particle cap and near-camera fade. Minecraft 1.21.4 MotionBlur now restores framebuffer, viewport, depth and projection state before drawing hands.
+
+Zoom: independent hold forwarding preserves the configured key even when vanilla binds the same key; native 1.21.4 only changes world FOV, leaving held items at their normal FOV.
+Ambience particles now have detailed custom snow crystals, petal contours and veins, varied warm leaves and soft summer motes, distinct lifetimes, flutter and falling motion. At most 64 live sprites use the existing shared depth-tested batch, with camera-distance fade and no full-screen bloom pass.
+TickSync is enabled by default as requested, with its own module toggle, packet margin and bounded maximum shift. It shifts a single client tick later after a stable packet cadence, without acceleration or server tick-rate mutation. It suspends on jitter, stale packets, low FPS, replay, integrated-server play, freezes, nonstandard server rates and external Tick Sync. This is phase alignment, not a promise of better PvP, ping or hit registration. Attribution and MIT license for LogGamja/TickSync are in META-INF/licenses/ticksync.

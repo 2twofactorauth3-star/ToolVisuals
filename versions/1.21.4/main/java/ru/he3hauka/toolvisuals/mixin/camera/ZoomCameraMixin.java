@@ -1,5 +1,6 @@
 package ru.he3hauka.toolvisuals.mixin.camera;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,5 +12,5 @@ import ru.he3hauka.toolvisuals.client.zoom.VisualZoom;
 @Mixin(GameRenderer.class)
 public abstract class ZoomCameraMixin {
     @Inject(method="getFov",at=@At("RETURN"),cancellable=true)
-    private void toolvisuals$zoom(CallbackInfoReturnable<Float> callback){if(!ReplayScope.active())callback.setReturnValue(VisualZoom.fov(callback.getReturnValue()));}
+    private void toolvisuals$zoom(Camera camera,float partial,boolean world,CallbackInfoReturnable<Float> callback){if(world&&!ReplayScope.active())callback.setReturnValue(VisualZoom.fov(callback.getReturnValue()));}
 }

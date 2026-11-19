@@ -12,6 +12,7 @@ import ru.he3hauka.toolvisuals.client.effects.*;
 import ru.he3hauka.toolvisuals.client.optimization.diagnostics.Diagnostics;
 import ru.he3hauka.toolvisuals.client.optimization.frame.FrameMonitor;
 import ru.he3hauka.toolvisuals.client.world.ambience.SeasonParticles;
+import ru.he3hauka.toolvisuals.client.world.ambience.SeasonGeometry;
 
 import static ru.he3hauka.toolvisuals.client.module.VisualSetting.*;
 
@@ -38,7 +39,7 @@ public final class EffectRenderer {
             long started=Diagnostics.start(Diagnostics.Section.WORLD_SUBMIT);
             try{
                 EffectGeometry.VertexSink sink=(x,y,z,color)->vertices.addVertex(matrix,x,y,z).setColor(color);
-                EffectGeometry.emit(current.effects,sink);EffectGeometry.emitSeason(current.effects,current.seasons.sprites(),current.seasons.color(),sink);
+                EffectGeometry.emit(current.effects,sink);SeasonGeometry.emit(current.effects,current.seasons.sprites(),current.seasons.color(),sink);
             }
             finally{Diagnostics.end(Diagnostics.Section.WORLD_SUBMIT,started);}
         });

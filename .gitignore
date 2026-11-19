@@ -109,6 +109,7 @@
 !/launcher/ToolLauncher.csproj
 !/launcher/app.manifest
 !/launcher/build.py
+!/launcher/Tools/Enable-ToolDiagnostics.bat
 !/launcher/README.md
 !/launcher/licenses/*.txt
 !/launcher/licenses/*.TXT

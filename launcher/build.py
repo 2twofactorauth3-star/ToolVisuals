@@ -62,6 +62,7 @@ def build(development=False, source=None):
             raise ValueError('Provide a valid ToolLauncher project version')
         destination = ROOT / 'build/libs' / ('ToolLauncher-' + launcher_version + '-win-x64.exe')
         shutil.copyfile(output / 'ToolLauncher.exe', destination)
+        shutil.copyfile(LAUNCHER / 'Tools/Enable-ToolDiagnostics.bat', ROOT / 'build/libs/Enable-ToolDiagnostics.bat')
         print('TOOLLAUNCHER_READY', destination, destination.stat().st_size, 'clients=' + ','.join(entry['minecraft'] for entry in entries))
 
 
